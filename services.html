@@ -8,6 +8,20 @@
   <link rel="stylesheet" href="assets/style.css" />
   <style>
     .hero{ --hero: url('assets/img/hero.jpg'); }
+
+    /* ===== 只读评价样式（轻量，不影响你原有样式）===== */
+    .reviews{margin-top:14px;border-top:1px solid rgba(0,0,0,.06);padding-top:14px}
+    .reviews__head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .reviews__title{font-weight:700;font-size:14px}
+    .reviews__sub{font-size:12px;color:#6b7280}
+    .reviews__list{display:grid;gap:10px}
+
+    .rv-item{border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:10px 12px;background:#fff}
+    .rv-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+    .rv-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50%}
+    .rv-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:#6b7280;white-space:nowrap}
+    .rv-stars{letter-spacing:1px}
+    .rv-text{font-size:13px;line-height:1.5;color:#111827}
   </style>
 </head>
 <body>
@@ -35,79 +49,87 @@
         </div>
       </section>
 
-      
-<main>
-  <section class="section">
-    <div class="container">
-      <h1 class="h1">请联系我们的在线客服</h1>
-      <p class="muted-center">&nbsp;</p>
-      <p class="center" style="margin:0;font-size:16px;">
-        QQ:2802632995/3412211505/3403647902 &nbsp; WhatsApp:+1 4315093334 &nbsp; tg:+44 7707489977
-      </p>
-      <p class="center" style="margin:6px 0 0;font-size:14px;color:#6b7280;">在线时间:早9点-晚11点</p>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="grid3">
-        <article class="card">
-          <img src="assets/img/spotify.jpg" alt="Spotify Premium" loading="lazy">
-          <div class="pad">
-            <h2>Spotify Premium</h2>
-            <p class="price">主做欧美日高价区家庭计划，年99</p>
-            <ul>
-              <li>无损音质</li>
-              <li>收听播客</li>
-              <li>离线下载</li>
-              <li>歌单混音</li>
-              <li>DJX功能</li>
-              <li>完整曲库</li>
-            </ul>
-            <p style="margin:12px 0 0;color:#4b5563;font-size:14px;">
-              更多功能敬请自寻探索，Spotify上线所有功能均有，未来上线的功能也第一时间会有！另可开通欧美Individual, Premium Duo, Family Plan，欢迎询价！
+      <main>
+        <section class="section">
+          <div class="container">
+            <h1 class="h1">请联系我们的在线客服</h1>
+            <p class="muted-center">&nbsp;</p>
+            <p class="center" style="margin:0;font-size:16px;">
+              QQ:2802632995/3412211505/3403647902 &nbsp; WhatsApp:+1 4315093334 &nbsp; tg:+44 7707489977
             </p>
+            <p class="center" style="margin:6px 0 0;font-size:14px;color:#6b7280;">在线时间:早9点-晚11点</p>
           </div>
-        </article>
+        </section>
 
-        <article class="card">
-          <img src="assets/img/netflix.jpg" alt="Netflix Premium" loading="lazy">
-          <div class="pad">
-            <h2>Netflix Premium</h2>
-            <p class="price">高价区一人一位，年128</p>
-            <ul>
-              <li>4K画质</li>
-              <li>杜比音效</li>
-              <li>离线下载</li>
-              <li>位置上锁</li>
-              <li>奈飞游戏</li>
-            </ul>
-            <p style="margin:12px 0 0;color:#4b5563;font-size:14px;">
-              特为大陆用户准备企业专线，秒开所有流媒体最高画质，并不影响使用大陆其他app，最高速率可达5GBS，支持测试，仅需+40/年
-            </p>
+        <section class="section">
+          <div class="container">
+            <div class="grid3">
+              <article class="card">
+                <img src="assets/img/spotify.jpg" alt="Spotify Premium" loading="lazy">
+                <div class="pad">
+                  <h2>Spotify Premium</h2>
+                  <p class="price">主做欧美日高价区家庭计划，年99</p>
+                  <ul>
+                    <li>无损音质</li>
+                    <li>收听播客</li>
+                    <li>离线下载</li>
+                    <li>歌单混音</li>
+                    <li>DJX功能</li>
+                    <li>完整曲库</li>
+                  </ul>
+                  <p style="margin:12px 0 0;color:#4b5563;font-size:14px;">
+                    更多功能敬请自寻探索，Spotify上线所有功能均有，未来上线的功能也第一时间会有！另可开通欧美Individual, Premium Duo, Family Plan，欢迎询价！
+                  </p>
+                </div>
+              </article>
+
+              <article class="card">
+                <img src="assets/img/netflix.jpg" alt="Netflix Premium" loading="lazy">
+                <div class="pad">
+                  <h2>Netflix Premium</h2>
+                  <p class="price">高价区一人一位，年128</p>
+                  <ul>
+                    <li>4K画质</li>
+                    <li>杜比音效</li>
+                    <li>离线下载</li>
+                    <li>位置上锁</li>
+                    <li>奈飞游戏</li>
+                  </ul>
+                  <p style="margin:12px 0 0;color:#4b5563;font-size:14px;">
+                    特为大陆用户准备企业专线，秒开所有流媒体最高画质，并不影响使用大陆其他app，最高速率可达5GBS，支持测试，仅需+40/年
+                  </p>
+                </div>
+              </article>
+
+              <article class="card">
+                <img src="assets/img/chatgpt.jpg" alt="ChatGPT Plus" loading="lazy">
+                <div class="pad">
+                  <h2>Chatgpt Plus</h2>
+                  <p class="price">账户单独使用，月75</p>
+                  <ul>
+                    <li>正规付费</li>
+                    <li>不限5.2+</li>
+                    <li>不降智ip</li>
+                  </ul>
+                  <p style="margin:12px 0 0;color:#4b5563;font-size:14px;">
+                    为避免大陆客户使用过程廉价高风险节点ip,造成gpt模型降智影响体验，开通chatgpt plus免费赠送企业专线，低风险ip超低延迟高速率，体验拉满
+                  </p>
+
+                  <!-- ===== 用户评价（只展示，不支持访客新增；每次随机显示3条）===== -->
+                  <div class="reviews" id="reviews-chatgpt" aria-label="用户评价">
+                    <div class="reviews__head">
+                      <div class="reviews__title">用户评价</div>
+                      <div class="reviews__sub">每次随机展示 3 条</div>
+                    </div>
+                    <div class="reviews__list" id="rvList"></div>
+                  </div>
+                </div>
+              </article>
+
+            </div>
           </div>
-        </article>
-
-        <article class="card">
-          <img src="assets/img/chatgpt.jpg" alt="ChatGPT Plus" loading="lazy">
-          <div class="pad">
-            <h2>Chatgpt Plus</h2>
-            <p class="price">账户单独使用，月75</p>
-            <ul>
-              <li>正规付费</li>
-              <li>不限5.2+</li>
-              <li>不降智ip</li>
-            </ul>
-            <p style="margin:12px 0 0;color:#4b5563;font-size:14px;">
-              为避免大陆客户使用过程廉价高风险节点ip,造成gpt模型降智影响体验，开通chatgpt plus免费赠送企业专线，低风险ip超低延迟高速率，体验拉满
-            </p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-</main>
-
+        </section>
+      </main>
 
       <div class="footer">
         Copyright © 2026 Maoyang Taiwan Inc. All rights reserved.
@@ -136,5 +158,62 @@
   </button>
 
   <script src="assets/script.js"></script>
+
+  <!-- ===== 评价只读渲染：随机显示3条 ===== -->
+  <script>
+  (() => {
+    const REVIEWS = [
+      { name: "Winton", rating: 5, text: "你们的会员确实稳 比别家便宜还更好" },
+      { name: "团团不委屈", rating: 5, text: "很不错，客服很有耐心解决问题" },
+      { name: "Vin", rating: 5, text: "速度太牛了，爽" },
+      { name: "Ana", rating: 5, text: "用了两年多了有时候会掉出会员，但是客服都给解决了" },
+      { name: "水水水", rating: 5, text: "奈飞搭配客服给的专线太爽了，真秒开4K" },
+      { name: "YUQI", rating: 5, text: "确实快，认准这家没错" },
+      { name: "Martin", rating: 5, text: "Perfect price with prefect service" },
+      { name: "劉生", rating: 5, text: "非常誠信的賣家，說到做到" },
+      { name: "Yeffy Chan", rating: 5, text: "真是正，第一次見咁好噶商家，祝興隆" }
+    ];
+
+    const SHOW_COUNT = 3;
+
+    const esc = (s) => String(s)
+      .replaceAll("&","&amp;").replaceAll("<","&lt;")
+      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function render(){
+      const box = document.getElementById("rvList");
+      if (!box) return;
+
+      const picked = shuffle(REVIEWS).slice(0, Math.min(SHOW_COUNT, REVIEWS.length));
+
+      box.innerHTML = picked.map(r => {
+        const rating = Math.max(1, Math.min(5, Number(r.rating) || 5));
+        return `
+          <div class="rv-item">
+            <div class="rv-top">
+              <div class="rv-name">${esc(r.name || "匿名用户")}</div>
+              <div class="rv-meta">
+                <span class="rv-stars">${"★".repeat(rating)}${"☆".repeat(5 - rating)}</span>
+              </div>
+            </div>
+            <div class="rv-text">${esc(r.text || "")}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", render);
+  })();
+  </script>
 </body>
 </html>
