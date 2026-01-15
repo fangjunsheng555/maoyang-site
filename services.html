@@ -9,19 +9,72 @@
   <style>
     .hero{ --hero: url('assets/img/hero.jpg'); }
 
-    /* ===== 只读评价样式（轻量，不影响你原有样式）===== */
-    .reviews{margin-top:14px;border-top:1px solid rgba(0,0,0,.06);padding-top:14px}
-    .reviews__head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
-    .reviews__title{font-weight:700;font-size:14px}
-    .reviews__sub{font-size:12px;color:#6b7280}
-    .reviews__list{display:grid;gap:10px}
+    /* ===== 评论卡片：居中 + 与现有卡片风格协调 ===== */
+    .centerRow{
+      display:flex;
+      justify-content:center;
+      margin-top:18px;
+    }
+    .centerRow .card{
+      width:min(820px, 100%);
+    }
 
-    .rv-item{border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:10px 12px;background:#fff}
-    .rv-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
-    .rv-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50%}
-    .rv-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:#6b7280;white-space:nowrap}
-    .rv-stars{letter-spacing:1px}
-    .rv-text{font-size:13px;line-height:1.5;color:#111827}
+    .reviewsHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:14px;
+    }
+    .reviewsTitle{
+      font-size:18px;
+      font-weight:700;
+      line-height:1.2;
+    }
+    .rvTip{
+      margin-top:6px;
+      font-size:13px;
+      color:#6b7280;
+    }
+    .reviewsSub{
+      font-size:12px;
+      color:#6b7280;
+      white-space:nowrap;
+      padding-top:2px;
+    }
+    .reviewsList{
+      display:grid;
+      gap:12px;
+    }
+    .reviewItem{
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:14px;
+      padding:12px 12px;
+      background:rgba(255,255,255,.6);
+    }
+    .reviewTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px;
+    }
+    .reviewName{
+      font-weight:700;
+      font-size:14px;
+    }
+    .reviewStars{
+      letter-spacing:1px;
+      font-size:13px;
+      opacity:.9;
+      user-select:none;
+    }
+    .reviewText{
+      margin:0;
+      color:#374151;
+      font-size:14px;
+      line-height:1.55;
+    }
   </style>
 </head>
 <body>
@@ -114,19 +167,28 @@
                   <p style="margin:12px 0 0;color:#4b5563;font-size:14px;">
                     为避免大陆客户使用过程廉价高风险节点ip,造成gpt模型降智影响体验，开通chatgpt plus免费赠送企业专线，低风险ip超低延迟高速率，体验拉满
                   </p>
-
-                  <!-- ===== 用户评价（只展示，不支持访客新增；每次随机显示3条）===== -->
-                  <div class="reviews" id="reviews-chatgpt" aria-label="用户评价">
-                    <div class="reviews__head">
-                      <div class="reviews__title">用户评价</div>
-                      <div class="reviews__sub">每次随机展示 3 条</div>
-                    </div>
-                    <div class="reviews__list" id="rvList"></div>
-                  </div>
                 </div>
               </article>
-
             </div>
+
+            <!-- 评论：独立卡片、居中展示 -->
+            <div class="centerRow">
+              <article class="card reviewsCard">
+                <div class="pad">
+                  <div class="reviewsHead">
+                    <div>
+                      <div class="reviewsTitle">用户评论</div>
+                      <div class="rvTip">真实反馈摘选 · 每次随机展示 3 条</div>
+                    </div>
+                    <div class="reviewsSub">仅展示，不支持新增</div>
+                  </div>
+
+                  <div class="reviewsList" id="rvList" aria-label="评论列表"></div>
+                </div>
+              </article>
+            </div>
+            <!-- /评论 -->
+
           </div>
         </section>
       </main>
@@ -159,61 +221,56 @@
 
   <script src="assets/script.js"></script>
 
-  <!-- ===== 评价只读渲染：随机显示3条 ===== -->
+  <!-- 评论随机展示：固定 9 条里抽 3 条（不支持新增） -->
   <script>
-  (() => {
-    const REVIEWS = [
-      { name: "Winton", rating: 5, text: "你们的会员确实稳 比别家便宜还更好" },
-      { name: "团团不委屈", rating: 5, text: "很不错，客服很有耐心解决问题" },
-      { name: "Vin", rating: 5, text: "速度太牛了，爽" },
-      { name: "Ana", rating: 5, text: "用了两年多了有时候会掉出会员，但是客服都给解决了" },
-      { name: "水水水", rating: 5, text: "奈飞搭配客服给的专线太爽了，真秒开4K" },
-      { name: "YUQI", rating: 5, text: "确实快，认准这家没错" },
-      { name: "Martin", rating: 5, text: "Perfect price with prefect service" },
-      { name: "劉生", rating: 5, text: "非常誠信的賣家，說到做到" },
-      { name: "Yeffy Chan", rating: 5, text: "真是正，第一次見咁好噶商家，祝興隆" }
-    ];
+    (function(){
+      const reviews = [
+        { name: "Winton", text: "你们的会员确实稳，比别家便宜还更好。", stars: 5 },
+        { name: "团团不委屈", text: "很不错，客服很有耐心解决问题。", stars: 5 },
+        { name: "Vin", text: "速度太牛了，爽。", stars: 5 },
+        { name: "Ana", text: "用了两年多了，有时候会掉出会员，但是客服都给解决了。", stars: 5 },
+        { name: "水水水", text: "奈飞搭配客服给的专线太爽了，真秒开4K。", stars: 5 },
+        { name: "YUQI", text: "确实快，认准这家没错。", stars: 5 },
+        { name: "Martin", text: "Perfect price with prefect service", stars: 5 },
+        { name: "劉生", text: "非常誠信的賣家，說到做到。", stars: 5 },
+        { name: "Yeffy Chan", text: "真是正，第一次見咁好噶商家，祝興隆。", stars: 5 }
+      ];
 
-    const SHOW_COUNT = 3;
-
-    const esc = (s) => String(s)
-      .replaceAll("&","&amp;").replaceAll("<","&lt;")
-      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-
-    function shuffle(arr){
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
+      function pickN(arr, n){
+        const a = arr.slice();
+        for(let i=a.length-1;i>0;i--){
+          const j = Math.floor(Math.random()*(i+1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a.slice(0, n);
       }
-      return a;
-    }
 
-    function render(){
-      const box = document.getElementById("rvList");
-      if (!box) return;
+      const list = document.getElementById('rvList');
+      if(!list) return;
 
-      const picked = shuffle(REVIEWS).slice(0, Math.min(SHOW_COUNT, REVIEWS.length));
-
-      box.innerHTML = picked.map(r => {
-        const rating = Math.max(1, Math.min(5, Number(r.rating) || 5));
+      const shown = pickN(reviews, 3);
+      list.innerHTML = shown.map(r => {
+        const stars = "★★★★★".slice(0, Math.max(0, Math.min(5, r.stars || 5)));
         return `
-          <div class="rv-item">
-            <div class="rv-top">
-              <div class="rv-name">${esc(r.name || "匿名用户")}</div>
-              <div class="rv-meta">
-                <span class="rv-stars">${"★".repeat(rating)}${"☆".repeat(5 - rating)}</span>
-              </div>
+          <div class="reviewItem">
+            <div class="reviewTop">
+              <div class="reviewName">${escapeHtml(r.name)}</div>
+              <div class="reviewStars" aria-label="${r.stars || 5} 星">${stars}</div>
             </div>
-            <div class="rv-text">${esc(r.text || "")}</div>
+            <p class="reviewText">${escapeHtml(r.text)}</p>
           </div>
         `;
-      }).join("");
-    }
+      }).join('');
 
-    document.addEventListener("DOMContentLoaded", render);
-  })();
+      function escapeHtml(s){
+        return String(s)
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
+    })();
   </script>
 </body>
 </html>
