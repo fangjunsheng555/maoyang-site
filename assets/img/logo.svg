@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="128" viewBox="0 0 420 128" role="img" aria-labelledby="title desc">
+  <title id="title">冒央会社</title>
+  <desc id="desc">Premium digital membership service logo</desc>
+  <defs>
+    <linearGradient id="mark" x1="14" y1="16" x2="106" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="0.56" stop-color="#0B4F4A"/>
+      <stop offset="1" stop-color="#143B36"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="31" y1="28" x2="93" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7D28B"/>
+      <stop offset="1" stop-color="#B7791F"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#0F172A" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="420" height="128" rx="24" fill="#FFFFFF"/>
+  <g filter="url(#shadow)">
+    <path d="M64 16 108 33.6v31.2c0 25.9-17.3 49.5-44 58-26.7-8.5-44-32.1-44-58V33.6L64 16Z" fill="url(#mark)"/>
+    <path d="M64 29.5 95.5 42v23.3c0 18.4-12.1 35.1-31.5 42-19.4-6.9-31.5-23.6-31.5-42V42L64 29.5Z" fill="none" stroke="url(#gold)" stroke-width="4"/>
+    <path d="M46.2 66.4 58.2 78.6 83 52.4" fill="none" stroke="#F8E5B8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g fill="#111827">
+    <text x="138" y="58" font-family="'Noto Sans SC','Microsoft YaHei','PingFang SC',Arial,sans-serif" font-size="34" font-weight="900" letter-spacing="2">冒央会社</text>
+    <text x="140" y="88" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="800" letter-spacing="2.8" fill="#0F766E">PREMIUM MEMBERSHIP SERVICE</text>
+  </g>
+  <path d="M140 101h210" stroke="#D9E4E1" stroke-width="2" stroke-linecap="round"/>
+</svg>
