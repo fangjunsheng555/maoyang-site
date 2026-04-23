@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" role="img" aria-labelledby="title desc">
+  <title id="title">Spotify logo</title>
+  <desc id="desc">Spotify brand mark and wordmark</desc>
+  <circle cx="48" cy="48" r="34" fill="#1DB954"/>
+  <path d="M30 37c17.7-4.8 39.8-2.9 55.1 6" fill="none" stroke="#fff" stroke-width="6.2" stroke-linecap="round"/>
+  <path d="M33.5 49.5c14.8-3.6 32.1-2 44.7 5" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M37 61c10.7-2.3 23.2-1 32.5 4.3" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <text x="96" y="60" fill="#191414" font-family="Inter, Arial, Helvetica, sans-serif" font-size="38" font-weight="800" letter-spacing="0">Spotify</text>
+</svg>
