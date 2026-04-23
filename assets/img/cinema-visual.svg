@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="720" viewBox="0 0 1000 720" role="img" aria-label="Premium cinema membership visual">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#210709"/><stop offset="0.54" stop-color="#111827"/><stop offset="1" stop-color="#0B1518"/></linearGradient><linearGradient id="red" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F87171"/><stop offset="1" stop-color="#991B1B"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="22" stdDeviation="20" flood-color="#000" flood-opacity="0.32"/></filter></defs>
+  <rect width="1000" height="720" fill="url(#bg)"/>
+  <circle cx="760" cy="160" r="230" fill="#EF4444" opacity="0.16"/>
+  <g filter="url(#s)">
+    <rect x="118" y="118" width="764" height="378" rx="28" fill="#0B0F14" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <rect x="154" y="154" width="692" height="220" rx="18" fill="#170B0C"/>
+    <path d="M154 374h692v86H154z" fill="#0E141B"/>
+    <circle cx="500" cy="264" r="72" fill="url(#red)" opacity="0.9"/>
+    <path d="M478 223v82l74-41-74-41Z" fill="#FFF7ED"/>
+    <g fill="#FFFFFF" opacity="0.14"><rect x="186" y="402" width="120" height="30" rx="15"/><rect x="330" y="402" width="120" height="30" rx="15"/><rect x="474" y="402" width="120" height="30" rx="15"/><rect x="618" y="402" width="120" height="30" rx="15"/></g>
+  </g>
+  <g filter="url(#s)">
+    <rect x="216" y="526" width="176" height="112" rx="20" fill="#161B22" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <path d="M257 574h94v42h-94z" fill="none" stroke="#F87171" stroke-width="10"/><path d="M246 566h116" stroke="#F87171" stroke-width="10" stroke-linecap="round"/>
+    <rect x="430" y="526" width="176" height="112" rx="20" fill="#161B22" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <path d="M478 560c20-22 61-22 81 0 18 20 18 47 0 67h-81c-18-20-18-47 0-67Z" fill="none" stroke="#FCA5A5" stroke-width="9"/>
+    <rect x="644" y="526" width="176" height="112" rx="20" fill="#161B22" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <path d="M716 556v48l-28-28m28 28 28-28" fill="none" stroke="#F87171" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
