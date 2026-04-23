@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-label="Trusted digital membership company visual">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#EEF5F2"/></linearGradient><linearGradient id="teal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0F766E"/><stop offset="1" stop-color="#0B4F4A"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F7D28B"/><stop offset="1" stop-color="#B7791F"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#0F172A" flood-opacity="0.12"/></filter></defs>
+  <rect width="1400" height="820" fill="url(#bg)"/>
+  <path d="M986 180c144 40 224 156 202 278-20 113-120 196-254 202-155 7-283-86-302-216-20-137 104-306 354-264Z" fill="#0F766E" opacity="0.1"/>
+  <g opacity="0.55" stroke="#B7791F" stroke-width="3" fill="none"><path d="M208 232c226-74 356-24 540 92 164 104 298 98 470 16"/><path d="M210 586c248-130 454-116 628-18 128 72 264 72 386 2" opacity="0.56"/></g>
+  <g filter="url(#s)">
+    <rect x="368" y="216" width="560" height="360" rx="34" fill="#FFFFFF"/>
+    <rect x="410" y="260" width="332" height="218" rx="24" fill="#F8FAFC" stroke="#DDE7E4"/>
+    <rect x="452" y="302" width="248" height="28" rx="14" fill="#0F766E" opacity="0.22"/>
+    <rect x="452" y="362" width="190" height="22" rx="11" fill="#B7791F" opacity="0.24"/>
+    <rect x="452" y="414" width="220" height="22" rx="11" fill="#0F766E" opacity="0.16"/>
+    <rect x="780" y="274" width="96" height="96" rx="22" fill="url(#teal)"/>
+    <path d="m804 322 20 20 34-42" fill="none" stroke="#F7D28B" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="780" y="402" width="96" height="96" rx="22" fill="url(#gold)" opacity="0.95"/>
+    <path d="M804 455h48m-36-28h24" stroke="#FFF7ED" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#s)">
+    <path d="M210 188 326 236v86c0 83-52 147-116 172-64-25-116-89-116-172v-86l116-48Z" fill="url(#teal)"/>
+    <path d="M210 232 286 264v58c0 54-34 96-76 114-42-18-76-60-76-114v-58l76-32Z" fill="none" stroke="url(#gold)" stroke-width="9"/>
+    <path d="m164 330 34 34 72-82" fill="none" stroke="#FFF7ED" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g filter="url(#s)">
+    <rect x="1000" y="286" width="252" height="84" rx="22" fill="#FFFFFF"/><rect x="1036" y="320" width="150" height="16" rx="8" fill="#0F766E" opacity="0.22"/><circle cx="1210" cy="328" r="16" fill="#F7D28B"/>
+    <rect x="972" y="402" width="294" height="84" rx="22" fill="#FFFFFF"/><rect x="1010" y="436" width="180" height="16" rx="8" fill="#0F766E" opacity="0.18"/><circle cx="1218" cy="444" r="16" fill="#F7D28B"/>
+    <rect x="1026" y="518" width="220" height="84" rx="22" fill="#FFFFFF"/><rect x="1062" y="552" width="126" height="16" rx="8" fill="#0F766E" opacity="0.18"/><circle cx="1206" cy="560" r="16" fill="#F7D28B"/>
+  </g>
+</svg>
