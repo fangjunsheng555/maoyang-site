@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 96" role="img" aria-labelledby="title desc">
+  <title id="title">ChatGPT logo</title>
+  <desc id="desc">ChatGPT brand mark and wordmark</desc>
+  <circle cx="48" cy="48" r="34" fill="#10A37F"/>
+  <g fill="none" stroke="#fff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M48 22.5c8.2 0 14.8 5.9 16 13.6 6.9 2.4 11.9 8.9 11.9 16.6 0 9.1-6.9 16.5-15.7 17.4-3.1 5.5-9 9.2-15.8 9.2-8.2 0-15.1-5.4-17.3-12.8-6.5-2.5-11.1-8.9-11.1-16.3 0-8.6 6.2-15.8 14.4-17.2 3-6.2 9.4-10.5 17.6-10.5Z" opacity=".9"/>
+    <path d="M36.5 34.8 53 25.4m-22.4 25 17.1-9.9m-.2 30.7 16.8-9.7M31 64.2l.1-19.4m33.2-11.2-.1 19.7m-16.7 17.9-16.4-9.4"/>
+  </g>
+  <text x="102" y="60" fill="#111827" font-family="Inter, Arial, Helvetica, sans-serif" font-size="37" font-weight="800" letter-spacing="0">ChatGPT</text>
+</svg>
