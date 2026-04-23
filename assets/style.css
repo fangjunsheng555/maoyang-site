@@ -274,6 +274,27 @@ img{max-width:100%;display:block}
 .grid3 > .card:nth-child(2){border-top:4px solid #e50914}
 .grid3 > .card:nth-child(3){border-top:4px solid #111827}
 .grid3 > .card:nth-child(3) .price{background:#f7f7f8;border-color:#d8dde5;color:#1f2937}
+.grid3 > .card{position:relative}
+.grid3 > .card::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  left:18px;
+  z-index:2;
+  width:154px;
+  height:48px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.74);
+  background-color:rgba(255,255,255,.94);
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:calc(100% - 22px) auto;
+  box-shadow:0 14px 30px rgba(0,0,0,.2);
+  pointer-events:none;
+}
+.grid3 > .card:nth-child(1)::before{background-image:url('img/brand-spotify.svg')}
+.grid3 > .card:nth-child(2)::before{background-image:url('img/brand-netflix.svg')}
+.grid3 > .card:nth-child(3)::before{width:170px;background-image:url('img/brand-chatgpt.svg')}
 
 .center{text-align:center}
 main .section .container > p.center{
@@ -339,6 +360,8 @@ main .section .container > p.center + p.center{margin-top:10px !important;color:
   .tile img,.grid3 > .card > img{aspect-ratio:4/3}
   .card h2{font-size:22px}
   .card .price{font-size:15px;padding:11px 12px}
+  .grid3 > .card::before{top:12px;left:12px;width:128px;height:40px;background-size:calc(100% - 18px) auto}
+  .grid3 > .card:nth-child(3)::before{width:142px}
   main .section .container > p.center{font-size:15px !important;line-height:1.7}
   .reviewsHead{display:block !important}
   .reviewsSub{display:block;margin-top:8px;white-space:normal !important}
