@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="720" viewBox="0 0 1000 720" role="img" aria-label="Premium AI membership visual">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071715"/><stop offset="0.5" stop-color="#101827"/><stop offset="1" stop-color="#062D2A"/></linearGradient><linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#67E8F9"/><stop offset="1" stop-color="#0F766E"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="22" stdDeviation="20" flood-color="#000" flood-opacity="0.28"/></filter></defs>
+  <rect width="1000" height="720" fill="url(#bg)"/>
+  <path d="M84 541C242 392 345 519 510 335c125-140 265-137 407-42" fill="none" stroke="#67E8F9" stroke-width="4" opacity="0.32"/>
+  <path d="M111 591c181-118 272-41 430-185 125-114 217-104 340-46" fill="none" stroke="#F8E4B0" stroke-width="3" opacity="0.22"/>
+  <g filter="url(#s)">
+    <rect x="310" y="128" width="380" height="430" rx="38" fill="#0C141C" stroke="#FFFFFF" stroke-opacity="0.14"/>
+    <circle cx="500" cy="282" r="106" fill="url(#cyan)" opacity="0.2"/>
+    <circle cx="500" cy="282" r="78" fill="none" stroke="#67E8F9" stroke-width="6" opacity="0.82"/>
+    <g stroke="#67E8F9" stroke-width="5" stroke-linecap="round" opacity="0.9"><path d="M464 270c14-18 34-18 50 0"/><path d="M514 270c14-18 34-18 50 0"/><path d="M460 314c22 28 58 38 104 0"/></g>
+    <rect x="364" y="430" width="272" height="22" rx="11" fill="#67E8F9" opacity="0.26"/>
+    <rect x="394" y="474" width="212" height="18" rx="9" fill="#FFFFFF" opacity="0.14"/>
+  </g>
+  <g filter="url(#s)">
+    <rect x="98" y="212" width="176" height="132" rx="24" fill="#111827" stroke="#67E8F9" stroke-opacity="0.24"/>
+    <circle cx="142" cy="256" r="13" fill="#67E8F9"/><rect x="170" y="244" width="76" height="16" rx="8" fill="#FFFFFF" opacity="0.18"/><rect x="132" y="292" width="108" height="16" rx="8" fill="#FFFFFF" opacity="0.13"/>
+    <rect x="726" y="420" width="178" height="132" rx="24" fill="#111827" stroke="#F8E4B0" stroke-opacity="0.24"/>
+    <path d="M770 486h94m-78-38h62m-42 76h22" stroke="#F8E4B0" stroke-width="10" stroke-linecap="round" opacity="0.82"/>
+  </g>
+</svg>
