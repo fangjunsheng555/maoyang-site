@@ -1,25 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="720" viewBox="0 0 1000 720" role="img" aria-label="Premium music membership visual">
-  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#05201D"/><stop offset="1" stop-color="#111827"/></linearGradient><linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#86EFAC"/><stop offset="1" stop-color="#0F766E"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="22" stdDeviation="20" flood-color="#000" flood-opacity="0.28"/></filter></defs>
-  <rect width="1000" height="720" fill="url(#bg)"/>
-  <circle cx="210" cy="566" r="230" fill="#16A34A" opacity="0.12"/>
-  <circle cx="780" cy="150" r="220" fill="#2DD4BF" opacity="0.1"/>
-  <g filter="url(#s)">
-    <rect x="356" y="92" width="288" height="528" rx="46" fill="#0B1518" stroke="#FFFFFF" stroke-opacity="0.16"/>
-    <rect x="398" y="142" width="204" height="150" rx="22" fill="#0E3B35"/>
-    <path d="M414 232c50-70 104-70 172-4" fill="none" stroke="#86EFAC" stroke-width="5" opacity="0.85"/>
-    <rect x="398" y="324" width="204" height="12" rx="6" fill="#86EFAC" opacity="0.82"/>
-    <circle cx="500" cy="384" r="42" fill="url(#green)"/>
-    <path d="M489 365v38l34-19-34-19Z" fill="#06201D"/>
-    <g fill="#FFFFFF" opacity="0.16"><rect x="398" y="458" width="160" height="14" rx="7"/><rect x="398" y="498" width="136" height="14" rx="7"/><rect x="398" y="538" width="178" height="14" rx="7"/></g>
-  </g>
-  <g fill="none" stroke="#86EFAC" stroke-width="8" stroke-linecap="round" opacity="0.85">
-    <path d="M104 354c26-94 96-88 118 0s92 84 118 0"/>
-    <path d="M704 398c22-70 76-64 96 0s76 60 96 0" opacity="0.6"/>
-  </g>
-  <g filter="url(#s)">
-    <rect x="118" y="160" width="150" height="120" rx="28" fill="#0B2F2C"/>
-    <path d="M205 194v62c0 16-14 28-31 21-15-6-16-25-1-33 8-4 17-3 24 1v-58l58-12v23l-50 10Z" fill="url(#green)"/>
-    <rect x="720" y="508" width="154" height="112" rx="28" fill="#0B2F2C"/>
-    <path d="M762 548h70v18h-70zM762 582h100v18H762z" fill="#86EFAC" opacity="0.9"/>
-  </g>
+<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='900' viewBox='0 0 1200 900' role='img' aria-label='Spotify premium music service visual'>
+  <defs><linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#061d19'/><stop offset='.62' stop-color='#0b2f2c'/><stop offset='1' stop-color='#111827'/></linearGradient><linearGradient id='green' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#86efac'/><stop offset='1' stop-color='#1db954'/></linearGradient><filter id='s' x='-20%' y='-20%' width='140%' height='150%' color-interpolation-filters='sRGB'><feDropShadow dx='0' dy='24' stdDeviation='24' flood-color='#020617' flood-opacity='.34'/></filter></defs>
+  <rect width='1200' height='900' fill='url(#bg)'/>
+  <path d='M78 604c48-166 154-164 202 0s154 164 202 0 154-164 202 0 154 164 202 0' fill='none' stroke='#86efac' stroke-width='10' stroke-linecap='round' opacity='.68'/>
+  <g filter='url(#s)'><rect x='442' y='92' width='318' height='650' rx='52' fill='#0a1215' stroke='#fff' stroke-opacity='.16'/><rect x='488' y='154' width='226' height='182' rx='26' fill='#0d3b34'/><path d='M510 276c52-74 116-76 184-6' fill='none' stroke='#86efac' stroke-width='6' opacity='.86'/><rect x='488' y='382' width='226' height='14' rx='7' fill='#86efac' opacity='.76'/><circle cx='601' cy='466' r='52' fill='url(#green)'/><path d='M588 440v52l45-26-45-26Z' fill='#071715'/><g fill='#fff' opacity='.16'><rect x='488' y='570' width='184' height='16' rx='8'/><rect x='488' y='616' width='148' height='16' rx='8'/><rect x='488' y='662' width='200' height='16' rx='8'/></g></g>
+  <g filter='url(#s)'><rect x='126' y='210' width='170' height='132' rx='30' fill='#0b2f2c'/><path d='M226 248v66c0 18-16 31-34 23-16-7-18-28-1-37 9-5 19-3 27 2v-62l62-13v25l-54 10Z' fill='url(#green)'/><rect x='846' y='556' width='208' height='134' rx='30' fill='#0b2f2c'/><path d='M896 602h88m-88 38h126' stroke='#86efac' stroke-width='18' stroke-linecap='round'/></g>
 </svg>

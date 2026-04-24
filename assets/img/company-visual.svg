@@ -1,27 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-label="Trusted digital membership company visual">
-  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#EEF5F2"/></linearGradient><linearGradient id="teal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0F766E"/><stop offset="1" stop-color="#0B4F4A"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F7D28B"/><stop offset="1" stop-color="#B7791F"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#0F172A" flood-opacity="0.12"/></filter></defs>
-  <rect width="1400" height="820" fill="url(#bg)"/>
-  <path d="M986 180c144 40 224 156 202 278-20 113-120 196-254 202-155 7-283-86-302-216-20-137 104-306 354-264Z" fill="#0F766E" opacity="0.1"/>
-  <g opacity="0.55" stroke="#B7791F" stroke-width="3" fill="none"><path d="M208 232c226-74 356-24 540 92 164 104 298 98 470 16"/><path d="M210 586c248-130 454-116 628-18 128 72 264 72 386 2" opacity="0.56"/></g>
-  <g filter="url(#s)">
-    <rect x="368" y="216" width="560" height="360" rx="34" fill="#FFFFFF"/>
-    <rect x="410" y="260" width="332" height="218" rx="24" fill="#F8FAFC" stroke="#DDE7E4"/>
-    <rect x="452" y="302" width="248" height="28" rx="14" fill="#0F766E" opacity="0.22"/>
-    <rect x="452" y="362" width="190" height="22" rx="11" fill="#B7791F" opacity="0.24"/>
-    <rect x="452" y="414" width="220" height="22" rx="11" fill="#0F766E" opacity="0.16"/>
-    <rect x="780" y="274" width="96" height="96" rx="22" fill="url(#teal)"/>
-    <path d="m804 322 20 20 34-42" fill="none" stroke="#F7D28B" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="780" y="402" width="96" height="96" rx="22" fill="url(#gold)" opacity="0.95"/>
-    <path d="M804 455h48m-36-28h24" stroke="#FFF7ED" stroke-width="10" stroke-linecap="round"/>
-  </g>
-  <g filter="url(#s)">
-    <path d="M210 188 326 236v86c0 83-52 147-116 172-64-25-116-89-116-172v-86l116-48Z" fill="url(#teal)"/>
-    <path d="M210 232 286 264v58c0 54-34 96-76 114-42-18-76-60-76-114v-58l76-32Z" fill="none" stroke="url(#gold)" stroke-width="9"/>
-    <path d="m164 330 34 34 72-82" fill="none" stroke="#FFF7ED" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
-  <g filter="url(#s)">
-    <rect x="1000" y="286" width="252" height="84" rx="22" fill="#FFFFFF"/><rect x="1036" y="320" width="150" height="16" rx="8" fill="#0F766E" opacity="0.22"/><circle cx="1210" cy="328" r="16" fill="#F7D28B"/>
-    <rect x="972" y="402" width="294" height="84" rx="22" fill="#FFFFFF"/><rect x="1010" y="436" width="180" height="16" rx="8" fill="#0F766E" opacity="0.18"/><circle cx="1218" cy="444" r="16" fill="#F7D28B"/>
-    <rect x="1026" y="518" width="220" height="84" rx="22" fill="#FFFFFF"/><rect x="1062" y="552" width="126" height="16" rx="8" fill="#0F766E" opacity="0.18"/><circle cx="1206" cy="560" r="16" fill="#F7D28B"/>
-  </g>
+<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='900' viewBox='0 0 1400 900' role='img' aria-label='Trusted digital membership company visual'>
+  <defs><linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#ffffff'/><stop offset='1' stop-color='#eef5f2'/></linearGradient><linearGradient id='teal' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#0f766e'/><stop offset='1' stop-color='#0b4f4a'/></linearGradient><linearGradient id='gold' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#f7d28b'/><stop offset='1' stop-color='#b7791f'/></linearGradient><filter id='s' x='-20%' y='-20%' width='140%' height='150%' color-interpolation-filters='sRGB'><feDropShadow dx='0' dy='24' stdDeviation='24' flood-color='#0f172a' flood-opacity='.12'/></filter></defs>
+  <rect width='1400' height='900' fill='url(#bg)'/>
+  <path d='M196 258c250-92 400-44 592 82 168 110 302 106 452 30' fill='none' stroke='#b7791f' stroke-opacity='.32' stroke-width='4'/>
+  <path d='M194 650c280-134 488-110 664-8 128 74 270 68 392-2' fill='none' stroke='#0f766e' stroke-opacity='.2' stroke-width='4'/>
+  <g filter='url(#s)'><path d='M220 176 342 226v92c0 88-54 158-122 184-68-26-122-96-122-184v-92l122-50Z' fill='url(#teal)'/><path d='M220 224 300 258v62c0 58-36 102-80 120-44-18-80-62-80-120v-62l80-34Z' fill='none' stroke='url(#gold)' stroke-width='9'/><path d='m172 334 36 36 76-86' fill='none' stroke='#fff7ed' stroke-width='16' stroke-linecap='round' stroke-linejoin='round'/></g>
+  <g filter='url(#s)'><rect x='390' y='224' width='574' height='382' rx='36' fill='#fff'/><rect x='436' y='276' width='334' height='230' rx='24' fill='#f8fafc' stroke='#d9e3e0'/><rect x='480' y='324' width='250' height='28' rx='14' fill='#0f766e' opacity='.22'/><rect x='480' y='386' width='194' height='22' rx='11' fill='#b7791f' opacity='.24'/><rect x='480' y='440' width='226' height='22' rx='11' fill='#0f766e' opacity='.16'/><rect x='812' y='296' width='100' height='100' rx='24' fill='url(#teal)'/><path d='m836 348 22 22 36-44' fill='none' stroke='#f7d28b' stroke-width='11' stroke-linecap='round' stroke-linejoin='round'/><rect x='812' y='430' width='100' height='100' rx='24' fill='url(#gold)'/><path d='M836 486h50m-36-30h24' stroke='#fff7ed' stroke-width='11' stroke-linecap='round'/></g>
+  <g filter='url(#s)'><rect x='1012' y='298' width='254' height='86' rx='22' fill='#fff'/><rect x='1048' y='333' width='152' height='16' rx='8' fill='#0f766e' opacity='.2'/><circle cx='1220' cy='341' r='16' fill='#f7d28b'/><rect x='980' y='430' width='302' height='86' rx='22' fill='#fff'/><rect x='1018' y='465' width='184' height='16' rx='8' fill='#0f766e' opacity='.18'/><circle cx='1234' cy='473' r='16' fill='#f7d28b'/><rect x='1038' y='562' width='232' height='86' rx='22' fill='#fff'/><rect x='1074' y='597' width='132' height='16' rx='8' fill='#0f766e' opacity='.18'/><circle cx='1220' cy='605' r='16' fill='#f7d28b'/></g>
 </svg>

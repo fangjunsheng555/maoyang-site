@@ -1,35 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="Premium membership service hero visual">
+<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900' role='img' aria-label='Premium digital membership service hero visual'>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061716"/><stop offset="0.52" stop-color="#0B2F2C"/><stop offset="1" stop-color="#111827"/></linearGradient>
-    <radialGradient id="glow" cx="52%" cy="46%" r="56%"><stop stop-color="#2DD4BF" stop-opacity="0.26"/><stop offset="0.58" stop-color="#2DD4BF" stop-opacity="0.07"/><stop offset="1" stop-color="#2DD4BF" stop-opacity="0"/></radialGradient>
-    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F8E4B0"/><stop offset="1" stop-color="#B7791F"/></linearGradient>
-    <filter id="shadow"><feDropShadow dx="0" dy="28" stdDeviation="24" flood-color="#020617" flood-opacity="0.35"/></filter>
+    <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#061716'/><stop offset='.58' stop-color='#0b2b2a'/><stop offset='1' stop-color='#111827'/></linearGradient>
+    <linearGradient id='panel' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#102522'/><stop offset='1' stop-color='#071211'/></linearGradient>
+    <linearGradient id='gold' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#f8e4b0'/><stop offset='1' stop-color='#b7791f'/></linearGradient>
+    <filter id='s' x='-20%' y='-20%' width='140%' height='150%' color-interpolation-filters='sRGB'><feDropShadow dx='0' dy='26' stdDeviation='24' flood-color='#020617' flood-opacity='.34'/></filter>
   </defs>
-  <rect width="1600" height="900" fill="url(#bg)"/>
-  <rect width="1600" height="900" fill="url(#glow)"/>
-  <path d="M0 667C240 566 391 602 594 514c279-121 489-303 1006-194" fill="none" stroke="#F8E4B0" stroke-opacity="0.18" stroke-width="3"/>
-  <path d="M0 725C266 621 407 671 653 548c278-139 514-364 947-228" fill="none" stroke="#2DD4BF" stroke-opacity="0.18" stroke-width="3"/>
-  <g filter="url(#shadow)">
-    <rect x="128" y="168" width="460" height="316" rx="28" fill="#0F2624" stroke="#7DD3C7" stroke-opacity="0.34"/>
-    <rect x="165" y="205" width="180" height="96" rx="14" fill="#F8FAFC" opacity="0.08"/>
-    <rect x="365" y="205" width="180" height="96" rx="14" fill="#F8FAFC" opacity="0.08"/>
-    <rect x="165" y="325" width="380" height="28" rx="14" fill="#2DD4BF" opacity="0.22"/>
-    <rect x="165" y="376" width="260" height="22" rx="11" fill="#F8E4B0" opacity="0.2"/>
-    <circle cx="218" cy="430" r="20" fill="#2DD4BF" opacity="0.75"/>
-    <circle cx="282" cy="430" r="20" fill="#F8E4B0" opacity="0.75"/>
-    <circle cx="346" cy="430" r="20" fill="#FFFFFF" opacity="0.5"/>
+  <rect width='1600' height='900' fill='url(#bg)'/>
+  <path d='M0 650c260-98 430-72 640-168 280-128 532-268 960-146' fill='none' stroke='#f8e4b0' stroke-opacity='.18' stroke-width='3'/>
+  <path d='M0 720c294-106 442-44 705-166 296-137 520-322 895-220' fill='none' stroke='#2dd4bf' stroke-opacity='.18' stroke-width='3'/>
+  <g filter='url(#s)'>
+    <rect x='884' y='176' width='560' height='424' rx='34' fill='url(#panel)' stroke='#f8e4b0' stroke-opacity='.28'/>
+    <rect x='934' y='228' width='460' height='92' rx='20' fill='#ffffff' opacity='.08'/>
+    <rect x='934' y='352' width='460' height='190' rx='22' fill='#041412' stroke='#2dd4bf' stroke-opacity='.22'/>
+    <path d='M982 484c94-118 176-56 268-142 66-62 130-56 184-26' fill='none' stroke='url(#gold)' stroke-width='4' opacity='.72'/>
+    <path d='M990 524c118-82 198-54 306-116 54-32 94-32 138-10' fill='none' stroke='#2dd4bf' stroke-width='4' opacity='.5'/>
+    <g fill='#fff' opacity='.14'><rect x='968' y='252' width='76' height='44' rx='14'/><rect x='1070' y='252' width='76' height='44' rx='14'/><rect x='1172' y='252' width='76' height='44' rx='14'/><rect x='1274' y='252' width='76' height='44' rx='14'/></g>
+    <path d='M996 274h18m-9-9v18M1095 274h28M1190 274h40M1294 274h36' stroke='#f8e4b0' stroke-width='6' stroke-linecap='round' opacity='.78'/>
   </g>
-  <g filter="url(#shadow)">
-    <rect x="904" y="230" width="550" height="396" rx="32" fill="#0D2221" stroke="#F8E4B0" stroke-opacity="0.28"/>
-    <path d="M962 509c93-118 174-59 265-145 65-62 129-56 182-26" fill="none" stroke="url(#gold)" stroke-width="3" opacity="0.62"/>
-    <path d="M968 552c113-85 195-58 300-122 58-36 96-35 139-13" fill="none" stroke="#2DD4BF" stroke-width="3" opacity="0.42"/>
-    <g fill="#FFFFFF" opacity="0.1"><rect x="960" y="284" width="86" height="70" rx="16"/><rect x="1072" y="284" width="86" height="70" rx="16"/><rect x="1184" y="284" width="86" height="70" rx="16"/><rect x="1296" y="284" width="86" height="70" rx="16"/></g>
-    <g stroke="#F8E4B0" stroke-width="3" fill="none" opacity="0.8"><path d="M1003 310v19l16 9 16-9v-19l-16-8-16 8Z"/><path d="m1104 331 16-32 4 28h20l-32 31-2-27h-6Z"/></g>
-    <circle cx="1226" cy="319" r="18" fill="#2DD4BF" opacity="0.75"/>
-    <path d="M1320 306h52v36h-52z" fill="none" stroke="#2DD4BF" stroke-width="3" opacity="0.75"/>
+  <g filter='url(#s)'>
+    <rect x='170' y='170' width='492' height='330' rx='34' fill='url(#panel)' stroke='#7dd3c7' stroke-opacity='.32'/>
+    <rect x='214' y='214' width='178' height='104' rx='18' fill='#fff' opacity='.08'/><rect x='420' y='214' width='198' height='104' rx='18' fill='#fff' opacity='.08'/>
+    <rect x='214' y='360' width='360' height='22' rx='11' fill='#2dd4bf' opacity='.28'/><rect x='214' y='410' width='244' height='18' rx='9' fill='#f8e4b0' opacity='.24'/>
+    <g fill='#2dd4bf' opacity='.82'><circle cx='238' cy='456' r='18'/><circle cx='298' cy='456' r='18'/><circle cx='358' cy='456' r='18'/></g>
   </g>
-  <g opacity="0.86">
-    <rect x="684" y="690" width="232" height="16" rx="8" fill="#F8E4B0" opacity="0.26"/>
-    <rect x="630" y="724" width="340" height="12" rx="6" fill="#2DD4BF" opacity="0.18"/>
-  </g>
+  <rect x='650' y='692' width='300' height='18' rx='9' fill='#f8e4b0' opacity='.2'/>
+  <rect x='574' y='728' width='452' height='12' rx='6' fill='#2dd4bf' opacity='.16'/>
 </svg>
