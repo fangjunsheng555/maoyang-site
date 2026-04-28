@@ -9,6 +9,10 @@ function number(value) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function needsAccountPassword(order) {
+  return order.service !== 'netflix';
+}
+
 function redisConfig() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -59,8 +63,10 @@ function orderText(order) {
     lines.push('应付: ' + order.finalAmount + ' CNY');
   }
 
-  lines.push('账号: ' + order.account);
-  lines.push('密码: ' + order.password);
+  if (needsAccountPassword(order)) {
+    lines.push('账号: ' + order.account);
+    lines.push('密码: ' + order.password);
+  }
   lines.push('联系方式: ' + order.contact);
   lines.push('备注: ' + (order.remark || '无'));
   return lines.join('\n');
@@ -97,7 +103,7 @@ module.exports = async function handler(req, res) {
     remark: clean(body.remark, 800)
   };
 
-  if (!order.account || !order.password || !order.contact) {
+  if (!order.contact || (needsAccountPassword(order) && (!order.account || !order.password))) {
     return res.status(400).json({ ok: false, error: 'missing_required_fields' });
   }
 
