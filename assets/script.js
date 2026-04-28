@@ -1,4 +1,11 @@
 (function(){
+  if(!document.querySelector('[data-hidden-rule]')){
+    const style = document.createElement('style');
+    style.dataset.hiddenRule = 'true';
+    style.textContent = '[hidden]{display:none!important}';
+    document.head.appendChild(style);
+  }
+
   const burger = document.querySelector('[data-burger]');
   const drawer = document.querySelector('[data-drawer]');
   const closeBtn = document.querySelector('[data-drawer-close]');
