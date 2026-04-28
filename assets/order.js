@@ -17,20 +17,42 @@ const ORDER_PRODUCTS = {
   const originalPrice = document.querySelector('[data-original-price]');
   const finalPrice = document.querySelector('[data-final-price]');
   const discount = document.querySelector('[data-discount]');
+  const rateNote = document.querySelector('[data-rate-note]');
   const paymentTitle = document.querySelector('[data-payment-title]');
   const paymentTag = document.querySelector('[data-payment-tag]');
   const alipayPanel = document.querySelector('[data-alipay-panel]');
   const usdtPanel = document.querySelector('[data-usdt-panel]');
   const alipayQr = document.querySelector('[data-alipay-qr]');
   const alipayEmpty = document.querySelector('[data-alipay-empty]');
+  const usdtQr = document.querySelector('[data-usdt-qr]');
+  const usdtEmpty = document.querySelector('[data-usdt-empty]');
   const usdtNetwork = document.querySelector('[data-usdt-network]');
   const usdtAddress = document.querySelector('[data-usdt-address]');
+  const usdtAddressRow = document.querySelector('[data-usdt-address-row]');
   const copyWallet = document.querySelector('[data-copy-wallet]');
   const statusBox = document.querySelector('[data-status]');
+
+  function round2(value){
+    return Math.round(Number(value || 0) * 100) / 100;
+  }
 
   function money(value){
     const n = Number(value || 0);
     return '￥' + (Number.isInteger(n) ? n : n.toFixed(2));
+  }
+
+  function usdtMoney(value){
+    return Number(value || 0).toFixed(2) + ' USDT';
+  }
+
+  function usdtRate(){
+    const value = Number(config.usdtRateCnyPerUsdt || 6.85);
+    return value > 0 ? value : 6.85;
+  }
+
+  function usdtDiscount(){
+    const value = Number(config.usdtDiscount || 0.9);
+    return value > 0 && value <= 1 ? value : 0.9;
   }
 
   function selectedMethod(){
@@ -44,52 +66,85 @@ const ORDER_PRODUCTS = {
     return item.price;
   }
 
+  function discountedCny(price){
+    return round2(price * usdtDiscount());
+  }
+
+  function payableUsdt(price){
+    return round2(discountedCny(price) / usdtRate());
+  }
+
+  function syncQr(img, empty, src){
+    if(!img || !empty) return;
+    if(src){
+      img.src = src;
+      img.hidden = false;
+      empty.hidden = true;
+    }else{
+      img.hidden = true;
+      empty.hidden = false;
+    }
+  }
+
   function updatePaymentInfo(){
     const method = selectedMethod();
     const price = basePrice();
-    const final = method === 'usdt' ? price * 0.9 : price;
+    const isUsdt = method === 'usdt';
+    const usdtDue = payableUsdt(price);
+    const cnyDue = discountedCny(price);
 
     customWrap.classList.toggle('show', serviceEl.value === 'other');
     originalPrice.textContent = price ? money(price) : '客服报价';
-    finalPrice.textContent = price ? money(final) : '客服确认';
-    discount.textContent = method === 'usdt' ? 'USDT 9折' : '无';
+    finalPrice.textContent = price ? (isUsdt ? usdtMoney(usdtDue) : money(price)) : '客服确认';
+    discount.textContent = isUsdt ? 'USDT 9折 · 汇率 ' + usdtRate().toFixed(2) : '无';
+    if(rateNote){
+      rateNote.hidden = !isUsdt || !price;
+      rateNote.textContent = price ? '折后人民币 ' + money(cnyDue) + '，按 6.85 汇率折算为 ' + usdtMoney(usdtDue) : '';
+    }
 
-    if(method === 'usdt'){
-      paymentTitle.textContent = 'USDT 支付';
-      paymentTag.textContent = '9折';
+    if(isUsdt){
+      paymentTitle.textContent = 'USDT 扫码付款';
+      paymentTag.textContent = 'USDT';
       alipayPanel.hidden = true;
       usdtPanel.hidden = false;
       usdtNetwork.textContent = config.usdtNetwork || 'TRC20';
-      usdtAddress.textContent = config.usdtAddress || '提交订单后联系客服获取 USDT 地址';
-      copyWallet.disabled = !config.usdtAddress;
+      syncQr(usdtQr, usdtEmpty, config.usdtQr);
+      if(config.usdtAddress){
+        usdtAddress.textContent = config.usdtAddress;
+        usdtAddressRow.hidden = false;
+        copyWallet.hidden = false;
+        copyWallet.disabled = false;
+      }else{
+        usdtAddress.textContent = '';
+        usdtAddressRow.hidden = true;
+        copyWallet.hidden = true;
+        copyWallet.disabled = true;
+      }
     }else{
       paymentTitle.textContent = '支付宝扫码付款';
       paymentTag.textContent = 'RMB';
       alipayPanel.hidden = false;
       usdtPanel.hidden = true;
-      if(config.alipayQr){
-        alipayQr.src = config.alipayQr;
-        alipayQr.hidden = false;
-        alipayEmpty.hidden = true;
-      }else{
-        alipayQr.hidden = true;
-        alipayEmpty.hidden = false;
-      }
+      syncQr(alipayQr, alipayEmpty, config.alipayQr);
     }
   }
 
   function orderPayload(){
     const item = ORDER_PRODUCTS[serviceEl.value] || ORDER_PRODUCTS.spotify;
     const method = selectedMethod();
-    const price = basePrice();
-    const final = method === 'usdt' ? price * 0.9 : price;
+    const price = round2(basePrice());
+    const isUsdt = method === 'usdt';
     const data = new FormData(form);
     return {
       service: serviceEl.value,
       serviceLabel: item.label,
       cycle: item.cycle,
       originalAmount: price,
-      finalAmount: final,
+      discountedCnyAmount: isUsdt ? discountedCny(price) : 0,
+      finalAmount: isUsdt ? payableUsdt(price) : price,
+      currency: isUsdt ? 'USDT' : 'CNY',
+      exchangeRate: isUsdt ? usdtRate() : 0,
+      discountRate: isUsdt ? usdtDiscount() : 1,
       paymentMethod: method,
       account: String(data.get('account') || '').trim(),
       password: String(data.get('password') || '').trim(),
@@ -100,19 +155,26 @@ const ORDER_PRODUCTS = {
   }
 
   function summary(payload, orderId){
-    return [
+    const rows = [
       '订单号：' + orderId,
       '服务：' + payload.serviceLabel,
       '周期：' + payload.cycle,
       '支付方式：' + (payload.paymentMethod === 'usdt' ? 'USDT 9折' : '支付宝'),
-      '原价：' + (payload.originalAmount ? money(payload.originalAmount) : '客服报价'),
-      '应付：' + (payload.finalAmount ? money(payload.finalAmount) : '客服确认'),
-      '账号：' + payload.account,
-      '密码：' + payload.password,
-      '联系方式：' + payload.contact,
-      '付款备注/交易号：' + (payload.paymentRef || '无'),
-      '备注：' + (payload.remark || '无')
-    ].join('\n');
+      '原价：' + (payload.originalAmount ? money(payload.originalAmount) : '客服报价')
+    ];
+    if(payload.paymentMethod === 'usdt'){
+      rows.push('折后人民币：' + (payload.discountedCnyAmount ? money(payload.discountedCnyAmount) : '客服确认'));
+      rows.push('汇率：1 USDT = ' + payload.exchangeRate.toFixed(2) + ' CNY');
+      rows.push('应付：' + (payload.finalAmount ? usdtMoney(payload.finalAmount) : '客服确认'));
+    }else{
+      rows.push('应付：' + (payload.finalAmount ? money(payload.finalAmount) : '客服确认'));
+    }
+    rows.push('账号：' + payload.account);
+    rows.push('密码：' + payload.password);
+    rows.push('联系方式：' + payload.contact);
+    rows.push('付款备注/交易号：' + (payload.paymentRef || '无'));
+    rows.push('备注：' + (payload.remark || '无'));
+    return rows.join('\n');
   }
 
   function setStatus(text, warn){
@@ -164,19 +226,19 @@ const ORDER_PRODUCTS = {
       const fallbackId = 'MY' + Date.now().toString().slice(-10);
       const text = summary(payload, fallbackId);
       await copyText(text);
-      setStatus('订单已生成，但后台接收端尚未配置。\n订单信息已尝试复制，请发送给在线客服。\n\n' + text, true);
+      setStatus('订单已生成。\n订单信息已尝试复制，请发送给在线客服。\n\n' + text, true);
       return;
     }
 
     const text = summary(payload, result.orderId);
-    if(result.delivered){
+    if(result.delivered || result.stored){
       setStatus('订单提交成功。\n订单号：' + result.orderId);
       form.reset();
       serviceEl.value = payload.service;
       updatePaymentInfo();
     }else{
       await copyText(text);
-      setStatus('订单已生成，后台接收端尚未配置。\n订单信息已尝试复制，请发送给在线客服。\n\n' + text, true);
+      setStatus('订单已生成。\n订单信息已尝试复制，请发送给在线客服。\n\n' + text, true);
     }
   });
 
