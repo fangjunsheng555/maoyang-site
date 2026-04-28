@@ -6,11 +6,56 @@
     document.head.appendChild(style);
   }
 
-  function installNetworkStyles(){
-    if(document.querySelector('[data-network-service-style]')) return;
+  const extraProducts = [
+    {
+      service: 'disney',
+      cardClass: 'productDisney',
+      tag: 'Disney+',
+      title: 'Disney+',
+      image: 'assets/img/cinema-visual.svg',
+      alt: 'Disney+ 4K Dolby',
+      cycle: '年付',
+      price: '年付108',
+      intro: '独立车位全球可用4K杜比套餐',
+      features: ['4K杜比', '位置上锁', '不被挤不排队'],
+      detail: '4K画质，杜比音效，离线下载，全球可用不限制地区，顶规4K杜比套餐，4人一车绝不超售，高峰不排队不被挤，位置可上锁，用户互不干扰，如需购买整号请联系在线客服',
+      tileText: '独立车位全球可用4K杜比套餐，位置可上锁，高峰不排队不被挤。'
+    },
+    {
+      service: 'hbomax',
+      cardClass: 'productHbomax',
+      tag: 'HBO Max',
+      title: 'HBO Max',
+      image: 'assets/img/cinema-visual.svg',
+      alt: 'HBO Max 4K Dolby',
+      cycle: '年付',
+      price: '年付148',
+      intro: '独立车位全球可用4K杜比套餐',
+      features: ['4K杜比', '全球可用', '实时售后保障'],
+      detail: '4K画质，杜比音效，离线下载，全球可用不限制地区，顶规4K杜比套餐，4人一车绝不超售，高峰不排队不被挤，位置可上锁，用户互不干扰，如需购买整号请联系在线客服',
+      tileText: '独立车位全球可用4K杜比套餐，实时售后保障，高峰不排队不被挤。'
+    },
+    {
+      service: 'network',
+      cardClass: 'productNetwork',
+      tag: 'Network',
+      title: '网络节点服务',
+      image: 'assets/img/service-visual.svg',
+      alt: '网络节点服务',
+      cycle: '年付',
+      price: '年付99',
+      intro: '不限设备·不限流量·最高5Gbps·解锁全球平台',
+      features: ['不限设备/流量', '高速稳定多节点', '全加密无日志'],
+      detail: '大厂机房多线路，最高5Gbps带宽，解锁所有流媒体/AI/社交软件，高峰不卡顿',
+      tileText: '不限设备·不限流量·最高5Gbps·解锁全球平台，大厂机房多线路，高峰不卡顿。'
+    }
+  ];
+
+  function installProductStyles(){
+    if(document.querySelector('[data-extra-products-style]')) return;
     const style = document.createElement('style');
-    style.dataset.networkServiceStyle = 'true';
-    style.textContent = '.productNetwork{border-top:4px solid #0f766e}.productNetwork:before{content:"NETWORK";display:flex;align-items:center;justify-content:center;color:#0b4f4a;font-size:15px;font-weight:950;background-image:linear-gradient(135deg,#ecfdf5,#dbeafe);letter-spacing:0}.productNetwork .price{background:#ecfdf3;border-color:#bbf7d0;color:#065f46}@media (max-width:1080px){.grid3>.productCard:nth-child(3){grid-column:auto}}';
+    style.dataset.extraProductsStyle = 'true';
+    style.textContent = '.productDisney{border-top:4px solid #113ccf}.productDisney:before,.productHbomax:before,.productNetwork:before{display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:950;letter-spacing:0;background-image:linear-gradient(135deg,#f8fbff,#e8efff);color:#113ccf}.productDisney:before{content:"DISNEY+"}.productHbomax{border-top:4px solid #5b2cff}.productHbomax:before{content:"HBO MAX";background-image:linear-gradient(135deg,#f7f3ff,#e9ddff);color:#4c1d95}.productNetwork{border-top:4px solid #0f766e}.productNetwork:before{content:"NETWORK";background-image:linear-gradient(135deg,#ecfdf5,#dbeafe);color:#0b4f4a}.productDisney .price{background:#eef4ff;border-color:#bfd7ff;color:#1646a8}.productHbomax .price{background:#f4f0ff;border-color:#d7c7ff;color:#4c1d95}.productNetwork .price{background:#ecfdf3;border-color:#bbf7d0;color:#065f46}@media (max-width:1080px){.grid3>.productCard:nth-child(3){grid-column:auto}}';
     document.head.appendChild(style);
   }
 
@@ -23,33 +68,47 @@
     else contactPanel.remove();
   }
 
-  function installNetworkTile(){
-    const firstTile = document.querySelector('.tile');
-    const grid = firstTile ? firstTile.parentElement : null;
-    if(!grid || grid.querySelector('[data-network-tile]')) return;
-
+  function createTile(product){
     const tile = document.createElement('a');
     tile.className = 'tile';
     tile.href = 'services.html#products';
-    tile.dataset.networkTile = 'true';
-    tile.innerHTML = "<img src='assets/img/service-visual.svg' alt='网络节点服务' loading='lazy'><div class='tileBody'><span class='serviceTag'>Network</span><h3>网络节点服务</h3><p>不限设备·不限流量·最高5Gbps·解锁全球平台，大厂机房多线路，高峰不卡顿。</p></div>";
-    grid.appendChild(tile);
+    tile.dataset.extraTile = product.service;
+    tile.innerHTML = "<img src='" + product.image + "' alt='" + product.alt + "' loading='lazy'><div class='tileBody'><span class='serviceTag'>" + product.tag + "</span><h3>" + product.title + "</h3><p>" + product.tileText + "</p></div>";
+    return tile;
   }
 
-  function installNetworkProductCard(){
-    const grid = document.querySelector('#products .grid3');
-    if(!grid || grid.querySelector('.productNetwork')) return;
+  function installHomeTiles(){
+    const firstTile = document.querySelector('.tile');
+    const grid = firstTile ? firstTile.parentElement : null;
+    if(!grid) return;
 
-    installNetworkStyles();
+    extraProducts.forEach((product) => {
+      if(grid.querySelector('[data-extra-tile="' + product.service + '"]')) return;
+      grid.appendChild(createTile(product));
+    });
+  }
+
+  function createProductCard(product){
     const card = document.createElement('article');
-    card.className = 'card productCard productNetwork';
-    card.innerHTML = "<img src='assets/img/service-visual.svg' alt='网络节点服务' loading='lazy'><div class='pad'><div class='productTop'><span class='brandPill'>Network</span><span class='miniPill'>年付</span></div><h2>网络节点服务</h2><p class='price'>年付99</p><p>不限设备·不限流量·最高5Gbps·解锁全球平台</p><ul><li>不限设备/流量</li><li>高速稳定多节点</li><li>全加密无日志</li></ul><p>大厂机房多线路，最高5Gbps带宽，解锁所有流媒体/AI/社交软件，高峰不卡顿</p></div>";
-    grid.appendChild(card);
+    card.className = 'card productCard ' + product.cardClass;
+    card.innerHTML = "<img src='" + product.image + "' alt='" + product.alt + "' loading='lazy'><div class='pad'><div class='productTop'><span class='brandPill'>" + product.tag + "</span><span class='miniPill'>" + product.cycle + "</span></div><h2>" + product.title + "</h2><p class='price'>" + product.price + "</p><p>" + product.intro + "</p><ul>" + product.features.map((item) => '<li>' + item + '</li>').join('') + "</ul><p>" + product.detail + "</p></div>";
+    return card;
+  }
+
+  function installExtraProductCards(){
+    const grid = document.querySelector('#products .grid3');
+    if(!grid) return;
+
+    installProductStyles();
+    extraProducts.forEach((product) => {
+      if(grid.querySelector('.' + product.cardClass)) return;
+      grid.appendChild(createProductCard(product));
+    });
   }
 
   removeServicesContactPanel();
-  installNetworkTile();
-  installNetworkProductCard();
+  installHomeTiles();
+  installExtraProductCards();
 
   const burger = document.querySelector('[data-burger]');
   const drawer = document.querySelector('[data-drawer]');
@@ -68,6 +127,8 @@
     ['.productSpotify', 'spotify'],
     ['.productNetflix', 'netflix'],
     ['.productChatgpt', 'chatgpt'],
+    ['.productDisney', 'disney'],
+    ['.productHbomax', 'hbomax'],
     ['.productNetwork', 'network']
   ];
 
