@@ -26,6 +26,40 @@ const ORDER_PRODUCTS = {
   const summaryPayment = document.querySelector('[data-summary-payment]');
   const statusBox = document.querySelector('[data-status]');
 
+  installPasswordToggle();
+
+  function installPasswordToggle(){
+    if(!passwordInput || passwordInput.dataset.toggleInstalled) return;
+
+    if(!document.querySelector('[data-password-toggle-style]')){
+      const style = document.createElement('style');
+      style.dataset.passwordToggleStyle = 'true';
+      style.textContent = '.passwordReveal{position:relative;display:flex;align-items:center;width:100%}.passwordReveal input{padding-right:76px}.passwordRevealBtn{position:absolute;right:8px;top:50%;transform:translateY(-50%);min-height:32px;border:0;border-radius:999px;background:#e7f3f1;color:#0b4f4a;font-weight:950;padding:0 12px;cursor:pointer}.passwordRevealBtn:hover{background:#d7ebe8}.passwordRevealBtn:focus{outline:none;box-shadow:0 0 0 3px rgba(15,118,110,.16)}';
+      document.head.appendChild(style);
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'passwordReveal';
+    passwordInput.parentNode.insertBefore(wrapper, passwordInput);
+    wrapper.appendChild(passwordInput);
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'passwordRevealBtn';
+    toggle.textContent = '显示';
+    toggle.setAttribute('aria-label', '显示密码');
+    toggle.setAttribute('aria-pressed', 'false');
+    toggle.addEventListener('click', () => {
+      const willShow = passwordInput.type === 'password';
+      passwordInput.type = willShow ? 'text' : 'password';
+      toggle.textContent = willShow ? '隐藏' : '显示';
+      toggle.setAttribute('aria-label', willShow ? '隐藏密码' : '显示密码');
+      toggle.setAttribute('aria-pressed', String(willShow));
+    });
+    wrapper.appendChild(toggle);
+    passwordInput.dataset.toggleInstalled = 'true';
+  }
+
   function round2(value){
     return Math.round(Number(value || 0) * 100) / 100;
   }
