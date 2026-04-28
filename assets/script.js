@@ -6,6 +6,12 @@
     document.head.appendChild(style);
   }
 
+  const contacts = [
+    { label: 'QQ', value: '2802632995' },
+    { label: 'WhatsApp', value: '+1 4315093334' },
+    { label: 'Telegram', value: '+44 7707489977' }
+  ];
+
   const extraProducts = [
     {
       service: 'disney',
@@ -51,12 +57,81 @@
     }
   ];
 
+  async function copyText(text){
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    const temp = document.createElement('textarea');
+    temp.value = text;
+    temp.setAttribute('readonly', '');
+    temp.style.position = 'fixed';
+    temp.style.left = '-999px';
+    document.body.appendChild(temp);
+    temp.select();
+    const ok = document.execCommand('copy');
+    temp.remove();
+    return ok;
+  }
+
   function installProductStyles(){
     if(document.querySelector('[data-extra-products-style]')) return;
     const style = document.createElement('style');
     style.dataset.extraProductsStyle = 'true';
-    style.textContent = '.productDisney{border-top:4px solid #113ccf}.productDisney:before,.productHbomax:before,.productNetwork:before{display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:950;letter-spacing:0;background-image:linear-gradient(135deg,#f8fbff,#e8efff);color:#113ccf}.productDisney:before{content:"DISNEY+"}.productHbomax{border-top:4px solid #5b2cff}.productHbomax:before{content:"HBO MAX";background-image:linear-gradient(135deg,#f7f3ff,#e9ddff);color:#4c1d95}.productNetwork{border-top:4px solid #0f766e}.productNetwork:before{content:"NETWORK";background-image:linear-gradient(135deg,#ecfdf5,#dbeafe);color:#0b4f4a}.productDisney .price{background:#eef4ff;border-color:#bfd7ff;color:#1646a8}.productHbomax .price{background:#f4f0ff;border-color:#d7c7ff;color:#4c1d95}.productNetwork .price{background:#ecfdf3;border-color:#bbf7d0;color:#065f46}@media (max-width:1080px){.grid3>.productCard:nth-child(3){grid-column:auto}}';
+    style.textContent = '.productCard{position:relative;border-radius:8px!important;border:1px solid #e2e8f0!important;border-top-width:1px!important;background:linear-gradient(180deg,#fff 0%,#fbfdfc 100%)!important;box-shadow:0 18px 46px rgba(15,23,42,.08)!important;overflow:hidden!important}.productCard>img{display:none!important}.productCard:before{content:""!important;position:absolute!important;left:auto!important;right:26px!important;top:26px!important;width:76px!important;height:76px!important;border-radius:20px!important;border:1px solid rgba(226,232,240,.9)!important;background-color:#fff!important;background-position:center!important;background-repeat:no-repeat!important;background-size:100% 100%!important;box-shadow:0 18px 34px rgba(15,23,42,.16)!important;z-index:2!important}.productSpotify:before{background-image:url("assets/img/app-spotify.svg")!important}.productNetflix:before{background-image:url("assets/img/app-netflix.svg")!important}.productDisney:before{background-image:url("assets/img/app-disney.svg")!important}.productHbomax:before{background-image:url("assets/img/app-hbomax.svg")!important}.productChatgpt:before{background-image:url("assets/img/app-chatgpt.svg")!important;width:76px!important}.productNetwork:before{background-image:url("assets/img/app-network.svg")!important}.productCard .pad{padding:26px 26px 30px!important;min-height:100%;display:flex;flex-direction:column}.productCard .productTop{margin:0 96px 14px 0!important;justify-content:flex-start!important}.productCard .brandPill{background:#fff!important;border:1px solid #e2e8f0!important;color:#475467!important}.productCard .miniPill{background:#f8fafc!important;border:1px solid #e2e8f0!important;color:#475467!important}.productCard h2{margin:0 96px 8px 0!important;color:#050b22!important;font-size:30px!important;line-height:1.12!important}.productCard .price{justify-content:flex-start!important;min-height:46px!important;margin:18px 0 16px!important;padding:10px 16px!important;border-radius:8px!important;border:1px dashed #35d9d1!important;background:#effffb!important;color:#083f3a!important;font-size:15.5px!important;text-align:left!important}.productCard .pad>p:not(.price){margin:12px 0 0!important;color:#475467!important;font-size:14.5px!important;line-height:1.75!important}.productCard .pad>ul{gap:9px!important;margin:18px 0 0!important}.productCard li{font-size:14.5px!important;color:#344054!important}.productCard li:before{background:#0f766e!important;box-shadow:0 0 0 4px rgba(15,118,110,.12)!important}.productCard .cta{margin-top:auto!important;background:#071024!important;color:#fff!important;border-color:#071024!important;box-shadow:0 16px 34px rgba(2,6,23,.16)!important}.productDisney .price{background:#eef6ff!important;border-color:#7dd3fc!important;color:#0c4a6e!important}.productHbomax .price{background:#f5f0ff!important;border-color:#c4b5fd!important;color:#4c1d95!important}.productNetwork .price{background:#ecfdf3!important;border-color:#6ee7b7!important;color:#065f46!important}@media (max-width:1080px){.grid3>.productCard:nth-child(3){grid-column:auto!important}}@media (max-width:560px){.productCard:before{right:18px!important;top:20px!important;width:62px!important;height:62px!important;border-radius:17px!important}.productCard h2{font-size:25px!important;margin-right:78px!important}.productCard .productTop{margin-right:78px!important}.productCard .pad{padding:22px!important}}';
     document.head.appendChild(style);
+  }
+
+  function installCopyContactStyles(){
+    if(document.querySelector('[data-copy-contact-style]')) return;
+    const style = document.createElement('style');
+    style.dataset.copyContactStyle = 'true';
+    style.textContent = '.copyContactGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.copyContactBtn{display:grid;gap:3px;min-height:64px;text-align:left;border:1px solid var(--line);border-radius:8px;background:#f8fbfa;color:#172033;padding:10px 12px;cursor:pointer;font:inherit;box-shadow:none}.copyContactBtn b{font-size:12px;color:#0f766e;line-height:1.2}.copyContactBtn span{font-size:14px;font-weight:900;line-height:1.3;overflow-wrap:anywhere}.copyContactBtn:hover{border-color:rgba(15,118,110,.42);background:#ecfdf5}.copyContactBtn.copied{border-color:#0f766e;background:#e7f3f1}.contactRows .copyContactGrid,.supportList .copyContactGrid{width:100%}@media (max-width:720px){.copyContactGrid{grid-template-columns:1fr}.copyContactBtn{min-height:58px}}';
+    document.head.appendChild(style);
+  }
+
+  function createContactGrid(){
+    const grid = document.createElement('div');
+    grid.className = 'copyContactGrid';
+    contacts.forEach((item) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'copyContactBtn';
+      button.innerHTML = '<b>' + item.label + '</b><span>' + item.value + '</span>';
+      button.addEventListener('click', async () => {
+        await copyText(item.value);
+        const label = button.querySelector('b');
+        const original = item.label;
+        button.classList.add('copied');
+        label.textContent = '已复制';
+        setTimeout(() => {
+          button.classList.remove('copied');
+          label.textContent = original;
+        }, 1500);
+      });
+      grid.appendChild(button);
+    });
+    return grid;
+  }
+
+  function installCopyContacts(){
+    installCopyContactStyles();
+
+    document.querySelectorAll('.contactRows').forEach((rows) => {
+      if(rows.querySelector('.copyContactGrid')) return;
+      const first = rows.querySelector('p');
+      const grid = createContactGrid();
+      if(first) first.replaceWith(grid);
+      else rows.prepend(grid);
+    });
+
+    document.querySelectorAll('.supportList').forEach((list) => {
+      if(list.querySelector('.copyContactGrid')) return;
+      Array.from(list.querySelectorAll('span')).forEach((span) => {
+        if(/QQ|WhatsApp|tg|Telegram/i.test(span.textContent || '')) span.remove();
+      });
+      list.appendChild(createContactGrid());
+    });
   }
 
   function removeServicesContactPanel(){
@@ -106,6 +181,7 @@
     });
   }
 
+  installCopyContacts();
   removeServicesContactPanel();
   installHomeTiles();
   installExtraProductCards();
