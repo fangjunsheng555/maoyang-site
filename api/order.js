@@ -62,7 +62,6 @@ function orderText(order) {
   lines.push('账号: ' + order.account);
   lines.push('密码: ' + order.password);
   lines.push('联系方式: ' + order.contact);
-  lines.push('付款备注/交易号: ' + (order.paymentRef || '无'));
   lines.push('备注: ' + (order.remark || '无'));
   return lines.join('\n');
 }
@@ -95,7 +94,6 @@ module.exports = async function handler(req, res) {
     account: clean(body.account, 200),
     password: clean(body.password, 200),
     contact: clean(body.contact, 200),
-    paymentRef: clean(body.paymentRef, 200),
     remark: clean(body.remark, 800)
   };
 
