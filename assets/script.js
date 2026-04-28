@@ -30,7 +30,7 @@
     {
       service: 'disney',
       cardClass: 'productDisney',
-      tag: 'Disney+',
+      tag: 'Disney',
       title: 'Disney+',
       image: media.disney,
       alt: 'Disney+ 4K Dolby',
