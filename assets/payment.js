@@ -32,6 +32,16 @@
     }
   }
 
+  function needsAccountPassword(order){
+    return order && order.service !== 'netflix';
+  }
+
+  function hasRequiredOrderInfo(order){
+    if(!order || !order.contact) return false;
+    if(needsAccountPassword(order) && (!order.account || !order.password)) return false;
+    return true;
+  }
+
   function money(value){
     const n = Number(value || 0);
     return '￥' + (Number.isInteger(n) ? n : n.toFixed(2));
@@ -83,7 +93,7 @@
   }
 
   function renderOrder(){
-    if(!payload || !payload.account || !payload.password || !payload.contact){
+    if(!hasRequiredOrderInfo(payload)){
       renderMissingOrder();
       return;
     }
