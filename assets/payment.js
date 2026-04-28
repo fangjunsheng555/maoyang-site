@@ -35,7 +35,7 @@
 
   function credentialMode(order){
     if(!order) return 'accountPassword';
-    if(order.service === 'netflix') return 'none';
+    if(['netflix', 'disney', 'hbomax'].includes(order.service)) return 'none';
     if(order.service === 'network') return 'username';
     return 'accountPassword';
   }
@@ -67,12 +67,53 @@
     statusBox.classList.add('show');
   }
 
+  function installSubscriptionStyle(){
+    if(document.querySelector('[data-subscription-style]')) return;
+    const style = document.createElement('style');
+    style.dataset.subscriptionStyle = 'true';
+    style.textContent = '.subscriptionLinks{display:grid;gap:12px;margin-top:12px}.subscriptionRow{display:grid;gap:8px;border:1px solid rgba(6,95,70,.18);border-radius:8px;background:rgba(255,255,255,.55);padding:12px}.subscriptionRowLabel{font-weight:950;color:#064e3b}.subscriptionCopyLine{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}.subscriptionCopyLine a{color:#065f46;font-weight:850;overflow-wrap:anywhere}.subscriptionCopyBtn{border:0;border-radius:999px;background:#111827;color:#fff;font-weight:950;padding:9px 14px;cursor:pointer;white-space:nowrap}@media (max-width:560px){.subscriptionCopyLine{grid-template-columns:1fr}.subscriptionCopyBtn{width:100%}}';
+    document.head.appendChild(style);
+  }
+
+  function appendSubscriptionRow(parent, label, url){
+    const row = document.createElement('div');
+    row.className = 'subscriptionRow';
+
+    const title = document.createElement('div');
+    title.className = 'subscriptionRowLabel';
+    title.textContent = label;
+
+    const line = document.createElement('div');
+    line.className = 'subscriptionCopyLine';
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.textContent = url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'subscriptionCopyBtn';
+    button.textContent = '复制';
+    button.addEventListener('click', async () => {
+      await copyText(url);
+      button.textContent = '已复制';
+      setTimeout(() => { button.textContent = '复制'; }, 1600);
+    });
+
+    line.append(link, button);
+    row.append(title, line);
+    parent.appendChild(row);
+  }
+
   function setNetworkSuccess(orderId){
     const username = String(payload.account || '').trim();
     const encoded = encodeURIComponent(username);
     const shadowrocket = 'https://hk.joinvip.vip:2056/sub/' + encoded;
     const clash = 'https://hk.joinvip.vip:2056/sub/' + encoded + '?format=clash';
 
+    installSubscriptionStyle();
     statusBox.classList.remove('warn');
     statusBox.classList.add('show');
     statusBox.textContent = '';
@@ -81,22 +122,12 @@
     message.textContent = '订单已提交成功，订阅链接将在30分钟内可用，请耐心等待，如有疑问请联系我们的在线客服';
     const idLine = document.createElement('div');
     idLine.textContent = '订单号：' + orderId;
-    const shadowLine = document.createElement('div');
-    shadowLine.textContent = 'shadowrocket:';
-    const shadowLink = document.createElement('a');
-    shadowLink.href = shadowrocket;
-    shadowLink.textContent = shadowrocket;
-    shadowLink.target = '_blank';
-    shadowLink.rel = 'noopener';
-    const clashLine = document.createElement('div');
-    clashLine.textContent = 'clash订阅:';
-    const clashLink = document.createElement('a');
-    clashLink.href = clash;
-    clashLink.textContent = clash;
-    clashLink.target = '_blank';
-    clashLink.rel = 'noopener';
+    const links = document.createElement('div');
+    links.className = 'subscriptionLinks';
 
-    [message, idLine, shadowLine, shadowLink, clashLine, clashLink].forEach((item) => statusBox.appendChild(item));
+    appendSubscriptionRow(links, 'shadowrocket小火箭订阅', shadowrocket);
+    appendSubscriptionRow(links, 'clash订阅', clash);
+    statusBox.append(message, idLine, links);
   }
 
   async function copyText(text){
@@ -142,7 +173,7 @@
     item.className = 'detailItem';
     item.dataset.usernameDetail = 'true';
     const label = document.createElement('span');
-    label.textContent = '用户名';
+    label.textContent = '设置你的用户名';
     const value = document.createElement('b');
     value.textContent = payload.account || '--';
     item.append(label, value);
