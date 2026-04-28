@@ -11,6 +11,9 @@ const ORDER_PRODUCTS = {
 
   const config = window.MAOYANG_PAYMENT || {};
   const serviceEl = form.querySelector('[data-service]');
+  const accountInput = form.querySelector('#account');
+  const passwordInput = form.querySelector('#password');
+  const authFields = [accountInput, passwordInput].map((input) => input ? input.closest('.field') : null).filter(Boolean);
   const customWrap = document.querySelector('[data-custom-amount-wrap]');
   const customAmount = document.querySelector('[data-custom-amount]');
   const payMethods = Array.from(document.querySelectorAll('[data-pay-method]'));
@@ -55,6 +58,20 @@ const ORDER_PRODUCTS = {
     return ORDER_PRODUCTS[serviceEl.value] || ORDER_PRODUCTS.spotify;
   }
 
+  function needsAccountPassword(){
+    return serviceEl.value !== 'netflix';
+  }
+
+  function syncCredentialFields(){
+    const needsAuth = needsAccountPassword();
+    authFields.forEach((field) => { field.hidden = !needsAuth; });
+    [accountInput, passwordInput].forEach((input) => {
+      if(!input) return;
+      input.required = needsAuth;
+      input.disabled = !needsAuth;
+    });
+  }
+
   function basePrice(){
     if(serviceEl.value === 'other') return Number(customAmount.value || 0);
     return selectedProduct().price;
@@ -76,6 +93,7 @@ const ORDER_PRODUCTS = {
     const usdtDue = payableUsdt(price);
     const cnyDue = discountedCny(price);
 
+    syncCredentialFields();
     customWrap.classList.toggle('show', serviceEl.value === 'other');
     originalPrice.textContent = price ? money(price) : '客服报价';
     finalPrice.textContent = price ? (isUsdt ? usdtMoney(usdtDue) : money(price)) : '客服确认';
@@ -94,6 +112,7 @@ const ORDER_PRODUCTS = {
     const method = selectedMethod();
     const price = round2(basePrice());
     const isUsdt = method === 'usdt';
+    const needsAuth = needsAccountPassword();
     const data = new FormData(form);
     return {
       service: serviceEl.value,
@@ -106,8 +125,8 @@ const ORDER_PRODUCTS = {
       exchangeRate: isUsdt ? usdtRate() : 0,
       discountRate: isUsdt ? usdtDiscount() : 1,
       paymentMethod: method,
-      account: String(data.get('account') || '').trim(),
-      password: String(data.get('password') || '').trim(),
+      account: needsAuth ? String(data.get('account') || '').trim() : '',
+      password: needsAuth ? String(data.get('password') || '').trim() : '',
       contact: String(data.get('contact') || '').trim(),
       remark: String(data.get('remark') || '').trim()
     };
@@ -130,7 +149,11 @@ const ORDER_PRODUCTS = {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const payload = orderPayload();
-    if(!payload.account || !payload.password || !payload.contact){
+    if(!payload.contact){
+      setStatus('请填写联系方式。', true);
+      return;
+    }
+    if(needsAccountPassword() && (!payload.account || !payload.password)){
       setStatus('请填写账号、密码和联系方式。', true);
       return;
     }
