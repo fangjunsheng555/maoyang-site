@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang='zh-CN'>
+<head>
+  <meta charset='utf-8' />
+  <meta name='viewport' content='width=device-width,initial-scale=1' />
+  <title>冒央会社 - 支付确认</title>
+  <meta name='description' content='冒央会社会员订阅支付确认。' />
+  <link rel='icon' href='assets/img/logo.svg' type='image/svg+xml' />
+  <link rel='stylesheet' href='assets/style.css' />
+  <style>
+    .paymentHero{min-height:340px;background-image:linear-gradient(90deg,rgba(6,18,28,.9),rgba(6,18,28,.58) 52%,rgba(6,18,28,.36)),url('assets/img/hero-pro.jpg')}
+    .paymentWrap{display:grid;grid-template-columns:minmax(0,.9fr) minmax(340px,1.1fr);gap:26px;align-items:start}.paymentBox{border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow-sm);padding:28px}.paymentBox h2{margin:0 0 18px;color:var(--ink-soft);font-size:24px;line-height:1.2;font-weight:950}.amountPanel{display:grid;gap:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper-soft);padding:16px}.amountRow{display:flex;align-items:center;justify-content:space-between;gap:16px;color:#344054;font-weight:850}.amountRow strong{color:var(--ink);font-size:27px;line-height:1;text-align:right}.rateNote{border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font-size:13px;font-weight:850;line-height:1.55}.detailList{display:grid;gap:12px;margin-top:18px}.detailItem{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding-bottom:12px;color:#344054;font-weight:850}.detailItem:last-child{border-bottom:0;padding-bottom:0}.detailItem b{text-align:right;color:var(--ink)}.paymentCard{border:1px solid var(--line);border-radius:8px;background:#fff;padding:18px}.paymentTitle{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px;font-weight:950;color:var(--ink-soft)}.qrFrame{display:flex;align-items:center;justify-content:center;min-height:252px;border:1px dashed #cfd8d5;border-radius:8px;background:#f8fbfa;color:#667085;text-align:center;font-weight:850;overflow:hidden}.qrFrame img{display:block;max-width:238px;width:100%;aspect-ratio:1 / 1;height:auto;object-fit:contain}.walletBox{display:grid;gap:12px}.walletLine{padding:12px;border:1px solid var(--line);border-radius:8px;background:#f8fbfa;word-break:break-all;color:#344054;font-weight:850}.copyBtn,.finishBtn{border:0;border-radius:999px;background:var(--teal);color:#fff;font-weight:950;min-height:46px;padding:12px 18px;cursor:pointer;box-shadow:0 12px 24px rgba(15,118,110,.2)}.copyBtn{background:#111827}.finishBtn{width:100%;margin-top:18px}.finishBtn:disabled,.copyBtn:disabled{opacity:.55;cursor:not-allowed}.statusBox{display:none;margin-top:16px;border-radius:8px;padding:14px 16px;background:#ecfdf3;color:#065f46;font-weight:850;white-space:pre-wrap}.statusBox.show{display:block}.statusBox.warn{background:#fff7ed;color:#9a3412}.paymentActions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.paymentActions .ghostCta{color:var(--ink);border-color:var(--line);background:#fff}@media (max-width:920px){.paymentWrap{grid-template-columns:1fr}.paymentBox{padding:22px}.amountRow strong{font-size:23px}.paymentHero{min-height:360px}}
+  </style>
+</head>
+<body>
+  <div class='shell container'>
+    <div class='topcard'>
+      <header class='header'>
+        <a class='brand' href='index.html' aria-label='返回首页'><img src='assets/img/logo.svg' alt='冒央会社' /></a>
+        <nav class='nav' aria-label='主导航'><a href='index.html'>首页</a><a href='services.html'>购买</a><a class='active' href='order.html'>下单</a><a href='about.html'>联系我们</a></nav>
+        <button class='burger' data-burger aria-label='打开菜单'><span></span></button>
+      </header>
+
+      <section class='hero paymentHero'>
+        <div class='inner'>
+          <p class='eyebrow'>Payment</p>
+          <h1 class='title'>支付确认</h1>
+          <p class='subtitle'>请按页面显示的收款码完成付款，付款完成后回到本页点击已完成付款。</p>
+        </div>
+      </section>
+
+      <main>
+        <section class='section sectionTight'>
+          <div class='container'>
+            <div class='paymentWrap'>
+              <aside class='paymentBox'>
+                <h2>订单摘要</h2>
+                <div class='amountPanel'>
+                  <div class='amountRow'><span>原价</span><b data-original-price>--</b></div>
+                  <div class='amountRow'><span>支付方式</span><b data-payment-method>--</b></div>
+                  <div class='amountRow'><span>应付</span><strong data-final-price>--</strong></div>
+                  <div class='rateNote' data-rate-note hidden></div>
+                </div>
+                <div class='detailList'>
+                  <div class='detailItem'><span>会员服务</span><b data-service-label>--</b></div>
+                  <div class='detailItem'><span>周期</span><b data-cycle>--</b></div>
+                  <div class='detailItem'><span>联系方式</span><b data-contact>--</b></div>
+                </div>
+                <div class='paymentActions'><a class='ghostCta' href='order.html'>返回修改</a><a class='ghostCta' href='about.html'>联系客服</a></div>
+              </aside>
+
+              <section class='paymentBox'>
+                <h2>收款码</h2>
+                <div class='paymentCard'>
+                  <div class='paymentTitle'><span data-payment-title>--</span><span data-payment-tag>--</span></div>
+                  <div data-alipay-payment hidden>
+                    <div class='qrFrame'>
+                      <img alt='支付宝收款码' data-alipay-qr hidden>
+                      <span data-alipay-empty>支付宝收款码</span>
+                    </div>
+                  </div>
+                  <div class='walletBox' data-usdt-payment hidden>
+                    <div class='qrFrame'>
+                      <img alt='USDT 收款码' data-usdt-qr hidden>
+                      <span data-usdt-empty>USDT 收款码</span>
+                    </div>
+                    <div class='walletLine'>网络：<span data-usdt-network>TRC20</span></div>
+                    <div class='walletLine'>地址：<span data-usdt-address></span></div>
+                    <button class='copyBtn' type='button' data-copy-wallet>复制地址</button>
+                  </div>
+                </div>
+                <button class='finishBtn' type='button' data-finish-payment>已完成付款</button>
+                <div class='statusBox' data-status></div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class='footer'>Copyright © 2026 Maoyang Taiwan Inc. All rights reserved.</div>
+    </div>
+  </div>
+
+  <div class='drawer' data-drawer><div class='panel'><div class='panelhead'><strong>菜单</strong><button class='close' data-drawer-close aria-label='关闭菜单'>×</button></div><nav aria-label='移动导航'><a href='index.html'>首页</a><a href='services.html'>购买</a><a class='active' href='order.html'>下单</a><a href='about.html'>联系我们</a></nav></div></div>
+  <button class='toTop' data-top aria-label='回到顶部'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M12 19V5' /><path d='M6 11l6-6 6 6' /></svg></button>
+  <script src='assets/script.js'></script>
+  <script src='assets/payment-config.js'></script>
+  <script src='assets/payment.js'></script>
+</body>
+</html>
