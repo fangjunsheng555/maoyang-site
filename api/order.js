@@ -10,7 +10,7 @@ function number(value) {
 }
 
 function needsAccountPassword(order) {
-  return order.service !== 'netflix' && order.service !== 'network';
+  return !['netflix', 'disney', 'hbomax', 'network'].includes(order.service);
 }
 
 function needsUsername(order) {
@@ -81,15 +81,15 @@ function orderText(order) {
 
   if (needsUsername(order)) {
     const links = subscriptionLinks(order.account);
-    lines.push('用户名: ' + order.account);
-    lines.push('Shadowrocket: ' + links.shadowrocket);
+    lines.push('设置你的用户名: ' + order.account);
+    lines.push('shadowrocket小火箭订阅: ' + links.shadowrocket);
     lines.push('Clash订阅: ' + links.clash);
   } else if (needsAccountPassword(order)) {
     lines.push('账号: ' + order.account);
     lines.push('密码: ' + order.password);
   }
   lines.push('联系方式: ' + order.contact);
-  lines.push('备注: ' + (order.remark || '无'));
+  lines.push('备注（非必填）: ' + (order.remark || '无'));
   return lines.join('\n');
 }
 
