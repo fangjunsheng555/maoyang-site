@@ -35,7 +35,6 @@
         order.account,
         order.password,
         order.contact,
-        order.paymentRef || '无',
         order.remark || '无'
       ];
       values.forEach((value) => {
