@@ -72,6 +72,48 @@ function orderText(order) {
   return lines.join('\n');
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+}
+
+function emailRecipients(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+async function sendOrderEmail(order, text) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.ORDER_EMAIL_FROM;
+  const to = emailRecipients(process.env.ORDER_EMAIL_TO);
+  if (!apiKey || !from || !to.length) return null;
+
+  const subjectPrefix = process.env.ORDER_EMAIL_SUBJECT_PREFIX || '冒央会社新订单';
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + apiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from,
+      to,
+      subject: subjectPrefix + ' ' + order.orderId,
+      text,
+      html: '<pre style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.7;white-space:pre-wrap;color:#101828">' + escapeHtml(text) + '</pre>'
+    })
+  });
+
+  return response.ok;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -143,6 +185,13 @@ module.exports = async function handler(req, res) {
     } catch (error) {
       deliveries.push({ channel: 'telegram', ok: false });
     }
+  }
+
+  try {
+    const emailSent = await sendOrderEmail(order, text);
+    if (emailSent !== null) deliveries.push({ channel: 'email', ok: emailSent });
+  } catch (error) {
+    deliveries.push({ channel: 'email', ok: false });
   }
 
   const delivered = stored || deliveries.some((item) => item.ok);
