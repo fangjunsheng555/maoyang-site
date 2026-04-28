@@ -12,14 +12,36 @@
     { label: 'Telegram', value: '+44 7707489977' }
   ];
 
+  const media = {
+    spotify: 'assets/img/spotify.jpg',
+    netflix: 'assets/img/netflix.jpg',
+    chatgpt: 'assets/img/chatgpt.jpg',
+    disney: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Disney%2B_logo.svg/960px-Disney%2B_logo.svg.png',
+    hbomax: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/HBO_Max_logo_%28May_2025%29.png',
+    network: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=82',
+    hero: 'assets/img/hero.jpg',
+    support: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=82',
+    company: 'assets/img/about.jpg'
+  };
+
+  const productMeta = {
+    spotify: { selector: '.productSpotify', image: media.spotify, alt: 'Spotify Premium', logo: false },
+    netflix: { selector: '.productNetflix', image: media.netflix, alt: 'Netflix Premium', logo: false },
+    chatgpt: { selector: '.productChatgpt', image: media.chatgpt, alt: 'ChatGPT Plus', logo: false },
+    disney: { selector: '.productDisney', image: media.disney, alt: 'Disney+', logo: true },
+    hbomax: { selector: '.productHbomax', image: media.hbomax, alt: 'HBO Max', logo: true },
+    network: { selector: '.productNetwork', image: media.network, alt: '网络节点服务', logo: false }
+  };
+
   const extraProducts = [
     {
       service: 'disney',
       cardClass: 'productDisney',
       tag: 'Disney+',
       title: 'Disney+',
-      image: 'assets/img/cinema-visual.svg',
+      image: media.disney,
       alt: 'Disney+ 4K Dolby',
+      logoImage: true,
       cycle: '年付',
       price: '年付108',
       intro: '独立车位全球可用4K杜比套餐',
@@ -32,8 +54,9 @@
       cardClass: 'productHbomax',
       tag: 'HBO Max',
       title: 'HBO Max',
-      image: 'assets/img/cinema-visual.svg',
+      image: media.hbomax,
       alt: 'HBO Max 4K Dolby',
+      logoImage: true,
       cycle: '年付',
       price: '年付148',
       intro: '独立车位全球可用4K杜比套餐',
@@ -46,8 +69,9 @@
       cardClass: 'productNetwork',
       tag: 'Network',
       title: '网络节点服务',
-      image: 'assets/img/service-visual.svg',
+      image: media.network,
       alt: '网络节点服务',
+      logoImage: false,
       cycle: '年付',
       price: '年付99',
       intro: '不限设备·不限流量·最高5Gbps·解锁全球平台',
@@ -74,12 +98,64 @@
     return ok;
   }
 
-  function installProductStyles(){
-    if(document.querySelector('[data-extra-products-style]')) return;
+  function installVisualStyles(){
+    if(document.querySelector('[data-maoyang-visual-style]')) return;
     const style = document.createElement('style');
-    style.dataset.extraProductsStyle = 'true';
-    style.textContent = '.productCard{position:relative;border-radius:8px!important;border:1px solid #e2e8f0!important;border-top-width:1px!important;background:linear-gradient(180deg,#fff 0%,#fbfdfc 100%)!important;box-shadow:0 18px 46px rgba(15,23,42,.08)!important;overflow:hidden!important}.productCard>img{display:none!important}.productCard:before{content:""!important;position:absolute!important;left:auto!important;right:26px!important;top:26px!important;width:76px!important;height:76px!important;border-radius:20px!important;border:1px solid rgba(226,232,240,.9)!important;background-color:#fff!important;background-position:center!important;background-repeat:no-repeat!important;background-size:100% 100%!important;box-shadow:0 18px 34px rgba(15,23,42,.16)!important;z-index:2!important}.productSpotify:before{background-image:url("assets/img/app-spotify.svg")!important}.productNetflix:before{background-image:url("assets/img/app-netflix.svg")!important}.productDisney:before{background-image:url("assets/img/app-disney.svg")!important}.productHbomax:before{background-image:url("assets/img/app-hbomax.svg")!important}.productChatgpt:before{background-image:url("assets/img/app-chatgpt.svg")!important;width:76px!important}.productNetwork:before{background-image:url("assets/img/app-network.svg")!important}.productCard .pad{padding:26px 26px 30px!important;min-height:100%;display:flex;flex-direction:column}.productCard .productTop{margin:0 96px 14px 0!important;justify-content:flex-start!important}.productCard .brandPill{background:#fff!important;border:1px solid #e2e8f0!important;color:#475467!important}.productCard .miniPill{background:#f8fafc!important;border:1px solid #e2e8f0!important;color:#475467!important}.productCard h2{margin:0 96px 8px 0!important;color:#050b22!important;font-size:30px!important;line-height:1.12!important}.productCard .price{justify-content:flex-start!important;min-height:46px!important;margin:18px 0 16px!important;padding:10px 16px!important;border-radius:8px!important;border:1px dashed #35d9d1!important;background:#effffb!important;color:#083f3a!important;font-size:15.5px!important;text-align:left!important}.productCard .pad>p:not(.price){margin:12px 0 0!important;color:#475467!important;font-size:14.5px!important;line-height:1.75!important}.productCard .pad>ul{gap:9px!important;margin:18px 0 0!important}.productCard li{font-size:14.5px!important;color:#344054!important}.productCard li:before{background:#0f766e!important;box-shadow:0 0 0 4px rgba(15,118,110,.12)!important}.productCard .cta{margin-top:auto!important;background:#071024!important;color:#fff!important;border-color:#071024!important;box-shadow:0 16px 34px rgba(2,6,23,.16)!important}.productDisney .price{background:#eef6ff!important;border-color:#7dd3fc!important;color:#0c4a6e!important}.productHbomax .price{background:#f5f0ff!important;border-color:#c4b5fd!important;color:#4c1d95!important}.productNetwork .price{background:#ecfdf3!important;border-color:#6ee7b7!important;color:#065f46!important}@media (max-width:1080px){.grid3>.productCard:nth-child(3){grid-column:auto!important}}@media (max-width:560px){.productCard:before{right:18px!important;top:20px!important;width:62px!important;height:62px!important;border-radius:17px!important}.productCard h2{font-size:25px!important;margin-right:78px!important}.productCard .productTop{margin-right:78px!important}.productCard .pad{padding:22px!important}}';
+    style.dataset.maoyangVisualStyle = 'true';
+    style.textContent = '\
+      .hero,.orderHero{background-image:linear-gradient(90deg,rgba(3,11,18,.78),rgba(3,11,18,.52) 48%,rgba(3,11,18,.16)),url("' + media.hero + '")!important;background-size:cover!important;background-position:center!important;position:relative;overflow:hidden!important}\
+      .hero:after,.orderHero:after{content:"";position:absolute;inset:auto 0 0 0;height:34%;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.95));pointer-events:none}\
+      .hero .inner{position:relative;z-index:1}\
+      .hero .eyebrow{color:#bff7ef!important}.hero .subtitle{max-width:720px!important}.hero .heroActions{gap:14px!important}\
+      .brand img{height:auto!important;max-height:58px!important;width:auto!important}\
+      .tile{overflow:hidden!important;background:#fff!important;border:1px solid rgba(210,226,222,.9)!important;box-shadow:0 18px 42px rgba(15,23,42,.08)!important}\
+      .tile>img{display:block!important;width:100%!important;aspect-ratio:16/10!important;height:auto!important;object-fit:cover!important;background:#06121a!important}\
+      .tile[data-logo-tile]>img{object-fit:contain!important;padding:42px!important;background:radial-gradient(circle at 26% 22%,rgba(45,212,191,.18),transparent 34%),linear-gradient(135deg,#03111f,#111827)!important}\
+      .tileBody{min-height:190px!important}.tileBody h3{letter-spacing:0!important}\
+      .productCard{position:relative;border-radius:8px!important;border:1px solid rgba(210,226,222,.95)!important;border-top-width:1px!important;background:#fff!important;box-shadow:0 20px 52px rgba(15,23,42,.09)!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}\
+      .productCard:before{display:none!important;content:none!important}\
+      .productCard>img{display:block!important;width:100%!important;aspect-ratio:16/10!important;height:auto!important;object-fit:cover!important;background:#06121a!important;border-bottom:1px solid rgba(226,232,240,.92)!important}\
+      .productCard[data-logo-card]>img{object-fit:contain!important;padding:42px!important;background:radial-gradient(circle at 18% 18%,rgba(20,184,166,.2),transparent 32%),linear-gradient(135deg,#020617,#101828 58%,#063f3a)!important}\
+      .productCard .pad{padding:24px 24px 28px!important;min-height:100%;display:flex!important;flex-direction:column!important}\
+      .productCard .productTop{margin:0 0 13px!important;justify-content:flex-start!important}.productCard .brandPill{background:#fff!important;border:1px solid #e2e8f0!important;color:#475467!important}.productCard .miniPill{background:#f8fafc!important;border:1px solid #e2e8f0!important;color:#475467!important}\
+      .productCard h2{margin:0 0 8px!important;color:#050b22!important;font-size:29px!important;line-height:1.12!important;letter-spacing:0!important}.productCard .price{justify-content:flex-start!important;min-height:46px!important;margin:16px 0 14px!important;padding:10px 16px!important;border-radius:8px!important;border:1px dashed #35d9d1!important;background:#effffb!important;color:#083f3a!important;font-size:15.5px!important;text-align:left!important}\
+      .productCard .pad>p:not(.price){margin:12px 0 0!important;color:#475467!important;font-size:14.5px!important;line-height:1.75!important}.productCard .pad>ul{gap:9px!important;margin:18px 0 0!important}.productCard li{font-size:14.5px!important;color:#344054!important}.productCard li:before{background:#0f766e!important;box-shadow:0 0 0 4px rgba(15,118,110,.12)!important}\
+      .productCard .cta{margin-top:auto!important;background:#071024!important;color:#fff!important;border-color:#071024!important;box-shadow:0 16px 34px rgba(2,6,23,.16)!important}\
+      .productDisney .price{background:#eef6ff!important;border-color:#7dd3fc!important;color:#0c4a6e!important}.productHbomax .price{background:#f5f0ff!important;border-color:#c4b5fd!important;color:#4c1d95!important}.productNetwork .price{background:#ecfdf3!important;border-color:#6ee7b7!important;color:#065f46!important}\
+      .grid2>.card>img{display:block!important;width:100%!important;aspect-ratio:16/10!important;height:auto!important;object-fit:cover!important;background:#eef5f2!important}\
+      .section .grid2>.card{overflow:hidden!important;border-radius:8px!important}\
+      @media (max-width:1080px){.grid3>.productCard:nth-child(3){grid-column:auto!important}}\
+      @media (max-width:560px){.productCard h2{font-size:25px!important}.productCard .pad{padding:22px!important}.productCard[data-logo-card]>img,.tile[data-logo-tile]>img{padding:30px!important}.tileBody{min-height:auto!important}}';
     document.head.appendChild(style);
+  }
+
+  function setImage(img, src, alt, logoMode){
+    if(!img) return;
+    img.src = src;
+    img.alt = alt || img.alt || '';
+    img.loading = img.loading || 'lazy';
+    if(/^https?:/.test(src)) img.referrerPolicy = 'no-referrer';
+    const card = img.closest('.productCard');
+    const tile = img.closest('.tile');
+    if(card) card.toggleAttribute('data-logo-card', !!logoMode);
+    if(tile) tile.toggleAttribute('data-logo-tile', !!logoMode);
+  }
+
+  function installProductImages(){
+    Object.keys(productMeta).forEach((key) => {
+      const item = productMeta[key];
+      document.querySelectorAll(item.selector).forEach((card) => setImage(card.querySelector('img'), item.image, item.alt, item.logo));
+    });
+
+    document.querySelectorAll('.tile').forEach((tile) => {
+      const title = (tile.querySelector('h3') || {}).textContent || '';
+      if(/Spotify/i.test(title)) setImage(tile.querySelector('img'), media.spotify, 'Spotify Premium', false);
+      if(/Netflix/i.test(title)) setImage(tile.querySelector('img'), media.netflix, 'Netflix Premium', false);
+      if(/ChatGPT/i.test(title)) setImage(tile.querySelector('img'), media.chatgpt, 'ChatGPT Plus', false);
+    });
+
+    document.querySelectorAll('img[src$="service-visual.svg"]').forEach((img) => setImage(img, media.support, '售后服务展示图', false));
+    document.querySelectorAll('img[src$="company-visual.svg"]').forEach((img) => setImage(img, media.company, '公司展示图', false));
   }
 
   function installCopyContactStyles(){
@@ -149,6 +225,7 @@
     tile.href = 'services.html#products';
     tile.dataset.extraTile = product.service;
     tile.innerHTML = "<img src='" + product.image + "' alt='" + product.alt + "' loading='lazy'><div class='tileBody'><span class='serviceTag'>" + product.tag + "</span><h3>" + product.title + "</h3><p>" + product.tileText + "</p></div>";
+    if(product.logoImage) tile.dataset.logoTile = 'true';
     return tile;
   }
 
@@ -166,7 +243,10 @@
   function createProductCard(product){
     const card = document.createElement('article');
     card.className = 'card productCard ' + product.cardClass;
+    if(product.logoImage) card.dataset.logoCard = 'true';
     card.innerHTML = "<img src='" + product.image + "' alt='" + product.alt + "' loading='lazy'><div class='pad'><div class='productTop'><span class='brandPill'>" + product.tag + "</span><span class='miniPill'>" + product.cycle + "</span></div><h2>" + product.title + "</h2><p class='price'>" + product.price + "</p><p>" + product.intro + "</p><ul>" + product.features.map((item) => '<li>' + item + '</li>').join('') + "</ul><p>" + product.detail + "</p></div>";
+    const img = card.querySelector('img');
+    if(img && /^https?:/.test(product.image)) img.referrerPolicy = 'no-referrer';
     return card;
   }
 
@@ -174,17 +254,46 @@
     const grid = document.querySelector('#products .grid3');
     if(!grid) return;
 
-    installProductStyles();
     extraProducts.forEach((product) => {
       if(grid.querySelector('.' + product.cardClass)) return;
       grid.appendChild(createProductCard(product));
     });
   }
 
+  function installProductLinks(){
+    const productLinks = [
+      ['.productSpotify', 'spotify'],
+      ['.productNetflix', 'netflix'],
+      ['.productChatgpt', 'chatgpt'],
+      ['.productDisney', 'disney'],
+      ['.productHbomax', 'hbomax'],
+      ['.productNetwork', 'network']
+    ];
+
+    productLinks.forEach(([selector, service]) => {
+      const card = document.querySelector(selector);
+      if(!card || card.querySelector('[data-order-link]')) return;
+      const pad = card.querySelector('.pad');
+      if(!pad) return;
+      const link = document.createElement('a');
+      link.href = 'order.html?service=' + service;
+      link.textContent = '立即下单';
+      link.className = 'cta';
+      link.dataset.orderLink = service;
+      link.style.marginTop = '22px';
+      link.style.alignSelf = 'flex-start';
+      pad.appendChild(link);
+    });
+  }
+
+  installVisualStyles();
   installCopyContacts();
   removeServicesContactPanel();
+  installProductImages();
   installHomeTiles();
   installExtraProductCards();
+  installProductImages();
+  installProductLinks();
 
   const burger = document.querySelector('[data-burger]');
   const drawer = document.querySelector('[data-drawer]');
@@ -197,30 +306,6 @@
   closeBtn && closeBtn.addEventListener('click', closeDrawer);
   drawer && drawer.addEventListener('click', (e)=>{
     if(e.target === drawer) closeDrawer();
-  });
-
-  const productLinks = [
-    ['.productSpotify', 'spotify'],
-    ['.productNetflix', 'netflix'],
-    ['.productChatgpt', 'chatgpt'],
-    ['.productDisney', 'disney'],
-    ['.productHbomax', 'hbomax'],
-    ['.productNetwork', 'network']
-  ];
-
-  productLinks.forEach(([selector, service]) => {
-    const card = document.querySelector(selector);
-    if(!card || card.querySelector('[data-order-link]')) return;
-    const pad = card.querySelector('.pad');
-    if(!pad) return;
-    const link = document.createElement('a');
-    link.href = 'order.html?service=' + service;
-    link.textContent = '立即下单';
-    link.className = 'cta';
-    link.dataset.orderLink = service;
-    link.style.marginTop = '22px';
-    link.style.alignSelf = 'flex-start';
-    pad.appendChild(link);
   });
 
   const toTop = document.querySelector('[data-top]');
