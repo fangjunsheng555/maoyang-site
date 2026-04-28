@@ -28,7 +28,7 @@
 
   var extraProducts = [
     {
-      service: 'cinema',
+      service: 'disney',
       cardClass: 'productDisney',
       tag: 'Disney+',
       title: 'Disney+',
