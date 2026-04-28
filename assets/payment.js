@@ -10,6 +10,7 @@
   const serviceLabel = document.querySelector('[data-service-label]');
   const cycle = document.querySelector('[data-cycle]');
   const contact = document.querySelector('[data-contact]');
+  const detailList = document.querySelector('.detailList');
   const paymentTitle = document.querySelector('[data-payment-title]');
   const paymentTag = document.querySelector('[data-payment-tag]');
   const alipayPayment = document.querySelector('[data-alipay-payment]');
@@ -32,13 +33,22 @@
     }
   }
 
-  function needsAccountPassword(order){
-    return order && order.service !== 'netflix';
+  function credentialMode(order){
+    if(!order) return 'accountPassword';
+    if(order.service === 'netflix') return 'none';
+    if(order.service === 'network') return 'username';
+    return 'accountPassword';
+  }
+
+  function validUsername(value){
+    return /^[A-Za-z0-9]{3,10}$/.test(String(value || '').trim());
   }
 
   function hasRequiredOrderInfo(order){
+    const mode = credentialMode(order);
     if(!order || !order.contact) return false;
-    if(needsAccountPassword(order) && (!order.account || !order.password)) return false;
+    if(mode === 'username' && !validUsername(order.account)) return false;
+    if(mode === 'accountPassword' && (!order.account || !order.password)) return false;
     return true;
   }
 
@@ -55,6 +65,38 @@
     statusBox.textContent = text;
     statusBox.classList.toggle('warn', !!warn);
     statusBox.classList.add('show');
+  }
+
+  function setNetworkSuccess(orderId){
+    const username = String(payload.account || '').trim();
+    const encoded = encodeURIComponent(username);
+    const shadowrocket = 'https://hk.joinvip.vip:2056/sub/' + encoded;
+    const clash = 'https://hk.joinvip.vip:2056/sub/' + encoded + '?format=clash';
+
+    statusBox.classList.remove('warn');
+    statusBox.classList.add('show');
+    statusBox.textContent = '';
+
+    const message = document.createElement('div');
+    message.textContent = '订单已提交成功，订阅链接将在30分钟内可用，请耐心等待，如有疑问请联系我们的在线客服';
+    const idLine = document.createElement('div');
+    idLine.textContent = '订单号：' + orderId;
+    const shadowLine = document.createElement('div');
+    shadowLine.textContent = 'shadowrocket:';
+    const shadowLink = document.createElement('a');
+    shadowLink.href = shadowrocket;
+    shadowLink.textContent = shadowrocket;
+    shadowLink.target = '_blank';
+    shadowLink.rel = 'noopener';
+    const clashLine = document.createElement('div');
+    clashLine.textContent = 'clash订阅:';
+    const clashLink = document.createElement('a');
+    clashLink.href = clash;
+    clashLink.textContent = clash;
+    clashLink.target = '_blank';
+    clashLink.rel = 'noopener';
+
+    [message, idLine, shadowLine, shadowLink, clashLine, clashLink].forEach((item) => statusBox.appendChild(item));
   }
 
   async function copyText(text){
@@ -92,6 +134,22 @@
     setStatus('订单信息已失效，请返回重新下单。', true);
   }
 
+  function renderUsernameDetail(){
+    if(!detailList || !payload || payload.service !== 'network') return;
+    if(detailList.querySelector('[data-username-detail]')) return;
+
+    const item = document.createElement('div');
+    item.className = 'detailItem';
+    item.dataset.usernameDetail = 'true';
+    const label = document.createElement('span');
+    label.textContent = '用户名';
+    const value = document.createElement('b');
+    value.textContent = payload.account || '--';
+    item.append(label, value);
+    const contactItem = contact ? contact.closest('.detailItem') : null;
+    detailList.insertBefore(item, contactItem || null);
+  }
+
   function renderOrder(){
     if(!hasRequiredOrderInfo(payload)){
       renderMissingOrder();
@@ -105,6 +163,7 @@
     serviceLabel.textContent = payload.serviceLabel || '--';
     cycle.textContent = payload.cycle || '--';
     contact.textContent = payload.contact || '--';
+    renderUsernameDetail();
 
     if(isUsdt){
       paymentTitle.textContent = 'USDT 扫码付款';
@@ -150,7 +209,11 @@
         const result = await response.json();
         if(!response.ok || !result.ok) throw new Error(result.error || 'submit_failed');
         sessionStorage.removeItem('maoyangPendingOrder');
-        setStatus('订单已提交成功，预计在30分钟内完成会员订阅，请耐心等待，如有疑问请联系我们的在线客服\n订单号：' + result.orderId, false);
+        if(payload.service === 'network'){
+          setNetworkSuccess(result.orderId);
+        }else{
+          setStatus('订单已提交成功，预计在30分钟内完成会员订阅，请耐心等待，如有疑问请联系我们的在线客服\n订单号：' + result.orderId, false);
+        }
         finishBtn.textContent = '已提交订单';
       }catch(error){
         finishBtn.disabled = false;
