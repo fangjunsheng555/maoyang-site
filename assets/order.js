@@ -1,12 +1,28 @@
 const ORDER_PRODUCTS = {
-  spotify: { label: 'Spotify Premium', price: 128, cycle: '年付' },
-  netflix: { label: 'Netflix Premium', price: 168, cycle: '年付' },
-  disney: { label: 'Disney+', price: 108, cycle: '年付' },
-  hbomax: { label: 'HBO Max', price: 148, cycle: '年付' },
-  chatgpt: { label: 'ChatGPT Plus', price: 75, cycle: '月付' },
-  network: { label: '网络节点服务', price: 99, cycle: '年付' },
-  other: { label: '其他服务 / 客服报价', price: 0, cycle: '报价' }
+  spotify: { label: 'Spotify Premium', price: 128, billing: 'yearly' },
+  netflix: { label: 'Netflix Premium', price: 168, billing: 'yearly' },
+  disney: { label: 'Disney+', price: 108, billing: 'yearly' },
+  hbomax: { label: 'HBO Max', price: 148, billing: 'yearly' },
+  chatgpt: { label: 'ChatGPT Plus', billing: 'chatgpt' },
+  network: { label: '网络节点服务', price: 99, billing: 'yearly' },
+  other: { label: '其他服务 / 客服报价', price: 0, billing: 'custom' }
 };
+
+const SERVICE_ORDER = ['spotify', 'netflix', 'disney', 'hbomax', 'chatgpt', 'network', 'other'];
+
+const YEARLY_PLANS = [
+  { value: '1y', label: '1年', cycle: '1年', years: 1, rate: 1, discountLabel: '' },
+  { value: '2y', label: '2年（9折）', cycle: '2年（9折）', years: 2, rate: 0.9, discountLabel: '两年9折' },
+  { value: '3y', label: '3年（8折）', cycle: '3年（8折）', years: 3, rate: 0.8, discountLabel: '三年8折' }
+];
+
+const CHATGPT_PLANS = [
+  { value: 'month', label: '月付 ¥75', cycle: '月付', amount: 75, discountLabel: '' },
+  { value: 'quarter', label: '三个月 ¥188', cycle: '三个月', amount: 188, discountLabel: '' },
+  { value: 'year', label: '年付 ¥588', cycle: '年付', amount: 588, discountLabel: '' }
+];
+
+const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报价', amount: 0, discountLabel: '' };
 
 (function(){
   const form = document.querySelector('[data-order-form]');
@@ -32,28 +48,44 @@ const ORDER_PRODUCTS = {
   const summaryCycle = document.querySelector('[data-summary-cycle]');
   const summaryPayment = document.querySelector('[data-summary-payment]');
   const statusBox = document.querySelector('[data-status]');
+  let planEl = null;
+  let planHint = null;
 
   installServiceOptions();
+  installPlanField();
   installRemarkHint();
   installPasswordToggle();
 
   function installServiceOptions(){
     if(!serviceEl) return;
-    const options = [
-      ['disney', 'Disney+ 年108'],
-      ['hbomax', 'HBO Max 年148'],
-      ['network', '网络节点服务 年99']
-    ];
-    const other = serviceEl.querySelector("option[value='other']");
-    const chatgpt = serviceEl.querySelector("option[value='chatgpt']");
-
-    options.forEach(([value, text]) => {
-      if(serviceEl.querySelector("option[value='" + value + "']")) return;
+    const requested = new URLSearchParams(window.location.search).get('service');
+    const current = requested && ORDER_PRODUCTS[requested] ? requested : (ORDER_PRODUCTS[serviceEl.value] ? serviceEl.value : 'spotify');
+    serviceEl.innerHTML = '';
+    SERVICE_ORDER.forEach((key) => {
       const option = document.createElement('option');
-      option.value = value;
-      option.textContent = text;
-      serviceEl.insertBefore(option, value === 'network' ? (other || null) : (chatgpt || other || null));
+      option.value = key;
+      option.textContent = ORDER_PRODUCTS[key].label;
+      serviceEl.appendChild(option);
     });
+    serviceEl.value = current;
+  }
+
+  function installPlanField(){
+    if(document.querySelector('[data-order-plan-style]')) return;
+    const style = document.createElement('style');
+    style.dataset.orderPlanStyle = 'true';
+    style.textContent = '.planHint{display:block;color:#667085;font-size:12px;font-weight:850;line-height:1.45}.planField[hidden]{display:none!important}.field select[data-plan]{font-weight:850}.summaryItem b{overflow-wrap:anywhere}';
+    document.head.appendChild(style);
+
+    const serviceField = serviceEl ? serviceEl.closest('.field') : null;
+    if(!serviceField) return;
+    const field = document.createElement('div');
+    field.className = 'field planField';
+    field.innerHTML = "<label for='plan'>周期 / 套餐</label><select id='plan' name='plan' data-plan></select><small class='planHint' data-plan-hint></small>";
+    serviceField.insertAdjacentElement('afterend', field);
+    planEl = field.querySelector('[data-plan]');
+    planHint = field.querySelector('[data-plan-hint]');
+    planEl.addEventListener('change', updatePaymentInfo);
   }
 
   function installRemarkHint(){
@@ -125,6 +157,41 @@ const ORDER_PRODUCTS = {
     return ORDER_PRODUCTS[serviceEl.value] || ORDER_PRODUCTS.spotify;
   }
 
+  function planOptions(){
+    const product = selectedProduct();
+    if(product.billing === 'yearly') return YEARLY_PLANS;
+    if(product.billing === 'chatgpt') return CHATGPT_PLANS;
+    return [CUSTOM_PLAN];
+  }
+
+  function syncPlanOptions(){
+    if(!planEl) return;
+    const product = selectedProduct();
+    const options = planOptions();
+    const current = planEl.value;
+    planEl.innerHTML = '';
+    options.forEach((plan) => {
+      const option = document.createElement('option');
+      option.value = plan.value;
+      option.textContent = plan.label;
+      planEl.appendChild(option);
+    });
+    planEl.value = options.some((plan) => plan.value === current) ? current : options[0].value;
+    const field = planEl.closest('.planField');
+    if(field) field.hidden = product.billing === 'custom';
+    if(planHint){
+      if(product.billing === 'yearly') planHint.textContent = '年付服务：两年9折，三年8折';
+      else if(product.billing === 'chatgpt') planHint.textContent = 'ChatGPT Plus 支持月付、三个月与年付套餐';
+      else planHint.textContent = '';
+    }
+  }
+
+  function selectedPlan(){
+    const options = planOptions();
+    const value = planEl ? planEl.value : options[0].value;
+    return options.find((plan) => plan.value === value) || options[0];
+  }
+
   function credentialMode(){
     if(['netflix', 'disney', 'hbomax'].includes(serviceEl.value)) return 'none';
     if(serviceEl.value === 'network') return 'username';
@@ -174,8 +241,20 @@ const ORDER_PRODUCTS = {
   }
 
   function basePrice(){
-    if(serviceEl.value === 'other') return Number(customAmount.value || 0);
-    return selectedProduct().price;
+    const product = selectedProduct();
+    const plan = selectedPlan();
+    if(product.billing === 'custom') return Number(customAmount.value || 0);
+    if(product.billing === 'chatgpt') return Number(plan.amount || 0);
+    return round2(product.price * (plan.years || 1) * (plan.rate || 1));
+  }
+
+  function planDiscountText(){
+    const plan = selectedPlan();
+    return plan.discountLabel || '';
+  }
+
+  function cycleText(){
+    return selectedPlan().cycle || selectedProduct().cycle || '--';
   }
 
   function discountedCny(price){
@@ -187,24 +266,26 @@ const ORDER_PRODUCTS = {
   }
 
   function updatePaymentInfo(){
+    syncPlanOptions();
     const method = selectedMethod();
     const product = selectedProduct();
     const price = basePrice();
     const isUsdt = method === 'usdt';
     const usdtDue = payableUsdt(price);
     const cnyDue = discountedCny(price);
+    const planDiscount = planDiscountText();
 
     syncCredentialFields();
     customWrap.classList.toggle('show', serviceEl.value === 'other');
     originalPrice.textContent = price ? money(price) : '客服报价';
     finalPrice.textContent = price ? (isUsdt ? usdtMoney(usdtDue) : money(price)) : '客服确认';
-    discount.textContent = isUsdt ? 'USDT 9折 · 汇率 ' + usdtRate().toFixed(2) : '无';
+    discount.textContent = isUsdt ? ((planDiscount ? planDiscount + ' + ' : '') + 'USDT 9折 · 汇率 ' + usdtRate().toFixed(2)) : (planDiscount || '无');
     if(rateNote){
       rateNote.hidden = !isUsdt || !price;
       rateNote.textContent = price ? '折后人民币 ' + money(cnyDue) + '，按 6.85 汇率折算为 ' + usdtMoney(usdtDue) : '';
     }
     if(summaryService) summaryService.textContent = product.label;
-    if(summaryCycle) summaryCycle.textContent = product.cycle;
+    if(summaryCycle) summaryCycle.textContent = cycleText();
     if(summaryPayment) summaryPayment.textContent = isUsdt ? 'USDT' : '支付宝';
   }
 
@@ -218,7 +299,7 @@ const ORDER_PRODUCTS = {
     return {
       service: serviceEl.value,
       serviceLabel: item.label,
-      cycle: item.cycle,
+      cycle: cycleText(),
       originalAmount: price,
       discountedCnyAmount: isUsdt ? discountedCny(price) : 0,
       finalAmount: isUsdt ? payableUsdt(price) : price,
@@ -238,10 +319,6 @@ const ORDER_PRODUCTS = {
     statusBox.classList.toggle('warn', !!warn);
     statusBox.classList.add('show');
   }
-
-  const params = new URLSearchParams(window.location.search);
-  const requested = params.get('service');
-  if(requested && ORDER_PRODUCTS[requested]) serviceEl.value = requested;
 
   serviceEl.addEventListener('change', updatePaymentInfo);
   customAmount.addEventListener('input', updatePaymentInfo);
