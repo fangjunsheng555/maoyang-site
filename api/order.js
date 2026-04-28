@@ -10,7 +10,23 @@ function number(value) {
 }
 
 function needsAccountPassword(order) {
-  return order.service !== 'netflix';
+  return order.service !== 'netflix' && order.service !== 'network';
+}
+
+function needsUsername(order) {
+  return order.service === 'network';
+}
+
+function validUsername(value) {
+  return /^[A-Za-z0-9]{3,10}$/.test(String(value || '').trim());
+}
+
+function subscriptionLinks(username) {
+  const encoded = encodeURIComponent(username);
+  return {
+    shadowrocket: 'https://hk.joinvip.vip:2056/sub/' + encoded,
+    clash: 'https://hk.joinvip.vip:2056/sub/' + encoded + '?format=clash'
+  };
 }
 
 function redisConfig() {
@@ -63,7 +79,12 @@ function orderText(order) {
     lines.push('应付: ' + order.finalAmount + ' CNY');
   }
 
-  if (needsAccountPassword(order)) {
+  if (needsUsername(order)) {
+    const links = subscriptionLinks(order.account);
+    lines.push('用户名: ' + order.account);
+    lines.push('Shadowrocket: ' + links.shadowrocket);
+    lines.push('Clash订阅: ' + links.clash);
+  } else if (needsAccountPassword(order)) {
     lines.push('账号: ' + order.account);
     lines.push('密码: ' + order.password);
   }
@@ -145,7 +166,7 @@ module.exports = async function handler(req, res) {
     remark: clean(body.remark, 800)
   };
 
-  if (!order.contact || (needsAccountPassword(order) && (!order.account || !order.password))) {
+  if (!order.contact || (needsUsername(order) && !validUsername(order.account)) || (needsAccountPassword(order) && (!order.account || !order.password))) {
     return res.status(400).json({ ok: false, error: 'missing_required_fields' });
   }
 
