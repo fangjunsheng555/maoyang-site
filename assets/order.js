@@ -1,6 +1,8 @@
 const ORDER_PRODUCTS = {
   spotify: { label: 'Spotify Premium', price: 128, cycle: '年付' },
   netflix: { label: 'Netflix Premium', price: 168, cycle: '年付' },
+  disney: { label: 'Disney+', price: 108, cycle: '年付' },
+  hbomax: { label: 'HBO Max', price: 148, cycle: '年付' },
   chatgpt: { label: 'ChatGPT Plus', price: 75, cycle: '月付' },
   network: { label: '网络节点服务', price: 99, cycle: '年付' },
   other: { label: '其他服务 / 客服报价', price: 0, cycle: '报价' }
@@ -14,9 +16,11 @@ const ORDER_PRODUCTS = {
   const serviceEl = form.querySelector('[data-service]');
   const accountInput = form.querySelector('#account');
   const passwordInput = form.querySelector('#password');
+  const remarkInput = form.querySelector('#remark');
   const accountField = accountInput ? accountInput.closest('.field') : null;
   const passwordField = passwordInput ? passwordInput.closest('.field') : null;
   const accountLabel = form.querySelector("label[for='account']");
+  const remarkLabel = form.querySelector("label[for='remark']");
   const customWrap = document.querySelector('[data-custom-amount-wrap]');
   const customAmount = document.querySelector('[data-custom-amount]');
   const payMethods = Array.from(document.querySelectorAll('[data-pay-method]'));
@@ -29,16 +33,32 @@ const ORDER_PRODUCTS = {
   const summaryPayment = document.querySelector('[data-summary-payment]');
   const statusBox = document.querySelector('[data-status]');
 
-  installNetworkOption();
+  installServiceOptions();
+  installRemarkHint();
   installPasswordToggle();
 
-  function installNetworkOption(){
-    if(!serviceEl || serviceEl.querySelector("option[value='network']")) return;
-    const option = document.createElement('option');
-    option.value = 'network';
-    option.textContent = '网络节点服务 年99';
+  function installServiceOptions(){
+    if(!serviceEl) return;
+    const options = [
+      ['disney', 'Disney+ 年108'],
+      ['hbomax', 'HBO Max 年148'],
+      ['network', '网络节点服务 年99']
+    ];
     const other = serviceEl.querySelector("option[value='other']");
-    serviceEl.insertBefore(option, other || null);
+    const chatgpt = serviceEl.querySelector("option[value='chatgpt']");
+
+    options.forEach(([value, text]) => {
+      if(serviceEl.querySelector("option[value='" + value + "']")) return;
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = text;
+      serviceEl.insertBefore(option, value === 'network' ? (other || null) : (chatgpt || other || null));
+    });
+  }
+
+  function installRemarkHint(){
+    if(remarkLabel) remarkLabel.textContent = '备注（非必填）';
+    if(remarkInput) remarkInput.placeholder = '订单备注（非必填）：地区、时长、特殊需求或客服报价说明';
   }
 
   function installPasswordToggle(){
@@ -106,7 +126,7 @@ const ORDER_PRODUCTS = {
   }
 
   function credentialMode(){
-    if(serviceEl.value === 'netflix') return 'none';
+    if(['netflix', 'disney', 'hbomax'].includes(serviceEl.value)) return 'none';
     if(serviceEl.value === 'network') return 'username';
     return 'accountPassword';
   }
@@ -144,7 +164,7 @@ const ORDER_PRODUCTS = {
         accountInput.removeAttribute('maxlength');
       }
     }
-    if(accountLabel) accountLabel.textContent = mode === 'username' ? '用户名' : '账号';
+    if(accountLabel) accountLabel.textContent = mode === 'username' ? '设置你的用户名' : '账号';
 
     if(passwordField) passwordField.hidden = !showPassword;
     if(passwordInput){
