@@ -2,6 +2,7 @@ const ORDER_PRODUCTS = {
   spotify: { label: 'Spotify Premium', price: 128, cycle: '年付' },
   netflix: { label: 'Netflix Premium', price: 168, cycle: '年付' },
   chatgpt: { label: 'ChatGPT Plus', price: 75, cycle: '月付' },
+  network: { label: '网络节点服务', price: 99, cycle: '年付' },
   other: { label: '其他服务 / 客服报价', price: 0, cycle: '报价' }
 };
 
@@ -13,7 +14,9 @@ const ORDER_PRODUCTS = {
   const serviceEl = form.querySelector('[data-service]');
   const accountInput = form.querySelector('#account');
   const passwordInput = form.querySelector('#password');
-  const authFields = [accountInput, passwordInput].map((input) => input ? input.closest('.field') : null).filter(Boolean);
+  const accountField = accountInput ? accountInput.closest('.field') : null;
+  const passwordField = passwordInput ? passwordInput.closest('.field') : null;
+  const accountLabel = form.querySelector("label[for='account']");
   const customWrap = document.querySelector('[data-custom-amount-wrap]');
   const customAmount = document.querySelector('[data-custom-amount]');
   const payMethods = Array.from(document.querySelectorAll('[data-pay-method]'));
@@ -26,7 +29,17 @@ const ORDER_PRODUCTS = {
   const summaryPayment = document.querySelector('[data-summary-payment]');
   const statusBox = document.querySelector('[data-status]');
 
+  installNetworkOption();
   installPasswordToggle();
+
+  function installNetworkOption(){
+    if(!serviceEl || serviceEl.querySelector("option[value='network']")) return;
+    const option = document.createElement('option');
+    option.value = 'network';
+    option.textContent = '网络节点服务 年99';
+    const other = serviceEl.querySelector("option[value='other']");
+    serviceEl.insertBefore(option, other || null);
+  }
 
   function installPasswordToggle(){
     if(!passwordInput || passwordInput.dataset.toggleInstalled) return;
@@ -92,18 +105,52 @@ const ORDER_PRODUCTS = {
     return ORDER_PRODUCTS[serviceEl.value] || ORDER_PRODUCTS.spotify;
   }
 
+  function credentialMode(){
+    if(serviceEl.value === 'netflix') return 'none';
+    if(serviceEl.value === 'network') return 'username';
+    return 'accountPassword';
+  }
+
   function needsAccountPassword(){
-    return serviceEl.value !== 'netflix';
+    return credentialMode() === 'accountPassword';
+  }
+
+  function needsUsername(){
+    return credentialMode() === 'username';
+  }
+
+  function validUsername(value){
+    return /^[A-Za-z0-9]{3,10}$/.test(String(value || '').trim());
   }
 
   function syncCredentialFields(){
-    const needsAuth = needsAccountPassword();
-    authFields.forEach((field) => { field.hidden = !needsAuth; });
-    [accountInput, passwordInput].forEach((input) => {
-      if(!input) return;
-      input.required = needsAuth;
-      input.disabled = !needsAuth;
-    });
+    const mode = credentialMode();
+    const showAccount = mode !== 'none';
+    const showPassword = mode === 'accountPassword';
+
+    if(accountField) accountField.hidden = !showAccount;
+    if(accountInput){
+      accountInput.required = showAccount;
+      accountInput.disabled = !showAccount;
+      if(mode === 'username'){
+        accountInput.placeholder = '3-10位数字字母组合，区分大小写';
+        accountInput.setAttribute('pattern', '[A-Za-z0-9]{3,10}');
+        accountInput.setAttribute('minlength', '3');
+        accountInput.setAttribute('maxlength', '10');
+      }else{
+        accountInput.placeholder = '需要开通的账号';
+        accountInput.removeAttribute('pattern');
+        accountInput.removeAttribute('minlength');
+        accountInput.removeAttribute('maxlength');
+      }
+    }
+    if(accountLabel) accountLabel.textContent = mode === 'username' ? '用户名' : '账号';
+
+    if(passwordField) passwordField.hidden = !showPassword;
+    if(passwordInput){
+      passwordInput.required = showPassword;
+      passwordInput.disabled = !showPassword;
+    }
   }
 
   function basePrice(){
@@ -146,7 +193,7 @@ const ORDER_PRODUCTS = {
     const method = selectedMethod();
     const price = round2(basePrice());
     const isUsdt = method === 'usdt';
-    const needsAuth = needsAccountPassword();
+    const mode = credentialMode();
     const data = new FormData(form);
     return {
       service: serviceEl.value,
@@ -159,8 +206,8 @@ const ORDER_PRODUCTS = {
       exchangeRate: isUsdt ? usdtRate() : 0,
       discountRate: isUsdt ? usdtDiscount() : 1,
       paymentMethod: method,
-      account: needsAuth ? String(data.get('account') || '').trim() : '',
-      password: needsAuth ? String(data.get('password') || '').trim() : '',
+      account: mode !== 'none' ? String(data.get('account') || '').trim() : '',
+      password: mode === 'accountPassword' ? String(data.get('password') || '').trim() : '',
       contact: String(data.get('contact') || '').trim(),
       remark: String(data.get('remark') || '').trim()
     };
@@ -185,6 +232,10 @@ const ORDER_PRODUCTS = {
     const payload = orderPayload();
     if(!payload.contact){
       setStatus('请填写联系方式。', true);
+      return;
+    }
+    if(needsUsername() && !validUsername(payload.account)){
+      setStatus('请填写 3-10 位数字字母组合用户名，区分大小写。', true);
       return;
     }
     if(needsAccountPassword() && (!payload.account || !payload.password)){
