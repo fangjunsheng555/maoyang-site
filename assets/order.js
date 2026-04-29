@@ -71,7 +71,7 @@ const ORDER_TEXT = {
     cycle: '周期',
     paymentMethod: '支付方式',
     alipayTitle: '支付宝扫码',
-    alipayHint: '按原价支付',
+    alipayHint: '',
     usdtTitle: 'USDT 支付',
     usdtHint: '9 折优惠',
     submit: '前往支付',
@@ -114,7 +114,7 @@ const ORDER_TEXT = {
     cycle: 'Cycle',
     paymentMethod: 'Payment Method',
     alipayTitle: 'Alipay QR Payment',
-    alipayHint: 'Pay at regular price',
+    alipayHint: '',
     usdtTitle: 'USDT Payment',
     usdtHint: '10% off',
     submit: 'Go to Payment',
@@ -288,7 +288,7 @@ function planCopy(plan, field){
     if(passwordInput) passwordInput.placeholder = orderLang() === 'en' ? 'Account password' : '账号密码';
 
     const payLabels = Array.from(document.querySelectorAll('.payTabs label span'));
-    setHtml(payLabels[0], orderText('alipayTitle') + '<small>' + orderText('alipayHint') + '</small>');
+    setHtml(payLabels[0], orderText('alipayTitle'));
     setHtml(payLabels[1], orderText('usdtTitle') + '<small>' + orderText('usdtHint') + '</small>');
 
     const amountRows = Array.from(document.querySelectorAll('.amountPanel .amountRow span'));
