@@ -87,6 +87,25 @@
           </div>
         </section>
 
+        <section class='section sectionTight' id='orderLookup'>
+          <div class='container'>
+            <div class='lookupPanel'>
+              <div class='lookupIntro'>
+                <span class='kicker' data-lookup-kicker>订单查询</span>
+                <h2 data-lookup-title>查询历史订单</h2>
+                <p data-lookup-desc>输入订单编号 / 下单时候所填写的联系方式可查询订单。</p>
+              </div>
+              <form class='lookupForm' data-order-lookup-form>
+                <label class='lookupLabel' for='lookupQuery' data-lookup-label>订单编号或联系方式</label>
+                <input id='lookupQuery' name='query' data-order-lookup-input autocomplete='off' placeholder='请输入订单编号或下单时填写的联系方式' required>
+                <button type='submit' data-lookup-submit>查询订单</button>
+              </form>
+              <div class='lookupStatus' data-order-lookup-status hidden></div>
+              <div class='lookupResults' data-order-lookup-results></div>
+            </div>
+          </div>
+        </section>
+
         <section class='section'>
           <div class='container'>
             <div class='sectionHead'>
@@ -117,5 +136,6 @@
   <div class='drawer' data-drawer><div class='panel'><div class='panelhead'><strong>菜单</strong><button class='close' data-drawer-close aria-label='关闭菜单'>×</button></div><nav aria-label='移动导航'><a class='active' href='/'>首页</a><a href='services.html'>购买</a><a href='about.html'>联系我们</a></nav></div></div>
   <button class='toTop' data-top aria-label='回到顶部'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M12 19V5' /><path d='M6 11l6-6 6 6' /></svg></button>
   <script src='assets/script.js'></script>
+  <script src='assets/order-lookup.js'></script>
 </body>
 </html>
