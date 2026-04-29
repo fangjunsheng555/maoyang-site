@@ -87,7 +87,7 @@
   }
   function translate(){
     var c=common[lang];document.documentElement.lang=lang==='zh'?'zh-CN':'en';$('[data-lang-toggle]').forEach(function(b){b.textContent=c[5];b.title=c[6]});
-    [['index.html',c[0]],['services.html',c[1]],['order.html',c[2]],['about.html',c[3]]].forEach(function(x){$('.nav a[href="'+x[0]+'"],.drawer nav a[href="'+x[0]+'"]').forEach(function(a){text(a,x[1])})});text(one('.drawer .panelhead strong'),c[4]);
+    [['/',c[0]],['index.html',c[0]],['services.html',c[1]],['order.html',c[2]],['about.html',c[3]]].forEach(function(x){$('.nav a[href="'+x[0]+'"],.drawer nav a[href="'+x[0]+'"]').forEach(function(a){text(a,x[1])})});text(one('.drawer .panelhead strong'),c[4]);
     var p=page();tileEnApply();metricEnApply();supportEnApply();reviewEnApply();
     if(p==='index.html'){setHero(copyEn.index.hero);head(0,copyEn.index.heads[0]);head(1,copyEn.index.heads[1]);var pb=$('.pbox');if(pb[0])text(one('p',pb[0]),copyEn.index.about);var sp=$('.grid2 .card .pad')[0];if(sp){text(one('.brandPill',sp),copyEn.index.support[0]);text(one('h2',sp),copyEn.index.support[1]);text(one('p',sp),copyEn.index.support[2])}}
     if(p==='services.html'){setHero(copyEn.services.hero);head(0,copyEn.services.head);productEnApply()}
