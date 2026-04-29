@@ -72,10 +72,10 @@ function publicOrder(order, type) {
     currency: order.currency || (order.paymentMethod === 'usdt' ? 'USDT' : 'CNY'),
     exchangeRate: Number(order.exchangeRate || 0),
     account: order.account || '',
-    password: order.service === 'spotify' ? '' : (order.password || ''),
+    password: order.password || '',
     contact: order.contact || '',
     remark: order.remark || '',
-    passwordHidden: order.service === 'spotify' && !!order.password
+    passwordHidden: false
   };
   if (output.service === 'network' && output.account) {
     output.subscriptionLinks = subscriptionLinks(output.account);
