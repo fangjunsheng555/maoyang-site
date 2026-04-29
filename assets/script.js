@@ -98,18 +98,62 @@
   }
   function hideEnglish(){var pb=$('.pbox');if(pb[1])pb[1].hidden=true;var co=one('.grid2 .card .pad');if(page()==='about.html'&&co){var ps=$('p',co);if(ps[1])ps[1].hidden=true}}
   function toggles(){$('.nav,.drawer nav').forEach(function(n){if(one('[data-lang-toggle]',n))return;var b=document.createElement('button');b.type='button';b.className='langToggle';b.dataset.langToggle='1';b.onclick=function(){setLang(lang==='zh'?'en':'zh',true)};n.appendChild(b)})}
-  function setLang(v,save){lang=v==='en'?'en':'zh';if(save)localStorage.setItem(langKey,lang);translate();window.dispatchEvent(new CustomEvent('maoyang:languagechange',{detail:{lang:lang}}))}
+  function setLang(v,save){lang=v==='en'?'en':'zh';if(save)localStorage.setItem(langKey,lang);translate();interactions();window.dispatchEvent(new CustomEvent('maoyang:languagechange',{detail:{lang:lang}}))}
   function interactions(){
-    if(one('[data-interaction-style]'))return;
     var motionOk=!window.matchMedia||!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var st=document.createElement('style');st.dataset.interactionStyle='1';
-    st.textContent='.header{transition:padding .2s ease,box-shadow .2s ease,background .2s ease}.header.isScrolled{padding-top:9px!important;padding-bottom:9px!important;background:rgba(255,255,255,.98)!important;box-shadow:0 12px 34px rgba(15,23,42,.12)!important}.nav a,.drawer nav a,.copyContactBtn,.cta,.ghostCta,.submitBtn,.lookupForm button,.lookupCopyBtn,.lookupDetailBtn,.payTabs label{position:relative;overflow:hidden}.tapRipple{position:absolute;border-radius:999px;transform:translate(-50%,-50%) scale(0);background:rgba(15,118,110,.18);pointer-events:none;animation:tapRipple .58s ease-out forwards}@keyframes tapRipple{to{transform:translate(-50%,-50%) scale(1);opacity:0}}';
-    if(motionOk)st.textContent+='.motionItem{opacity:0;transform:translateY(18px);transition:opacity .56s ease,transform .56s ease}.motionItem.inView{opacity:1;transform:translateY(0)}.tiltReady{transform-style:preserve-3d;will-change:transform}.tiltReady:hover{box-shadow:0 28px 68px rgba(15,23,42,.14)!important}.hero .inner{transition:transform .18s ease-out}.hero.isPointerActive .inner{transform:translate3d(var(--hero-x,0),var(--hero-y,0),0)}';
-    document.head.appendChild(st);
+    if(!one('[data-interaction-style]')){
+      var st=document.createElement('style');st.dataset.interactionStyle='1';
+      st.textContent='.header{transition:padding .2s ease,box-shadow .2s ease,background .2s ease}.header.isScrolled{padding-top:9px!important;padding-bottom:9px!important;background:rgba(255,255,255,.98)!important;box-shadow:0 12px 34px rgba(15,23,42,.12)!important}.nav a,.drawer nav a,.copyContactBtn,.cta,.ghostCta,.submitBtn,.lookupForm button,.lookupCopyBtn,.lookupDetailBtn,.payTabs label,.mobileDock a{position:relative;overflow:hidden}.tapRipple{position:absolute;border-radius:999px;transform:translate(-50%,-50%) scale(0);background:rgba(15,118,110,.18);pointer-events:none;animation:tapRipple .58s ease-out forwards}@keyframes tapRipple{to{transform:translate(-50%,-50%) scale(1);opacity:0}}.scrollProgress{position:fixed;top:0;left:0;right:0;height:3px;z-index:1200;background:transparent;pointer-events:none}.scrollProgress span{display:block;width:0;height:100%;background:linear-gradient(90deg,#0f766e,#20c7bd);box-shadow:0 0 14px rgba(15,118,110,.38);transition:width .12s ease-out}.mobileDock{display:none}.mobileDock a{display:flex;align-items:center;justify-content:center;gap:6px;min-height:52px;border-radius:999px;color:#344054;font-size:12px;font-weight:950;-webkit-tap-highlight-color:transparent}.mobileDock a svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}.mobileDock a.active{background:#0f766e;color:#fff;box-shadow:0 12px 24px rgba(15,118,110,.26)}.touchActive{transform:scale(.985)!important;box-shadow:0 16px 42px rgba(15,23,42,.12)!important}.dockPulse{animation:dockPulse .38s ease-out}@keyframes dockPulse{50%{transform:translateY(-2px) scale(1.03)}}@media(max-width:760px){body.hasMobileDock{padding-bottom:calc(86px + env(safe-area-inset-bottom))}.mobileDock{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:1100;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px;border:1px solid rgba(217,227,224,.92);border-radius:999px;background:rgba(255,255,255,.94);box-shadow:0 18px 46px rgba(15,23,42,.18);backdrop-filter:blur(18px)}.toTop{bottom:calc(96px + env(safe-area-inset-bottom))!important}}';
+      if(motionOk)st.textContent+='.motionItem{opacity:0;transform:translateY(18px);transition:opacity .56s ease,transform .56s ease}.motionItem.inView{opacity:1;transform:translateY(0)}.tiltReady{transform-style:preserve-3d;will-change:transform}.tiltReady:hover{box-shadow:0 28px 68px rgba(15,23,42,.14)!important}.hero .inner{transition:transform .18s ease-out}.hero.isPointerActive .inner{transform:translate3d(var(--hero-x,0),var(--hero-y,0),0)}';
+      document.head.appendChild(st);
+    }
+    function dockIcon(name){
+      var icons={
+        services:"<svg viewBox='0 0 24 24'><path d='M4 6h16'/><path d='M4 12h16'/><path d='M4 18h16'/></svg>",
+        order:"<svg viewBox='0 0 24 24'><path d='M8 3h8l3 3v15H5V3h3Z'/><path d='M9 13h6'/><path d='M9 17h4'/></svg>",
+        lookup:"<svg viewBox='0 0 24 24'><circle cx='11' cy='11' r='6'/><path d='m16 16 4 4'/></svg>",
+        support:"<svg viewBox='0 0 24 24'><path d='M4 12a8 8 0 0 1 16 0v5a3 3 0 0 1-3 3h-3'/><path d='M4 13h3v5H4z'/><path d='M17 13h3v5h-3z'/></svg>"
+      };
+      return icons[name]||'';
+    }
+    function dockLabels(){return lang==='zh'?{services:'服务',order:'下单',lookup:'查订单',support:'客服'}:{services:'Services',order:'Order',lookup:'Lookup',support:'Support'}}
+    function dockHref(name){
+      var p=page();
+      if(name==='services')return p==='services.html'?'#products':'services.html#products';
+      if(name==='order')return p==='order.html'?'#orderForm':'order.html';
+      if(name==='lookup')return p==='index.html'?'#orderLookup':'index.html#orderLookup';
+      return p==='about.html'?'#contact':'about.html#contact';
+    }
+    function activeDock(name){
+      var p=page(),hash=location.hash;
+      if(name==='services')return p==='services.html'&&(!hash||hash==='#products'||/^#service-/.test(hash));
+      if(name==='order')return p==='order.html'||p==='payment.html';
+      if(name==='lookup')return p==='index.html'&&hash==='#orderLookup';
+      if(name==='support')return p==='about.html';
+      return false;
+    }
+    function mobileDock(){
+      var dock=one('[data-mobile-dock]'),labels=dockLabels(),names=['services','order','lookup','support'];
+      if(!dock){dock=document.createElement('nav');dock.className='mobileDock';dock.dataset.mobileDock='1';dock.setAttribute('aria-label',lang==='zh'?'移动快捷操作':'Mobile quick actions');document.body.appendChild(dock)}
+      dock.setAttribute('aria-label',lang==='zh'?'移动快捷操作':'Mobile quick actions');
+      names.forEach(function(name){
+        var a=one('[data-dock="'+name+'"]',dock);
+        if(!a){a=document.createElement('a');a.dataset.dock=name;dock.appendChild(a)}
+        a.href=dockHref(name);a.innerHTML=dockIcon(name)+'<span>'+labels[name]+'</span>';a.classList.toggle('active',activeDock(name));
+      });
+      document.body.classList.add('hasMobileDock');
+    }
+    function progress(){
+      var bar=one('[data-scroll-progress]');
+      if(!bar){bar=document.createElement('div');bar.className='scrollProgress';bar.dataset.scrollProgress='1';bar.innerHTML='<span></span>';document.body.appendChild(bar)}
+      var max=Math.max(1,document.documentElement.scrollHeight-window.innerHeight),pct=Math.max(0,Math.min(1,window.scrollY/max))*100;
+      one('span',bar).style.width=pct+'%';
+    }
+    mobileDock();progress();
     var header=one('.header');
-    function compact(){if(header)header.classList.toggle('isScrolled',window.scrollY>18)}
-    window.addEventListener('scroll',compact,{passive:true});compact();
-    if(motionOk){
+    function compact(){if(header)header.classList.toggle('isScrolled',window.scrollY>18);progress()}
+    if(!document.documentElement.dataset.scrollInteractionBound){window.addEventListener('scroll',compact,{passive:true});document.documentElement.dataset.scrollInteractionBound='1'}compact();
+    if(motionOk&&!document.documentElement.dataset.motionInteractionBound){
       var items=$('.sectionHead,.tile,.card,.pbox,.contactPanel,.orderBox,.lookupPanel,.reviewItem,.amountPanel,.summaryList');
       items.forEach(function(el,i){el.classList.add('motionItem');el.style.transitionDelay=Math.min(i%6*45,180)+'ms'});
       if('IntersectionObserver'in window){
@@ -125,14 +169,22 @@
         var hero=one('.hero');
         if(hero)hero.addEventListener('pointermove',function(e){var r=hero.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;hero.classList.add('isPointerActive');hero.style.setProperty('--hero-x',(x*8)+'px');hero.style.setProperty('--hero-y',(y*6)+'px')},{passive:true});
       }
+      document.documentElement.dataset.motionInteractionBound='1';
     }
-    document.addEventListener('click',function(e){
-      var target=e.target.closest('.nav a,.drawer nav a,.copyContactBtn,.cta,.ghostCta,.submitBtn,.lookupForm button,.lookupCopyBtn,.lookupDetailBtn,.payTabs label');
+    if(!document.documentElement.dataset.tapInteractionBound){
+      document.addEventListener('pointerdown',function(e){if(e.target.closest('input,textarea,select'))return;var card=e.target.closest('.tile,.productCard,.lookupCard,.copyContactBtn,.payTabs label,.mobileDock a,.cta,.ghostCta,.submitBtn');if(card)card.classList.add('touchActive')},{passive:true});
+      ['pointerup','pointercancel','pointerleave'].forEach(function(type){document.addEventListener(type,function(){ $('.touchActive').forEach(function(el){el.classList.remove('touchActive')})},{passive:true})});
+      document.addEventListener('click',function(e){
+      var target=e.target.closest('.nav a,.drawer nav a,.copyContactBtn,.cta,.ghostCta,.submitBtn,.lookupForm button,.lookupCopyBtn,.lookupDetailBtn,.payTabs label,.mobileDock a');
       if(!target)return;
       var r=target.getBoundingClientRect(),d=Math.max(r.width,r.height)*1.8,span=document.createElement('span');
       span.className='tapRipple';span.style.width=d+'px';span.style.height=d+'px';span.style.left=(e.clientX-r.left)+'px';span.style.top=(e.clientY-r.top)+'px';
       target.appendChild(span);setTimeout(function(){span.remove()},650);
-    },true);
+      if(target.closest('.mobileDock')){target.classList.add('dockPulse');setTimeout(function(){target.classList.remove('dockPulse')},420)}
+      },true);
+      document.documentElement.dataset.tapInteractionBound='1';
+    }
+    if(!document.documentElement.dataset.hashInteractionBound){window.addEventListener('hashchange',function(){interactions()});document.documentElement.dataset.hashInteractionBound='1'}
   }
   style();contactsUI();addCards();setupServiceAnchors();images();toggles();translate();interactions();scrollToServiceHash();setTimeout(function(){setupServiceAnchors();translate();scrollToServiceHash()},0);window.addEventListener('load',function(){setupServiceAnchors();translate();interactions();scrollToServiceHash()});document.addEventListener('change',function(e){if(e.target.matches('[data-service],[data-plan],[data-pay-method]'))setTimeout(translate,0)},true);
   var burger=one('[data-burger]'),drawer=one('[data-drawer]'),closeBtn=one('[data-drawer-close]');function open(){if(drawer)drawer.style.display='flex'}function close(){if(drawer)drawer.style.display='none'}if(burger)burger.onclick=open;if(closeBtn)closeBtn.onclick=close;if(drawer)drawer.onclick=function(e){if(e.target===drawer)close()};var top=one('[data-top]');function scroll(){if(top)top.style.display=window.scrollY>350?'flex':'none'}window.addEventListener('scroll',scroll,{passive:true});scroll();if(top)top.onclick=function(){window.scrollTo({top:0,behavior:'smooth'})};
