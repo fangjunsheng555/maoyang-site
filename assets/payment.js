@@ -24,6 +24,7 @@
   const copyWallet = document.querySelector('[data-copy-wallet]');
   const finishBtn = document.querySelector('[data-finish-payment]');
   const statusBox = document.querySelector('[data-status]');
+  let orderSubmitted = false;
 
   function currentLang(){
     if(window.MAOYANG_GET_LANG) return window.MAOYANG_GET_LANG();
@@ -48,9 +49,13 @@
       discountNote: '折后人民币 {cny}，按 {rate} 汇率折算。',
       submitting: '正在提交订单',
       submitted: '已提交订单',
-      finishPayment: '已完成付款',
+      finishPayment: '付款完成，提交订单',
       success: '订单已提交成功，预计在30分钟内完成会员订阅，请耐心等待，如有疑问请联系我们的在线客服\n订单号：{id}',
       failed: '订单提交失败，请联系在线客服。',
+      flowOrder: '确认订单',
+      flowPay: '扫码付款',
+      flowSubmit: '提交订单',
+      flowHint: '请按页面显示金额完成付款，付款后点击下方按钮提交订单。',
       usernameLabel: '设置你的用户名',
       orderSummary: '订单摘要',
       paymentQrCode: '收款码',
@@ -81,9 +86,13 @@
       discountNote: 'Discounted CNY amount: {cny}. Converted at an exchange rate of {rate}.',
       submitting: 'Submitting order',
       submitted: 'Order submitted',
-      finishPayment: 'I have completed payment',
+      finishPayment: 'Payment completed, submit order',
       success: 'Your order has been submitted. Membership activation is expected within 30 minutes. Please wait patiently. If you have any questions, contact online support.\nOrder ID: {id}',
       failed: 'Order submission failed. Please contact online support.',
+      flowOrder: 'Review order',
+      flowPay: 'Pay by QR',
+      flowSubmit: 'Submit order',
+      flowHint: 'Please pay the exact amount shown on this page, then tap the button below to submit your order.',
       usernameLabel: 'Set your username',
       orderSummary: 'Order Summary',
       paymentQrCode: 'Payment QR Code',
@@ -176,10 +185,48 @@
     return key ? CYCLE_LABELS[language][key] : (payload.cycle || '--');
   }
 
+  function installPaymentFlow(done){
+    const box = paymentTitle ? paymentTitle.closest('.paymentBox') : null;
+    const card = box ? box.querySelector('.paymentCard') : null;
+    if(!box || !card) return;
+    if(!document.querySelector('[data-payment-flow-style]')){
+      const style = document.createElement('style');
+      style.dataset.paymentFlowStyle = 'true';
+      style.textContent = '.paymentFlow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 14px}.paymentFlowStep{display:grid;gap:4px;align-content:center;min-height:58px;border:1px solid var(--line);border-radius:8px;background:#f8fbfa;padding:10px 8px;text-align:center;color:#667085;font-size:12px;font-weight:900}.paymentFlowStep b{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin:0 auto;border-radius:999px;background:#e7f3f1;color:#0f766e;font-size:12px}.paymentFlowStep.done,.paymentFlowStep.active{border-color:rgba(15,118,110,.28);background:#eefaf8;color:#0f766e}.paymentFlowStep.active{box-shadow:0 10px 22px rgba(15,118,110,.10)}.paymentFlowHint{margin:0 0 16px;border-left:3px solid #0f766e;border-radius:8px;background:#f8fbfa;padding:10px 12px;color:#344054;font-size:13px;font-weight:850;line-height:1.65}@media(max-width:560px){.paymentFlowStep{min-height:54px;padding:9px 6px;font-size:11px}.paymentFlowHint{font-size:12px}}';
+      document.head.appendChild(style);
+    }
+    let flow = box.querySelector('[data-payment-flow]');
+    if(!flow){
+      flow = document.createElement('div');
+      flow.dataset.paymentFlow = 'true';
+      card.insertAdjacentElement('beforebegin', flow);
+    }
+    const states = done ? ['done', 'done', 'done'] : ['done', 'active', 'todo'];
+    const labels = [tr('flowOrder'), tr('flowPay'), tr('flowSubmit')];
+    flow.className = 'paymentFlow';
+    flow.innerHTML = '';
+    labels.forEach((label, index) => {
+      const step = document.createElement('div');
+      step.className = 'paymentFlowStep ' + states[index];
+      step.innerHTML = '<b>' + (index + 1) + '</b><span></span>';
+      step.querySelector('span').textContent = label;
+      flow.appendChild(step);
+    });
+    let hint = box.querySelector('[data-payment-flow-hint]');
+    if(!hint){
+      hint = document.createElement('p');
+      hint.dataset.paymentFlowHint = 'true';
+      hint.className = 'paymentFlowHint';
+      flow.insertAdjacentElement('afterend', hint);
+    }
+    hint.textContent = tr('flowHint');
+  }
+
   function applyStaticText(){
     const headings = Array.from(document.querySelectorAll('.paymentBox h2'));
     if(headings[0]) headings[0].textContent = tr('orderSummary');
     if(headings[1]) headings[1].textContent = tr('paymentQrCode');
+    installPaymentFlow(orderSubmitted);
 
     const amountRows = Array.from(document.querySelectorAll('.amountPanel .amountRow span'));
     if(amountRows[0]) amountRows[0].textContent = tr('originalPrice');
@@ -429,6 +476,8 @@
         }else{
           setStatus(tr('success', { id: result.orderId }), false);
         }
+        orderSubmitted = true;
+        installPaymentFlow(orderSubmitted);
         finishBtn.textContent = tr('submitted');
       }catch(error){
         finishBtn.disabled = false;
