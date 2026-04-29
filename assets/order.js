@@ -127,7 +127,11 @@ const ORDER_TEXT = {
     contactMissing: 'Please enter your contact information.',
     usernameMissing: 'Please enter a 3-10 character username using letters and numbers. It is case-sensitive.',
     accountMissing: 'Please enter account, password, and contact information.',
-    amountMissing: 'Please enter the quoted amount from support.'
+    amountMissing: 'Please enter the quoted amount from support.',
+    requiredField: 'Please fill out this field.',
+    passwordMissing: 'Please enter the account password.',
+    accountRequired: 'Please enter the account to activate.',
+    usernameRequired: 'Please set a username using 3-10 letters or numbers. It is case-sensitive.'
   }
 };
 
@@ -165,6 +169,7 @@ function planCopy(plan, field){
   const serviceEl = form.querySelector('[data-service]');
   const accountInput = form.querySelector('#account');
   const passwordInput = form.querySelector('#password');
+  const contactInput = form.querySelector('#contact');
   const remarkInput = form.querySelector('#remark');
   const accountField = accountInput ? accountInput.closest('.field') : null;
   const passwordField = passwordInput ? passwordInput.closest('.field') : null;
@@ -188,6 +193,7 @@ function planCopy(plan, field){
   installPlanField();
   installRemarkHint();
   installPasswordToggle();
+  installValidityMessages();
   applyStaticText();
 
   function installServiceOptions(){
@@ -407,6 +413,40 @@ function planCopy(plan, field){
     return /^[A-Za-z0-9]{3,10}$/.test(String(value || '').trim());
   }
 
+  function requiredMessage(input){
+    if(!input) return orderText('requiredField');
+    if(input === contactInput) return orderText('contactMissing');
+    if(input === passwordInput) return orderText('passwordMissing');
+    if(input === accountInput && needsUsername()) return orderText('usernameRequired');
+    if(input === accountInput) return orderText('accountRequired');
+    if(input === customAmount) return orderText('amountMissing');
+    return orderText('requiredField');
+  }
+
+  function installValidityMessages(){
+    [accountInput, passwordInput, contactInput, customAmount].forEach((input) => {
+      if(!input) return;
+      input.addEventListener('invalid', () => {
+        input.setCustomValidity(requiredMessage(input));
+      });
+      input.addEventListener('input', () => {
+        input.setCustomValidity('');
+      });
+      input.addEventListener('change', () => {
+        input.setCustomValidity('');
+      });
+    });
+  }
+
+  function showFieldError(input, message){
+    if(input){
+      input.setCustomValidity(message);
+      input.reportValidity();
+      setTimeout(() => input.setCustomValidity(''), 0);
+    }
+    setStatus(message, true);
+  }
+
   function syncCredentialFields(){
     const mode = credentialMode();
     const showAccount = mode !== 'none';
@@ -535,19 +575,19 @@ function planCopy(plan, field){
     event.preventDefault();
     const payload = orderPayload();
     if(!payload.contact){
-      setStatus(orderText('contactMissing'), true);
+      showFieldError(contactInput, orderText('contactMissing'));
       return;
     }
     if(needsUsername() && !validUsername(payload.account)){
-      setStatus(orderText('usernameMissing'), true);
+      showFieldError(accountInput, orderText('usernameMissing'));
       return;
     }
     if(needsAccountPassword() && (!payload.account || !payload.password)){
-      setStatus(orderText('accountMissing'), true);
+      showFieldError(!payload.account ? accountInput : passwordInput, !payload.account ? orderText('accountRequired') : orderText('passwordMissing'));
       return;
     }
     if(!payload.originalAmount){
-      setStatus(orderText('amountMissing'), true);
+      showFieldError(customAmount, orderText('amountMissing'));
       return;
     }
 
