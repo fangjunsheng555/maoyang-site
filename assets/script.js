@@ -104,7 +104,7 @@
     if(!one('[data-interaction-style]')){
       var st=document.createElement('style');st.dataset.interactionStyle='1';
       st.textContent='.header{transition:padding .2s ease,box-shadow .2s ease,background .2s ease}.header.isScrolled{padding-top:9px!important;padding-bottom:9px!important;background:rgba(255,255,255,.98)!important;box-shadow:0 12px 34px rgba(15,23,42,.12)!important}.nav a,.drawer nav a,.copyContactBtn,.cta,.ghostCta,.submitBtn,.lookupForm button,.lookupCopyBtn,.lookupDetailBtn,.payTabs label,.mobileDock a{position:relative;overflow:hidden}.tapRipple{position:absolute;border-radius:999px;transform:translate(-50%,-50%) scale(0);background:rgba(15,118,110,.18);pointer-events:none;animation:tapRipple .58s ease-out forwards}@keyframes tapRipple{to{transform:translate(-50%,-50%) scale(1);opacity:0}}.scrollProgress{position:fixed;top:0;left:0;right:0;height:3px;z-index:1200;background:transparent;pointer-events:none}.scrollProgress span{display:block;width:0;height:100%;background:linear-gradient(90deg,#0f766e,#20c7bd);box-shadow:0 0 14px rgba(15,118,110,.38);transition:width .12s ease-out}.mobileDock{display:none}.mobileDock a{display:flex;align-items:center;justify-content:center;gap:6px;min-height:52px;border-radius:999px;color:#344054;font-size:12px;font-weight:950;-webkit-tap-highlight-color:transparent}.mobileDock a svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}.mobileDock a.active{background:#0f766e;color:#fff;box-shadow:0 12px 24px rgba(15,118,110,.26)}.touchActive{transform:scale(.985)!important;box-shadow:0 16px 42px rgba(15,23,42,.12)!important}.dockPulse{animation:dockPulse .38s ease-out}@keyframes dockPulse{50%{transform:translateY(-2px) scale(1.03)}}@media(max-width:760px){body.hasMobileDock{padding-bottom:calc(86px + env(safe-area-inset-bottom))}.mobileDock{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:1100;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px;border:1px solid rgba(217,227,224,.92);border-radius:999px;background:rgba(255,255,255,.94);box-shadow:0 18px 46px rgba(15,23,42,.18);backdrop-filter:blur(18px)}.toTop{bottom:calc(96px + env(safe-area-inset-bottom))!important}}';
-      st.textContent+='.mobileServiceRail,.orderMobileBar{display:none}.mobileServiceRail a{white-space:nowrap}.orderMobileBar button{border:0;border-radius:999px;background:#0f766e;color:#fff;font-weight:950;min-height:42px;padding:10px 16px;box-shadow:0 12px 24px rgba(15,118,110,.22)}.orderMobileMeta{display:grid;gap:2px;min-width:0}.orderMobileMeta span{font-size:12px;color:#667085;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orderMobileMeta b{font-size:18px;color:#101828;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:760px){.mobileServiceRail{position:sticky;top:68px;z-index:45;display:flex;gap:8px;overflow-x:auto;margin:0 0 18px;padding:8px;border:1px solid rgba(217,227,224,.92);border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 14px 34px rgba(15,23,42,.09);backdrop-filter:blur(18px);scrollbar-width:none}.mobileServiceRail::-webkit-scrollbar{display:none}.mobileServiceRail a{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:999px;border:1px solid rgba(217,227,224,.95);background:#fff;color:#344054;font-size:13px;font-weight:950}.mobileServiceRail a.active{background:#0f766e;color:#fff;border-color:#0f766e;box-shadow:0 10px 22px rgba(15,118,110,.22)}.orderMobileBar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:1098;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 12px 12px 16px;border:1px solid rgba(217,227,224,.92);border-radius:999px;background:rgba(255,255,255,.95);box-shadow:0 18px 46px rgba(15,23,42,.18);backdrop-filter:blur(18px)}body.hasMobileDock.hasOrderBar{padding-bottom:calc(154px + env(safe-area-inset-bottom))}body.isTyping .mobileDock,body.isTyping .orderMobileBar{opacity:0;transform:translateY(120%);pointer-events:none}.mobileDock,.orderMobileBar{transition:opacity .2s ease,transform .2s ease}}';
+      st.textContent+='.mobileServiceRail,.orderMobileBar{display:none}.mobileServiceRail a{white-space:nowrap}.orderMobileMeta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;width:100%;min-width:0}.orderMobileMeta span{font-size:12px;color:#667085;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orderMobileMeta b{font-size:17px;color:#101828;line-height:1.15;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orderMobileMeta .orderMobileService{grid-column:1/-1;color:#0f766e;font-weight:950}@media(max-width:760px){.mobileServiceRail{position:sticky;top:68px;z-index:45;display:flex;gap:8px;overflow-x:auto;margin:0 0 18px;padding:8px;border:1px solid rgba(217,227,224,.92);border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 14px 34px rgba(15,23,42,.09);backdrop-filter:blur(18px);scrollbar-width:none}.mobileServiceRail::-webkit-scrollbar{display:none}.mobileServiceRail a{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:999px;border:1px solid rgba(217,227,224,.95);background:#fff;color:#344054;font-size:13px;font-weight:950}.mobileServiceRail a.active{background:#0f766e;color:#fff;border-color:#0f766e;box-shadow:0 10px 22px rgba(15,118,110,.22)}.orderMobileBar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:1098;display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid rgba(217,227,224,.92);border-radius:18px;background:rgba(255,255,255,.95);box-shadow:0 18px 46px rgba(15,23,42,.18);backdrop-filter:blur(18px)}body.hasMobileDock.hasOrderBar{padding-bottom:calc(154px + env(safe-area-inset-bottom))}body.isTyping .mobileDock,body.isTyping .orderMobileBar{opacity:0!important;transform:translateY(140%)!important;pointer-events:none!important}.mobileDock,.orderMobileBar{transition:opacity .18s ease,transform .18s ease}}';
       if(motionOk)st.textContent+='.motionItem{opacity:0;transform:translateY(18px);transition:opacity .56s ease,transform .56s ease}.motionItem.inView{opacity:1;transform:translateY(0)}.tiltReady{transform-style:preserve-3d;will-change:transform}.tiltReady:hover{box-shadow:0 28px 68px rgba(15,23,42,.14)!important}.hero .inner{transition:transform .18s ease-out}.hero.isPointerActive .inner{transform:translate3d(var(--hero-x,0),var(--hero-y,0),0)}';
       document.head.appendChild(st);
     }
@@ -165,24 +165,37 @@
     }
     function orderMobileBar(){
       if(page()!=='order.html')return;
-      var finalPrice=one('[data-final-price]'),service=one('[data-summary-service]'),submit=one('.submitBtn'),form=one('[data-order-form]');
-      if(!finalPrice||!service||!submit||!form)return;
+      var finalPrice=one('[data-final-price]'),service=one('[data-summary-service]'),cycle=one('[data-summary-cycle]');
+      if(!finalPrice||!service||!cycle)return;
       var bar=one('[data-order-mobile-bar]');
-      if(!bar){bar=document.createElement('div');bar.className='orderMobileBar';bar.dataset.orderMobileBar='1';bar.innerHTML='<div class="orderMobileMeta"><span></span><b></b></div><button type="button"></button>';document.body.appendChild(bar)}
-      one('span',bar).textContent=service.textContent||'';
-      one('b',bar).textContent=finalPrice.textContent||'';
-      var btn=one('button',bar);btn.textContent=submit.textContent||'';btn.onclick=function(){if(form.requestSubmit)form.requestSubmit();else submit.click()};
+      if(!bar){bar=document.createElement('div');bar.className='orderMobileBar';bar.dataset.orderMobileBar='1';bar.innerHTML='<div class="orderMobileMeta"><span class="orderMobileService"></span><span class="orderMobileCycle"></span><b class="orderMobileAmount"></b></div>';document.body.appendChild(bar)}
+      one('.orderMobileService',bar).textContent=service.textContent||'';
+      one('.orderMobileCycle',bar).textContent=cycle.textContent||'';
+      one('.orderMobileAmount',bar).textContent=finalPrice.textContent||'';
       document.body.classList.add('hasOrderBar');
       if(!bar.dataset.watch){
         var obs=new MutationObserver(orderMobileBar);
-        [finalPrice,service,submit].forEach(function(n){obs.observe(n,{childList:true,characterData:true,subtree:true})});
+        [finalPrice,service,cycle].forEach(function(n){obs.observe(n,{childList:true,characterData:true,subtree:true})});
         bar.dataset.watch='1';
       }
     }
     function typingGuard(){
       if(document.documentElement.dataset.typingGuardBound)return;
-      document.addEventListener('focusin',function(e){if(e.target.matches('input,textarea,select'))document.body.classList.add('isTyping')},true);
-      document.addEventListener('focusout',function(e){if(e.target.matches('input,textarea,select'))setTimeout(function(){document.body.classList.remove('isTyping')},140)},true);
+      var initialHeight=window.innerHeight;
+      function isField(el){return !!(el&&el.matches&&el.matches('input,textarea,select'))}
+      function syncTyping(force){
+        var active=isField(document.activeElement);
+        var keyboardOpen=window.visualViewport ? (window.visualViewport.height < initialHeight - 120) : false;
+        document.body.classList.toggle('isTyping', force===true || active || keyboardOpen);
+      }
+      document.addEventListener('focusin',function(e){if(isField(e.target))syncTyping(true)},true);
+      document.addEventListener('focusout',function(){setTimeout(syncTyping,220)},true);
+      document.addEventListener('input',function(e){if(isField(e.target))syncTyping(true)},true);
+      window.addEventListener('resize',function(){setTimeout(syncTyping,80)},{passive:true});
+      if(window.visualViewport){
+        window.visualViewport.addEventListener('resize',function(){setTimeout(syncTyping,40)},{passive:true});
+        window.visualViewport.addEventListener('scroll',function(){setTimeout(syncTyping,40)},{passive:true});
+      }
       document.documentElement.dataset.typingGuardBound='1';
     }
     function progress(){
