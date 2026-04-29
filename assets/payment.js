@@ -25,6 +25,192 @@
   const finishBtn = document.querySelector('[data-finish-payment]');
   const statusBox = document.querySelector('[data-status]');
 
+  function currentLang(){
+    if(window.MAOYANG_GET_LANG) return window.MAOYANG_GET_LANG();
+    try{
+      const saved = localStorage.getItem('maoyangLang');
+      if(saved === 'zh' || saved === 'en') return saved;
+    }catch(error){}
+    return /^zh/i.test(navigator.language || '') ? 'zh' : 'en';
+  }
+
+  const TEXT = {
+    zh: {
+      copy: '复制',
+      copied: '已复制',
+      copyAddress: '复制地址',
+      orderInvalid: '订单信息已失效，请返回重新下单。',
+      networkSuccess: '订单已提交成功，订阅链接将在30分钟内可用，请耐心等待，如有疑问请联系我们的在线客服',
+      orderNumber: '订单号：',
+      alipay: '支付宝',
+      alipayTitle: '支付宝扫码付款',
+      usdtTitle: 'USDT 扫码付款',
+      discountNote: '折后人民币 {cny}，按 {rate} 汇率折算。',
+      submitting: '正在提交订单',
+      submitted: '已提交订单',
+      finishPayment: '已完成付款',
+      success: '订单已提交成功，预计在30分钟内完成会员订阅，请耐心等待，如有疑问请联系我们的在线客服\n订单号：{id}',
+      failed: '订单提交失败，请联系在线客服。',
+      usernameLabel: '设置你的用户名',
+      orderSummary: '订单摘要',
+      paymentQrCode: '收款码',
+      originalPrice: '原价',
+      paymentMethod: '支付方式',
+      amountDue: '应付',
+      service: '会员服务',
+      cycle: '周期',
+      contact: '联系方式',
+      network: '网络：',
+      address: '地址：',
+      backToEdit: '返回修改',
+      contactSupport: '联系客服',
+      customQuote: '客服报价',
+      shadowrocket: 'shadowrocket小火箭订阅',
+      clash: 'clash订阅'
+    },
+    en: {
+      copy: 'Copy',
+      copied: 'Copied',
+      copyAddress: 'Copy address',
+      orderInvalid: 'Order information has expired. Please go back and place the order again.',
+      networkSuccess: 'Your order has been submitted. The subscription links will become available within 30 minutes. Please wait patiently. If you have any questions, contact online support.',
+      orderNumber: 'Order ID: ',
+      alipay: 'Alipay',
+      alipayTitle: 'Alipay QR Payment',
+      usdtTitle: 'USDT QR Payment',
+      discountNote: 'Discounted CNY amount: {cny}. Converted at an exchange rate of {rate}.',
+      submitting: 'Submitting order',
+      submitted: 'Order submitted',
+      finishPayment: 'I have completed payment',
+      success: 'Your order has been submitted. Membership activation is expected within 30 minutes. Please wait patiently. If you have any questions, contact online support.\nOrder ID: {id}',
+      failed: 'Order submission failed. Please contact online support.',
+      usernameLabel: 'Set your username',
+      orderSummary: 'Order Summary',
+      paymentQrCode: 'Payment QR Code',
+      originalPrice: 'Original Price',
+      paymentMethod: 'Payment Method',
+      amountDue: 'Amount Due',
+      service: 'Membership Service',
+      cycle: 'Cycle',
+      contact: 'Contact Information',
+      network: 'Network: ',
+      address: 'Address: ',
+      backToEdit: 'Back to Edit',
+      contactSupport: 'Contact Support',
+      customQuote: 'Custom Quote',
+      shadowrocket: 'Shadowrocket subscription',
+      clash: 'Clash subscription'
+    }
+  };
+
+  function tr(key, values){
+    let text = (TEXT[currentLang()] || TEXT.zh)[key] || TEXT.zh[key] || key;
+    Object.keys(values || {}).forEach((name) => {
+      text = text.replace('{' + name + '}', values[name]);
+    });
+    return text;
+  }
+
+  const PRODUCT_LABELS = {
+    zh: {
+      spotify: 'Spotify Premium',
+      netflix: 'Netflix Premium',
+      disney: 'Disney+',
+      hbomax: 'HBO Max',
+      chatgpt: 'ChatGPT Plus',
+      network: '网络节点服务',
+      other: '其他服务 / 客服报价'
+    },
+    en: {
+      spotify: 'Spotify Premium',
+      netflix: 'Netflix Premium',
+      disney: 'Disney+',
+      hbomax: 'HBO Max',
+      chatgpt: 'ChatGPT Plus',
+      network: 'Network Node Service',
+      other: 'Other Service / Custom Quote'
+    }
+  };
+
+  const CYCLE_LABELS = {
+    zh: {
+      '1y': '1年',
+      '2y': '2年（9折）',
+      '3y': '3年（8折）',
+      month: '月付',
+      quarter: '三个月',
+      year: '年付',
+      custom: '客服报价'
+    },
+    en: {
+      '1y': '1 Year',
+      '2y': '2 Years (10% off)',
+      '3y': '3 Years (20% off)',
+      month: 'Monthly',
+      quarter: '3 Months',
+      year: 'Annual',
+      custom: 'Custom Quote'
+    }
+  };
+
+  function serviceCopy(){
+    const language = currentLang();
+    return (PRODUCT_LABELS[language] && PRODUCT_LABELS[language][payload.service]) || payload.serviceLabel || '--';
+  }
+
+  function cycleKey(value){
+    const raw = String(value || '').toLowerCase();
+    if(/1\s*year|1年/.test(raw)) return '1y';
+    if(/2\s*years|2年/.test(raw)) return '2y';
+    if(/3\s*years|3年/.test(raw)) return '3y';
+    if(/3\s*months|三个月/.test(raw)) return 'quarter';
+    if(/monthly|month|月付/.test(raw)) return 'month';
+    if(/annual|yearly|年付/.test(raw)) return 'year';
+    if(/custom|客服/.test(raw)) return 'custom';
+    return '';
+  }
+
+  function cycleCopy(){
+    const key = cycleKey(payload.cycle);
+    const language = currentLang();
+    return key ? CYCLE_LABELS[language][key] : (payload.cycle || '--');
+  }
+
+  function applyStaticText(){
+    const headings = Array.from(document.querySelectorAll('.paymentBox h2'));
+    if(headings[0]) headings[0].textContent = tr('orderSummary');
+    if(headings[1]) headings[1].textContent = tr('paymentQrCode');
+
+    const amountRows = Array.from(document.querySelectorAll('.amountPanel .amountRow span'));
+    if(amountRows[0]) amountRows[0].textContent = tr('originalPrice');
+    if(amountRows[1]) amountRows[1].textContent = tr('paymentMethod');
+    if(amountRows[2]) amountRows[2].textContent = tr('amountDue');
+
+    const detailRows = Array.from(document.querySelectorAll('.detailItem span'));
+    if(detailRows[0]) detailRows[0].textContent = tr('service');
+    if(detailRows[1]) detailRows[1].textContent = tr('cycle');
+    const usernameDetail = document.querySelector('[data-username-detail] span');
+    if(usernameDetail) usernameDetail.textContent = tr('usernameLabel');
+    if(detailRows[detailRows.length - 1]) detailRows[detailRows.length - 1].textContent = tr('contact');
+
+    const actions = Array.from(document.querySelectorAll('.paymentActions a'));
+    if(actions[0]) actions[0].textContent = tr('backToEdit');
+    if(actions[1]) actions[1].textContent = tr('contactSupport');
+
+    const walletLines = Array.from(document.querySelectorAll('.walletLine'));
+    setLinePrefix(walletLines[0], tr('network'));
+    setLinePrefix(walletLines[1], tr('address'));
+  }
+
+  function setLinePrefix(line, value){
+    if(!line) return;
+    if(line.firstChild && line.firstChild.nodeType === Node.TEXT_NODE){
+      line.firstChild.nodeValue = value;
+      return;
+    }
+    line.insertBefore(document.createTextNode(value), line.firstChild);
+  }
+
   function readPendingOrder(){
     try{
       return JSON.parse(sessionStorage.getItem('maoyangPendingOrder') || 'null');
@@ -95,11 +281,11 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'subscriptionCopyBtn';
-    button.textContent = '复制';
+    button.textContent = tr('copy');
     button.addEventListener('click', async () => {
       await copyText(url);
-      button.textContent = '已复制';
-      setTimeout(() => { button.textContent = '复制'; }, 1600);
+      button.textContent = tr('copied');
+      setTimeout(() => { button.textContent = tr('copy'); }, 1600);
     });
 
     line.append(link, button);
@@ -119,14 +305,14 @@
     statusBox.textContent = '';
 
     const message = document.createElement('div');
-    message.textContent = '订单已提交成功，订阅链接将在30分钟内可用，请耐心等待，如有疑问请联系我们的在线客服';
+    message.textContent = tr('networkSuccess');
     const idLine = document.createElement('div');
-    idLine.textContent = '订单号：' + orderId;
+    idLine.textContent = tr('orderNumber') + orderId;
     const links = document.createElement('div');
     links.className = 'subscriptionLinks';
 
-    appendSubscriptionRow(links, 'shadowrocket小火箭订阅', shadowrocket);
-    appendSubscriptionRow(links, 'clash订阅', clash);
+    appendSubscriptionRow(links, tr('shadowrocket'), shadowrocket);
+    appendSubscriptionRow(links, tr('clash'), clash);
     statusBox.append(message, idLine, links);
   }
 
@@ -159,10 +345,11 @@
   }
 
   function renderMissingOrder(){
+    applyStaticText();
     if(finishBtn) finishBtn.disabled = true;
     if(alipayPayment) alipayPayment.hidden = true;
     if(usdtPayment) usdtPayment.hidden = true;
-    setStatus('订单信息已失效，请返回重新下单。', true);
+    setStatus(tr('orderInvalid'), true);
   }
 
   function renderUsernameDetail(){
@@ -173,7 +360,7 @@
     item.className = 'detailItem';
     item.dataset.usernameDetail = 'true';
     const label = document.createElement('span');
-    label.textContent = '设置你的用户名';
+    label.textContent = tr('usernameLabel');
     const value = document.createElement('b');
     value.textContent = payload.account || '--';
     item.append(label, value);
@@ -187,28 +374,29 @@
       return;
     }
 
+    applyStaticText();
     const isUsdt = payload.paymentMethod === 'usdt';
-    originalPrice.textContent = payload.originalAmount ? money(payload.originalAmount) : '客服报价';
+    originalPrice.textContent = payload.originalAmount ? money(payload.originalAmount) : tr('customQuote');
     finalPrice.textContent = isUsdt ? usdtMoney(payload.finalAmount) : money(payload.finalAmount);
-    paymentMethod.textContent = isUsdt ? 'USDT' : '支付宝';
-    serviceLabel.textContent = payload.serviceLabel || '--';
-    cycle.textContent = payload.cycle || '--';
+    paymentMethod.textContent = isUsdt ? 'USDT' : tr('alipay');
+    serviceLabel.textContent = serviceCopy();
+    cycle.textContent = cycleCopy();
     contact.textContent = payload.contact || '--';
     renderUsernameDetail();
 
     if(isUsdt){
-      paymentTitle.textContent = 'USDT 扫码付款';
-      paymentTag.textContent = 'TRC20';
+      paymentTitle.textContent = tr('usdtTitle');
+      paymentTag.textContent = usdtMoney(payload.finalAmount);
       alipayPayment.hidden = true;
       usdtPayment.hidden = false;
       usdtNetwork.textContent = config.usdtNetwork || 'TRC20';
       usdtAddress.textContent = config.usdtAddress || DEFAULT_USDT_ADDRESS;
       syncQr(usdtQr, usdtEmpty, config.usdtQr);
       rateNote.hidden = false;
-      rateNote.textContent = '折后人民币 ' + money(payload.discountedCnyAmount) + '，按 ' + Number(payload.exchangeRate || 6.85).toFixed(2) + ' 汇率折算。';
+      rateNote.textContent = tr('discountNote', { cny: money(payload.discountedCnyAmount), rate: Number(payload.exchangeRate || 6.85).toFixed(2) });
     }else{
-      paymentTitle.textContent = '支付宝扫码付款';
-      paymentTag.textContent = 'RMB';
+      paymentTitle.textContent = tr('alipayTitle');
+      paymentTag.textContent = money(payload.finalAmount);
       alipayPayment.hidden = false;
       usdtPayment.hidden = true;
       syncQr(alipayQr, alipayEmpty, config.alipayQr);
@@ -221,8 +409,8 @@
     copyWallet.addEventListener('click', async () => {
       const address = config.usdtAddress || DEFAULT_USDT_ADDRESS;
       await copyText(address);
-      copyWallet.textContent = '已复制';
-      setTimeout(() => { copyWallet.textContent = '复制地址'; }, 1600);
+      copyWallet.textContent = tr('copied');
+      setTimeout(() => { copyWallet.textContent = tr('copyAddress'); }, 1600);
     });
   }
 
@@ -230,7 +418,7 @@
     finishBtn.addEventListener('click', async () => {
       if(!payload || finishBtn.disabled) return;
       finishBtn.disabled = true;
-      finishBtn.textContent = '正在提交订单';
+      finishBtn.textContent = tr('submitting');
       try{
         const response = await fetch('/api/order', {
           method: 'POST',
@@ -243,16 +431,24 @@
         if(payload.service === 'network'){
           setNetworkSuccess(result.orderId);
         }else{
-          setStatus('订单已提交成功，预计在30分钟内完成会员订阅，请耐心等待，如有疑问请联系我们的在线客服\n订单号：' + result.orderId, false);
+          setStatus(tr('success', { id: result.orderId }), false);
         }
-        finishBtn.textContent = '已提交订单';
+        finishBtn.textContent = tr('submitted');
       }catch(error){
         finishBtn.disabled = false;
-        finishBtn.textContent = '已完成付款';
-        setStatus('订单提交失败，请联系在线客服。', true);
+        finishBtn.textContent = tr('finishPayment');
+        setStatus(tr('failed'), true);
       }
     });
   }
 
+  window.addEventListener('maoyang:languagechange', () => {
+    renderOrder();
+    if(copyWallet) copyWallet.textContent = tr('copyAddress');
+    if(finishBtn && !finishBtn.disabled) finishBtn.textContent = tr('finishPayment');
+  });
+
   renderOrder();
+  if(copyWallet) copyWallet.textContent = tr('copyAddress');
+  if(finishBtn && !finishBtn.disabled) finishBtn.textContent = tr('finishPayment');
 })();

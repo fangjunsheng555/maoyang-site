@@ -24,6 +24,139 @@ const CHATGPT_PLANS = [
 
 const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报价', amount: 0, discountLabel: '' };
 
+const PRODUCT_LABEL_EN = {
+  spotify: 'Spotify Premium',
+  netflix: 'Netflix Premium',
+  disney: 'Disney+',
+  hbomax: 'HBO Max',
+  chatgpt: 'ChatGPT Plus',
+  network: 'Network Node Service',
+  other: 'Other Service / Custom Quote'
+};
+
+const PLAN_EN = {
+  '1y': { label: '1 Year', cycle: '1 Year', discountLabel: '' },
+  '2y': { label: '2 Years (10% off)', cycle: '2 Years (10% off)', discountLabel: '2-year 10% off' },
+  '3y': { label: '3 Years (20% off)', cycle: '3 Years (20% off)', discountLabel: '3-year 20% off' },
+  month: { label: 'Monthly ¥75', cycle: 'Monthly', discountLabel: '' },
+  quarter: { label: '3 Months ¥188', cycle: '3 Months', discountLabel: '' },
+  year: { label: 'Annual ¥588', cycle: 'Annual', discountLabel: '' },
+  custom: { label: 'Custom Quote', cycle: 'Custom Quote', discountLabel: '' }
+};
+
+const ORDER_TEXT = {
+  zh: {
+    planLabel: '周期 / 套餐',
+    yearlyHint: '年付服务：两年9折，三年8折',
+    chatgptHint: 'ChatGPT Plus 支持月付、三个月与年付套餐',
+    remarkLabel: '备注（非必填）',
+    remarkPlaceholder: '订单备注（非必填）：地区、时长、特殊需求或客服报价说明',
+    show: '显示',
+    hide: '隐藏',
+    showPassword: '显示密码',
+    hidePassword: '隐藏密码',
+    usernameLabel: '设置你的用户名',
+    accountLabel: '账号',
+    usernamePlaceholder: '3-10位数字字母组合，区分大小写',
+    accountPlaceholder: '需要开通的账号',
+    customAmountLabel: '报价金额',
+    contactLabel: '联系方式',
+    serviceLabel: '会员服务',
+    paymentTitle: '支付方式',
+    summaryTitle: '订单摘要',
+    originalPrice: '原价',
+    paymentDiscount: '支付优惠',
+    amountDue: '应付',
+    cycle: '周期',
+    paymentMethod: '支付方式',
+    alipayTitle: '支付宝扫码',
+    alipayHint: '按原价支付',
+    usdtTitle: 'USDT 支付',
+    usdtHint: '9 折优惠',
+    submit: '继续支付',
+    backToServices: '返回购买页',
+    contactSupport: '联系客服',
+    customQuote: '客服报价',
+    customerConfirm: '客服确认',
+    noDiscount: '无',
+    usdtDiscount: 'USDT 9折 · 汇率 {rate}',
+    rateNote: '折后人民币 {cny}，按 6.85 汇率折算为 {usdt}',
+    alipay: '支付宝',
+    contactMissing: '请填写联系方式。',
+    usernameMissing: '请填写 3-10 位数字字母组合用户名，区分大小写。',
+    accountMissing: '请填写账号、密码和联系方式。',
+    amountMissing: '请填写客服报价金额。'
+  },
+  en: {
+    planLabel: 'Cycle / Plan',
+    yearlyHint: 'Annual services: 10% off for 2 years, 20% off for 3 years.',
+    chatgptHint: 'ChatGPT Plus supports monthly, 3-month, and annual plans.',
+    remarkLabel: 'Order Notes (Optional)',
+    remarkPlaceholder: 'Order notes (optional): region, duration, special requests, or custom quote details',
+    show: 'Show',
+    hide: 'Hide',
+    showPassword: 'Show password',
+    hidePassword: 'Hide password',
+    usernameLabel: 'Set your username',
+    accountLabel: 'Account',
+    usernamePlaceholder: '3-10 letters or numbers, case-sensitive',
+    accountPlaceholder: 'Account to activate',
+    customAmountLabel: 'Quoted Amount',
+    contactLabel: 'Contact Information',
+    serviceLabel: 'Membership Service',
+    paymentTitle: 'Payment Method',
+    summaryTitle: 'Order Summary',
+    originalPrice: 'Original Price',
+    paymentDiscount: 'Payment Discount',
+    amountDue: 'Amount Due',
+    cycle: 'Cycle',
+    paymentMethod: 'Payment Method',
+    alipayTitle: 'Alipay QR Payment',
+    alipayHint: 'Pay at regular price',
+    usdtTitle: 'USDT Payment',
+    usdtHint: '10% off',
+    submit: 'Continue to Payment',
+    backToServices: 'Back to Services',
+    contactSupport: 'Contact Support',
+    customQuote: 'Custom quote',
+    customerConfirm: 'Support confirmation',
+    noDiscount: 'None',
+    usdtDiscount: 'USDT 10% off · Rate {rate}',
+    rateNote: 'Discounted CNY amount: {cny}. Converted at 6.85 to {usdt}.',
+    alipay: 'Alipay',
+    contactMissing: 'Please enter your contact information.',
+    usernameMissing: 'Please enter a 3-10 character username using letters and numbers. It is case-sensitive.',
+    accountMissing: 'Please enter account, password, and contact information.',
+    amountMissing: 'Please enter the quoted amount from support.'
+  }
+};
+
+function orderLang(){
+  if(window.MAOYANG_GET_LANG) return window.MAOYANG_GET_LANG();
+  try{
+    const saved = localStorage.getItem('maoyangLang');
+    if(saved === 'zh' || saved === 'en') return saved;
+  }catch(error){}
+  return /^zh/i.test(navigator.language || '') ? 'zh' : 'en';
+}
+
+function orderText(key, values){
+  let text = (ORDER_TEXT[orderLang()] || ORDER_TEXT.zh)[key] || ORDER_TEXT.zh[key] || key;
+  Object.keys(values || {}).forEach((name) => {
+    text = text.replace('{' + name + '}', values[name]);
+  });
+  return text;
+}
+
+function productLabel(key){
+  return orderLang() === 'en' ? (PRODUCT_LABEL_EN[key] || ORDER_PRODUCTS[key].label) : ORDER_PRODUCTS[key].label;
+}
+
+function planCopy(plan, field){
+  if(orderLang() !== 'en') return plan[field] || '';
+  return (PLAN_EN[plan.value] && PLAN_EN[plan.value][field]) || plan[field] || '';
+}
+
 (function(){
   const form = document.querySelector('[data-order-form]');
   if(!form) return;
@@ -55,6 +188,7 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
   installPlanField();
   installRemarkHint();
   installPasswordToggle();
+  applyStaticText();
 
   function installServiceOptions(){
     if(!serviceEl) return;
@@ -64,10 +198,17 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
     SERVICE_ORDER.forEach((key) => {
       const option = document.createElement('option');
       option.value = key;
-      option.textContent = ORDER_PRODUCTS[key].label;
+      option.textContent = productLabel(key);
       serviceEl.appendChild(option);
     });
     serviceEl.value = current;
+  }
+
+  function refreshServiceOptionLabels(){
+    if(!serviceEl) return;
+    Array.from(serviceEl.options).forEach((option) => {
+      if(ORDER_PRODUCTS[option.value]) option.textContent = productLabel(option.value);
+    });
   }
 
   function installPlanField(){
@@ -81,7 +222,7 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
     if(!serviceField) return;
     const field = document.createElement('div');
     field.className = 'field planField';
-    field.innerHTML = "<label for='plan'>周期 / 套餐</label><select id='plan' name='plan' data-plan></select><small class='planHint' data-plan-hint></small>";
+    field.innerHTML = "<label for='plan' data-plan-label>" + orderText('planLabel') + "</label><select id='plan' name='plan' data-plan></select><small class='planHint' data-plan-hint></small>";
     serviceField.insertAdjacentElement('afterend', field);
     planEl = field.querySelector('[data-plan]');
     planHint = field.querySelector('[data-plan-hint]');
@@ -89,8 +230,68 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
   }
 
   function installRemarkHint(){
-    if(remarkLabel) remarkLabel.textContent = '备注（非必填）';
-    if(remarkInput) remarkInput.placeholder = '订单备注（非必填）：地区、时长、特殊需求或客服报价说明';
+    if(remarkLabel) remarkLabel.textContent = orderText('remarkLabel');
+    if(remarkInput) remarkInput.placeholder = orderText('remarkPlaceholder');
+  }
+
+  function setHtml(node, value){
+    if(node) node.innerHTML = value;
+  }
+
+  function applyStaticText(){
+    const headings = Array.from(document.querySelectorAll('.orderBox h2'));
+    if(headings[0]) headings[0].textContent = orderLang() === 'en' ? 'Order Information' : '订单信息';
+    if(headings[1]) headings[1].textContent = orderText('paymentTitle');
+    if(headings[2]) headings[2].textContent = orderText('summaryTitle');
+
+    const serviceLabelNode = form.querySelector("label[for='service']");
+    const customAmountLabel = form.querySelector("label[for='customAmount']");
+    const passwordLabel = form.querySelector("label[for='password']");
+    const contactLabel = form.querySelector("label[for='contact']");
+    if(serviceLabelNode) serviceLabelNode.textContent = orderText('serviceLabel');
+    if(customAmountLabel) customAmountLabel.textContent = orderText('customAmountLabel');
+    if(passwordLabel) passwordLabel.textContent = orderLang() === 'en' ? 'Password' : '密码';
+    if(contactLabel) contactLabel.textContent = orderText('contactLabel');
+    if(customAmount) customAmount.placeholder = orderLang() === 'en' ? 'Amount quoted by support' : '填写客服报价金额';
+    if(passwordInput) passwordInput.placeholder = orderLang() === 'en' ? 'Account password' : '账号密码';
+
+    const payLabels = Array.from(document.querySelectorAll('.payTabs label span'));
+    setHtml(payLabels[0], orderText('alipayTitle') + '<small>' + orderText('alipayHint') + '</small>');
+    setHtml(payLabels[1], orderText('usdtTitle') + '<small>' + orderText('usdtHint') + '</small>');
+
+    const amountRows = Array.from(document.querySelectorAll('.amountPanel .amountRow span'));
+    if(amountRows[0]) amountRows[0].textContent = orderText('originalPrice');
+    if(amountRows[1]) amountRows[1].textContent = orderText('paymentDiscount');
+    if(amountRows[2]) amountRows[2].textContent = orderText('amountDue');
+
+    const summaryRows = Array.from(document.querySelectorAll('.summaryItem span'));
+    if(summaryRows[0]) summaryRows[0].textContent = orderText('serviceLabel');
+    if(summaryRows[1]) summaryRows[1].textContent = orderText('cycle');
+    if(summaryRows[2]) summaryRows[2].textContent = orderText('paymentMethod');
+
+    const actions = Array.from(document.querySelectorAll('.orderFooterActions a'));
+    if(actions[0]) actions[0].textContent = orderText('backToServices');
+    if(actions[1]) actions[1].textContent = orderText('contactSupport');
+    const submit = document.querySelector('.submitBtn');
+    if(submit) submit.textContent = orderText('submit');
+
+    const toggle = document.querySelector('.passwordRevealBtn');
+    if(toggle && passwordInput) renderPasswordToggle(toggle);
+  }
+
+  function eyeIcon(isVisible){
+    if(isVisible){
+      return "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M3 12s3.4-6 9-6 9 6 9 6-3.4 6-9 6-9-6-9-6Z'/><circle cx='12' cy='12' r='2.5'/></svg>";
+    }
+    return "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M3 12s3.4-6 9-6 9 6 9 6-3.4 6-9 6-9-6-9-6Z'/><circle cx='12' cy='12' r='2.5'/><path d='M4 20 20 4'/></svg>";
+  }
+
+  function renderPasswordToggle(toggle){
+    const isVisible = passwordInput.type === 'text';
+    toggle.innerHTML = eyeIcon(isVisible);
+    toggle.setAttribute('aria-label', isVisible ? orderText('hidePassword') : orderText('showPassword'));
+    toggle.setAttribute('title', isVisible ? orderText('hidePassword') : orderText('showPassword'));
+    toggle.setAttribute('aria-pressed', String(isVisible));
   }
 
   function installPasswordToggle(){
@@ -99,7 +300,7 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
     if(!document.querySelector('[data-password-toggle-style]')){
       const style = document.createElement('style');
       style.dataset.passwordToggleStyle = 'true';
-      style.textContent = '.passwordReveal{position:relative;display:flex;align-items:center;width:100%}.passwordReveal input{padding-right:76px}.passwordRevealBtn{position:absolute;right:8px;top:50%;transform:translateY(-50%);min-height:32px;border:0;border-radius:999px;background:#e7f3f1;color:#0b4f4a;font-weight:950;padding:0 12px;cursor:pointer}.passwordRevealBtn:hover{background:#d7ebe8}.passwordRevealBtn:focus{outline:none;box-shadow:0 0 0 3px rgba(15,118,110,.16)}';
+      style.textContent = '.passwordReveal{position:relative;display:flex;align-items:center;width:100%}.passwordReveal input{padding-right:48px}.passwordRevealBtn{position:absolute;right:10px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:0;border-radius:999px;background:transparent;color:#2563eb;padding:0;cursor:pointer}.passwordRevealBtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.passwordRevealBtn:hover{background:#eff6ff}.passwordRevealBtn:focus{outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.16)}';
       document.head.appendChild(style);
     }
 
@@ -111,15 +312,11 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
     const toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'passwordRevealBtn';
-    toggle.textContent = '显示';
-    toggle.setAttribute('aria-label', '显示密码');
-    toggle.setAttribute('aria-pressed', 'false');
+    renderPasswordToggle(toggle);
     toggle.addEventListener('click', () => {
       const willShow = passwordInput.type === 'password';
       passwordInput.type = willShow ? 'text' : 'password';
-      toggle.textContent = willShow ? '隐藏' : '显示';
-      toggle.setAttribute('aria-label', willShow ? '隐藏密码' : '显示密码');
-      toggle.setAttribute('aria-pressed', String(willShow));
+      renderPasswordToggle(toggle);
     });
     wrapper.appendChild(toggle);
     passwordInput.dataset.toggleInstalled = 'true';
@@ -173,15 +370,15 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
     options.forEach((plan) => {
       const option = document.createElement('option');
       option.value = plan.value;
-      option.textContent = plan.label;
+      option.textContent = planCopy(plan, 'label');
       planEl.appendChild(option);
     });
     planEl.value = options.some((plan) => plan.value === current) ? current : options[0].value;
     const field = planEl.closest('.planField');
     if(field) field.hidden = product.billing === 'custom';
     if(planHint){
-      if(product.billing === 'yearly') planHint.textContent = '年付服务：两年9折，三年8折';
-      else if(product.billing === 'chatgpt') planHint.textContent = 'ChatGPT Plus 支持月付、三个月与年付套餐';
+      if(product.billing === 'yearly') planHint.textContent = orderText('yearlyHint');
+      else if(product.billing === 'chatgpt') planHint.textContent = orderText('chatgptHint');
       else planHint.textContent = '';
     }
   }
@@ -220,18 +417,18 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
       accountInput.required = showAccount;
       accountInput.disabled = !showAccount;
       if(mode === 'username'){
-        accountInput.placeholder = '3-10位数字字母组合，区分大小写';
+        accountInput.placeholder = orderText('usernamePlaceholder');
         accountInput.setAttribute('pattern', '[A-Za-z0-9]{3,10}');
         accountInput.setAttribute('minlength', '3');
         accountInput.setAttribute('maxlength', '10');
       }else{
-        accountInput.placeholder = '需要开通的账号';
+        accountInput.placeholder = orderText('accountPlaceholder');
         accountInput.removeAttribute('pattern');
         accountInput.removeAttribute('minlength');
         accountInput.removeAttribute('maxlength');
       }
     }
-    if(accountLabel) accountLabel.textContent = mode === 'username' ? '设置你的用户名' : '账号';
+    if(accountLabel) accountLabel.textContent = mode === 'username' ? orderText('usernameLabel') : orderText('accountLabel');
 
     if(passwordField) passwordField.hidden = !showPassword;
     if(passwordInput){
@@ -250,11 +447,11 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
 
   function planDiscountText(){
     const plan = selectedPlan();
-    return plan.discountLabel || '';
+    return planCopy(plan, 'discountLabel');
   }
 
   function cycleText(){
-    return selectedPlan().cycle || selectedProduct().cycle || '--';
+    return planCopy(selectedPlan(), 'cycle') || selectedProduct().cycle || '--';
   }
 
   function discountedCny(price){
@@ -277,16 +474,16 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
 
     syncCredentialFields();
     customWrap.classList.toggle('show', serviceEl.value === 'other');
-    originalPrice.textContent = price ? money(price) : '客服报价';
-    finalPrice.textContent = price ? (isUsdt ? usdtMoney(usdtDue) : money(price)) : '客服确认';
-    discount.textContent = isUsdt ? ((planDiscount ? planDiscount + ' + ' : '') + 'USDT 9折 · 汇率 ' + usdtRate().toFixed(2)) : (planDiscount || '无');
+    originalPrice.textContent = price ? money(price) : orderText('customQuote');
+    finalPrice.textContent = price ? (isUsdt ? usdtMoney(usdtDue) : money(price)) : orderText('customerConfirm');
+    discount.textContent = isUsdt ? ((planDiscount ? planDiscount + ' + ' : '') + orderText('usdtDiscount', { rate: usdtRate().toFixed(2) })) : (planDiscount || orderText('noDiscount'));
     if(rateNote){
       rateNote.hidden = !isUsdt || !price;
-      rateNote.textContent = price ? '折后人民币 ' + money(cnyDue) + '，按 6.85 汇率折算为 ' + usdtMoney(usdtDue) : '';
+      rateNote.textContent = price ? orderText('rateNote', { cny: money(cnyDue), usdt: usdtMoney(usdtDue) }) : '';
     }
-    if(summaryService) summaryService.textContent = product.label;
+    if(summaryService) summaryService.textContent = productLabel(serviceEl.value);
     if(summaryCycle) summaryCycle.textContent = cycleText();
-    if(summaryPayment) summaryPayment.textContent = isUsdt ? 'USDT' : '支付宝';
+    if(summaryPayment) summaryPayment.textContent = isUsdt ? 'USDT' : orderText('alipay');
   }
 
   function orderPayload(){
@@ -298,7 +495,7 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
     const data = new FormData(form);
     return {
       service: serviceEl.value,
-      serviceLabel: item.label,
+      serviceLabel: productLabel(serviceEl.value),
       cycle: cycleText(),
       originalAmount: price,
       discountedCnyAmount: isUsdt ? discountedCny(price) : 0,
@@ -323,24 +520,34 @@ const CUSTOM_PLAN = { value: 'custom', label: '客服报价', cycle: '客服报�
   serviceEl.addEventListener('change', updatePaymentInfo);
   customAmount.addEventListener('input', updatePaymentInfo);
   payMethods.forEach((item) => item.addEventListener('change', updatePaymentInfo));
+  window.addEventListener('maoyang:languagechange', () => {
+    refreshServiceOptionLabels();
+    const planLabel = document.querySelector('[data-plan-label]');
+    if(planLabel) planLabel.textContent = orderText('planLabel');
+    installRemarkHint();
+    applyStaticText();
+    syncPlanOptions();
+    updatePaymentInfo();
+    syncCredentialFields();
+  });
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const payload = orderPayload();
     if(!payload.contact){
-      setStatus('请填写联系方式。', true);
+      setStatus(orderText('contactMissing'), true);
       return;
     }
     if(needsUsername() && !validUsername(payload.account)){
-      setStatus('请填写 3-10 位数字字母组合用户名，区分大小写。', true);
+      setStatus(orderText('usernameMissing'), true);
       return;
     }
     if(needsAccountPassword() && (!payload.account || !payload.password)){
-      setStatus('请填写账号、密码和联系方式。', true);
+      setStatus(orderText('accountMissing'), true);
       return;
     }
     if(!payload.originalAmount){
-      setStatus('请填写客服报价金额。', true);
+      setStatus(orderText('amountMissing'), true);
       return;
     }
 
