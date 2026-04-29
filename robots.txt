@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin.html
+Disallow: /payment.html
+
+Sitemap: https://joinvip.vip/sitemap.xml

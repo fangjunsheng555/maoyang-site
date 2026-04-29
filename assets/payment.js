@@ -127,7 +127,7 @@
       disney: 'Disney+',
       hbomax: 'HBO Max',
       chatgpt: 'ChatGPT Plus',
-      network: 'Network Node Service',
+      network: 'VPN Service',
       other: 'Other Service / Custom Quote'
     }
   };
