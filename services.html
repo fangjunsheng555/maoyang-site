@@ -38,7 +38,12 @@
       ]
     }
   </script>
-  <style>.hero{--hero:url('assets/img/hero-visual.svg')}</style>
+  <style>
+    .hero.servicesHero{--hero:url('assets/img/hero-visual.svg');min-height:340px}
+    .servicesHero .inner{padding:86px 0 60px}
+    @media (max-width:920px){.hero.servicesHero{min-height:286px}.servicesHero .inner{padding:52px 0 44px}.servicesHero .subtitle{margin-top:12px;font-size:15px;line-height:1.65}}
+    @media (max-width:560px){.hero.servicesHero{min-height:276px}.servicesHero .title{font-size:38px}}
+  </style>
 </head>
 <body>
   <div class='shell container'>
@@ -49,12 +54,11 @@
         <button class='burger' data-burger aria-label='打开菜单'><span></span></button>
       </header>
 
-      <section class='hero'>
+      <section class='hero servicesHero'>
         <div class='inner'>
           <p class='eyebrow'>Membership Catalog</p>
           <h1 class='title'>购买服务</h1>
           <p class='subtitle'>Spotify、Netflix、ChatGPT、Disney+、hbomax、网络节点服务展示。如有疑问可联系我们的在线客服团队咨询</p>
-          <div class='heroActions'><a class='cta' href='#products'>查看服务</a><a class='ghostCta' href='about.html'>联系客服</a></div>
         </div>
       </section>
 

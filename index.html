@@ -48,7 +48,13 @@
       "inLanguage": ["zh-CN", "en"]
     }
   </script>
-  <style>.hero{--hero:url('assets/img/hero-visual.svg')}</style>
+  <style>
+    .hero.homeHero{--hero:url('assets/img/hero-visual.svg');min-height:540px}
+    .homeHero .inner{padding:94px 0 74px}
+    .homeHero .heroMetrics{margin-top:30px}
+    @media (max-width:920px){.hero.homeHero{min-height:430px}.homeHero .inner{padding:58px 0 50px}.homeHero .subtitle{margin-top:12px;font-size:15px;line-height:1.6}.homeHero .heroMetrics{margin-top:24px}}
+    @media (max-width:560px){.hero.homeHero{min-height:416px}.homeHero .title{font-size:38px}.homeHero .heroMetrics{gap:10px}.homeHero .heroMetrics b{font-size:21px}.homeHero .heroMetrics span{font-size:11.5px}}
+  </style>
 </head>
 <body>
   <div class='shell container'>
@@ -59,12 +65,11 @@
         <button class='burger' data-burger aria-label='打开菜单'><span></span></button>
       </header>
 
-      <section class='hero'>
+      <section class='hero homeHero'>
         <div class='inner'>
           <p class='eyebrow'>Maoyang Taiwan Inc.</p>
           <h1 class='title'>冒央会社</h1>
           <p class='subtitle'>一站式流媒体订阅，AI会员门户网站，成交只是开始，期待为阁下带来出众的网络服务体验</p>
-          <div class='heroActions'><a class='cta' href='services.html'>购买服务</a><a class='ghostCta' href='about.html'>联系客服</a></div>
           <div class='heroMetrics' aria-label='服务数据'>
             <span><b>5年+</b>会员服务经验</span><span><b>5w+</b>累计服务客户</span><span><b>10w+</b>累计订单销量</span><span><b>100%</b>好评反馈</span>
           </div>
