@@ -50,8 +50,15 @@ function orderMatches(order, query) {
   return idMatches(order, query) || contactExactMatches(order, query);
 }
 
-function publicOrder(order) {
+function matchType(order, query) {
+  if (idMatches(order, query)) return 'orderId';
+  if (contactExactMatches(order, query)) return 'contact';
+  return '';
+}
+
+function publicOrder(order, type) {
   const output = {
+    matchType: type || '',
     orderId: order.orderId || '',
     createdAt: order.createdAt || '',
     createdAtBeijing: order.createdAtBeijing || '',
@@ -113,7 +120,7 @@ module.exports = async function handler(req, res) {
     const matched = orders
       .filter((order) => orderMatches(order, query))
       .slice(0, 10)
-      .map(publicOrder);
+      .map((order) => publicOrder(order, matchType(order, query)));
 
     return res.status(200).json({ ok: true, configured: true, orders: matched });
   } catch (error) {

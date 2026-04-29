@@ -45,7 +45,9 @@
       shadowrocket: 'shadowrocket小火箭订阅',
       clash: 'Clash订阅',
       copy: '复制',
-      copied: '已复制'
+      copied: '已复制',
+      viewDetails: '查看完整订单',
+      hideDetails: '收起详情'
     },
     en: {
       kicker: 'Order Lookup',
@@ -82,7 +84,9 @@
       shadowrocket: 'Shadowrocket subscription',
       clash: 'Clash subscription',
       copy: 'Copy',
-      copied: 'Copied'
+      copied: 'Copied',
+      viewDetails: 'View full order',
+      hideDetails: 'Hide details'
     }
   };
 
@@ -103,7 +107,7 @@
     if(document.querySelector('[data-order-lookup-style]')) return;
     const style = document.createElement('style');
     style.dataset.orderLookupStyle = 'true';
-    style.textContent = '.lookupPanel{border:1px solid var(--line);border-radius:8px;background:linear-gradient(180deg,#fff,#fbfdfc);box-shadow:var(--shadow-sm);padding:28px;display:grid;gap:20px}.lookupIntro{display:grid;gap:8px}.lookupIntro h2{margin:0;color:var(--ink-soft);font-size:clamp(26px,3vw,36px);line-height:1.18;font-weight:950}.lookupIntro p{max-width:760px;margin:0;color:var(--muted);line-height:1.75}.lookupForm{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}.lookupLabel{display:block;color:#344054;font-size:13px;font-weight:900;grid-column:1/-1}.lookupForm input{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff;padding:13px 14px;color:var(--ink);font:inherit;outline:none}.lookupForm input:focus{border-color:rgba(15,118,110,.5);box-shadow:0 0 0 4px rgba(15,118,110,.1)}.lookupForm button,.lookupCopyBtn{border:0;border-radius:999px;background:var(--teal);color:#fff;font-weight:950;min-height:48px;padding:12px 22px;cursor:pointer;box-shadow:0 12px 24px rgba(15,118,110,.16)}.lookupForm button:disabled{opacity:.62;cursor:not-allowed}.lookupStatus{border-radius:8px;background:#ecfdf3;color:#065f46;padding:13px 15px;font-weight:850;line-height:1.6}.lookupStatus.warn{background:#fff7ed;color:#9a3412}.lookupResults{display:grid;gap:14px}.lookupCard{border:1px solid var(--line);border-radius:8px;background:#fff;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.05)}.lookupCardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px}.lookupCardHead h3{margin:0;color:var(--ink-soft);font-size:20px;line-height:1.25}.lookupBadge{display:inline-flex;align-items:center;justify-content:center;min-height:30px;border-radius:999px;background:var(--teal-soft);color:var(--teal-dark);padding:5px 10px;font-size:12px;font-weight:950;white-space:nowrap}.lookupRows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px}.lookupRow{display:grid;gap:3px;border-bottom:1px solid rgba(217,227,224,.72);padding-bottom:9px}.lookupRow span{color:#667085;font-size:12px;font-weight:850}.lookupRow b{color:#172033;font-size:14px;line-height:1.55;overflow-wrap:anywhere}.lookupLinks{display:grid;gap:10px;margin-top:16px}.lookupLinksTitle{font-weight:950;color:var(--ink-soft)}.lookupLinkRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;background:#f8fbfa;padding:12px}.lookupLinkText{display:grid;gap:4px;min-width:0}.lookupLinkText span{font-size:12px;color:#0f766e;font-weight:950}.lookupLinkText a{color:#172033;font-weight:850;overflow-wrap:anywhere}.lookupCopyBtn{min-height:38px;background:#111827;padding:8px 14px;box-shadow:none}@media(max-width:720px){.lookupPanel{padding:22px}.lookupForm{grid-template-columns:1fr}.lookupRows{grid-template-columns:1fr}.lookupCardHead{display:grid}.lookupLinkRow{grid-template-columns:1fr}.lookupCopyBtn{width:100%}}';
+    style.textContent = '.lookupPanel{border:1px solid var(--line);border-radius:8px;background:linear-gradient(180deg,#fff,#fbfdfc);box-shadow:var(--shadow-sm);padding:28px;display:grid;gap:20px}.lookupIntro{display:grid;gap:8px}.lookupIntro h2{margin:0;color:var(--ink-soft);font-size:clamp(26px,3vw,36px);line-height:1.18;font-weight:950}.lookupIntro p{max-width:760px;margin:0;color:var(--muted);line-height:1.75}.lookupForm{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}.lookupLabel{display:block;color:#344054;font-size:13px;font-weight:900;grid-column:1/-1}.lookupForm input{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff;padding:13px 14px;color:var(--ink);font:inherit;outline:none}.lookupForm input:focus{border-color:rgba(15,118,110,.5);box-shadow:0 0 0 4px rgba(15,118,110,.1)}.lookupForm button,.lookupCopyBtn,.lookupDetailBtn{border:0;border-radius:999px;background:var(--teal);color:#fff;font-weight:950;min-height:48px;padding:12px 22px;cursor:pointer;box-shadow:0 12px 24px rgba(15,118,110,.16)}.lookupForm button:disabled{opacity:.62;cursor:not-allowed}.lookupStatus{border-radius:8px;background:#ecfdf3;color:#065f46;padding:13px 15px;font-weight:850;line-height:1.6}.lookupStatus.warn{background:#fff7ed;color:#9a3412}.lookupResults{display:grid;gap:14px}.lookupCard{border:1px solid var(--line);border-radius:8px;background:#fff;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.05)}.lookupCardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px}.lookupCardHead h3{margin:0;color:var(--ink-soft);font-size:20px;line-height:1.25}.lookupBadge{display:inline-flex;align-items:center;justify-content:center;min-height:30px;border-radius:999px;background:var(--teal-soft);color:var(--teal-dark);padding:5px 10px;font-size:12px;font-weight:950;white-space:nowrap}.lookupRows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px}.lookupSummary{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}.lookupRow{display:grid;gap:3px;border-bottom:1px solid rgba(217,227,224,.72);padding-bottom:9px}.lookupRow span{color:#667085;font-size:12px;font-weight:850}.lookupRow b{color:#172033;font-size:14px;line-height:1.55;overflow-wrap:anywhere}.lookupDetails{display:grid;gap:16px;margin-top:16px}.lookupDetails[hidden]{display:none!important}.lookupDetailBtn{margin-top:16px;min-height:40px;background:#111827;padding:9px 16px;box-shadow:none}.lookupLinks{display:grid;gap:10px;margin-top:16px}.lookupLinkRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;background:#f8fbfa;padding:12px}.lookupLinksTitle{font-weight:950;color:var(--ink-soft)}.lookupLinkText{display:grid;gap:4px;min-width:0}.lookupLinkText span{font-size:12px;color:#0f766e;font-weight:950}.lookupLinkText a{color:#172033;font-weight:850;overflow-wrap:anywhere}.lookupCopyBtn{min-height:38px;background:#111827;padding:8px 14px;box-shadow:none}@media(max-width:920px){.lookupSummary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:720px){.lookupPanel{padding:22px}.lookupForm{grid-template-columns:1fr}.lookupRows,.lookupSummary{grid-template-columns:1fr}.lookupCardHead{display:grid}.lookupLinkRow{grid-template-columns:1fr}.lookupCopyBtn,.lookupDetailBtn{width:100%}}';
     document.head.appendChild(style);
   }
 
@@ -188,6 +192,72 @@
     parent.appendChild(item);
   }
 
+  function amountText(order){
+    return money(order.finalAmount, order.currency === 'USDT' || order.paymentMethod === 'usdt' ? 'USDT' : 'CNY');
+  }
+
+  function renderSummary(order){
+    const summary = document.createElement('div');
+    summary.className = 'lookupRows lookupSummary';
+    summary.append(row(t('service'), serviceName(order)));
+    summary.append(row(t('orderId'), safe(order.orderId)));
+    summary.append(row(t('time'), safe(order.createdAtBeijing || order.createdAt)));
+    summary.append(row(t('amount'), amountText(order)));
+    return summary;
+  }
+
+  function renderDetailRows(order){
+    const rows = document.createElement('div');
+    rows.className = 'lookupRows';
+    rows.append(row(t('orderId'), safe(order.orderId)));
+    rows.append(row(t('time'), safe(order.createdAtBeijing || order.createdAt)));
+    rows.append(row(t('service'), serviceName(order)));
+    rows.append(row(t('cycle'), safe(order.cycle)));
+    rows.append(row(t('payment'), paymentName(order)));
+    rows.append(row(t('amount'), amountText(order)));
+    rows.append(row(t('originalAmount'), money(order.originalAmount, 'CNY')));
+    if(order.paymentMethod === 'usdt'){
+      rows.append(row(t('discountedCny'), money(order.discountedCnyAmount, 'CNY')));
+      rows.append(row(t('exchangeRate'), order.exchangeRate ? ('1 USDT = ' + order.exchangeRate + ' CNY') : t('none')));
+    }
+
+    if(order.service === 'network'){
+      rows.append(row(t('username'), safe(order.account)));
+    }else{
+      rows.append(row(t('account'), safe(order.account)));
+      if(order.passwordHidden){
+        rows.append(row(t('password'), t('passwordHidden')));
+      }else if(order.password){
+        rows.append(row(t('password'), order.password));
+      }
+    }
+    rows.append(row(t('contact'), safe(order.contact)));
+    rows.append(row(t('remark'), safe(order.remark)));
+    return rows;
+  }
+
+  function renderLinks(order){
+    if(!order.subscriptionLinks || (!order.subscriptionLinks.shadowrocket && !order.subscriptionLinks.clash)) return null;
+    const links = document.createElement('div');
+    links.className = 'lookupLinks';
+    const linksTitle = document.createElement('div');
+    linksTitle.className = 'lookupLinksTitle';
+    linksTitle.textContent = t('linksTitle');
+    links.appendChild(linksTitle);
+    if(order.subscriptionLinks.shadowrocket) renderLink(links, t('shadowrocket'), order.subscriptionLinks.shadowrocket);
+    if(order.subscriptionLinks.clash) renderLink(links, t('clash'), order.subscriptionLinks.clash);
+    return links;
+  }
+
+  function renderDetails(order){
+    const details = document.createElement('div');
+    details.className = 'lookupDetails';
+    details.appendChild(renderDetailRows(order));
+    const links = renderLinks(order);
+    if(links) details.appendChild(links);
+    return details;
+  }
+
   function renderOrders(orders){
     lastOrders = orders || [];
     resultsBox.innerHTML = '';
@@ -209,46 +279,23 @@
       badge.className = 'lookupBadge';
       badge.textContent = order.orderId || '--';
       head.append(title, badge);
+      card.appendChild(head);
 
-      const rows = document.createElement('div');
-      rows.className = 'lookupRows';
-      rows.append(row(t('orderId'), safe(order.orderId)));
-      rows.append(row(t('time'), safe(order.createdAtBeijing || order.createdAt)));
-      rows.append(row(t('service'), serviceName(order)));
-      rows.append(row(t('cycle'), safe(order.cycle)));
-      rows.append(row(t('payment'), paymentName(order)));
-      rows.append(row(t('amount'), money(order.finalAmount, order.currency === 'USDT' || order.paymentMethod === 'usdt' ? 'USDT' : 'CNY')));
-      rows.append(row(t('originalAmount'), money(order.originalAmount, 'CNY')));
-      if(order.paymentMethod === 'usdt'){
-        rows.append(row(t('discountedCny'), money(order.discountedCnyAmount, 'CNY')));
-        rows.append(row(t('exchangeRate'), order.exchangeRate ? ('1 USDT = ' + order.exchangeRate + ' CNY') : t('none')));
-      }
-
-      if(order.service === 'network'){
-        rows.append(row(t('username'), safe(order.account)));
+      if(order.matchType === 'contact'){
+        card.appendChild(renderSummary(order));
+        const details = renderDetails(order);
+        details.hidden = true;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'lookupDetailBtn';
+        button.textContent = t('viewDetails');
+        button.addEventListener('click', () => {
+          details.hidden = !details.hidden;
+          button.textContent = details.hidden ? t('viewDetails') : t('hideDetails');
+        });
+        card.append(button, details);
       }else{
-        rows.append(row(t('account'), safe(order.account)));
-        if(order.passwordHidden){
-          rows.append(row(t('password'), t('passwordHidden')));
-        }else if(order.password){
-          rows.append(row(t('password'), order.password));
-        }
-      }
-      rows.append(row(t('contact'), safe(order.contact)));
-      rows.append(row(t('remark'), safe(order.remark)));
-
-      card.append(head, rows);
-
-      if(order.subscriptionLinks && (order.subscriptionLinks.shadowrocket || order.subscriptionLinks.clash)){
-        const links = document.createElement('div');
-        links.className = 'lookupLinks';
-        const linksTitle = document.createElement('div');
-        linksTitle.className = 'lookupLinksTitle';
-        linksTitle.textContent = t('linksTitle');
-        links.appendChild(linksTitle);
-        if(order.subscriptionLinks.shadowrocket) renderLink(links, t('shadowrocket'), order.subscriptionLinks.shadowrocket);
-        if(order.subscriptionLinks.clash) renderLink(links, t('clash'), order.subscriptionLinks.clash);
-        card.appendChild(links);
+        card.appendChild(renderDetails(order));
       }
 
       resultsBox.appendChild(card);

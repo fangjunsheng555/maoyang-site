@@ -61,7 +61,7 @@ const ORDER_TEXT = {
     accountPlaceholder: '需要开通的账号',
     customAmountLabel: '报价金额',
     contactLabel: '联系方式',
-    contactNote: '请准确填写，客服订单核实凭证并可用于日后订单查询。',
+    contactNote: '*请准确填写，客服订单核实凭证并可用于日后订单查询；',
     serviceLabel: '会员服务',
     paymentTitle: '支付方式',
     summaryTitle: '订单摘要',
@@ -104,7 +104,7 @@ const ORDER_TEXT = {
     accountPlaceholder: 'Account to activate',
     customAmountLabel: 'Quoted Amount',
     contactLabel: 'Contact Information',
-    contactNote: 'Please enter this accurately. Support uses it to verify your order, and it can be used for future order lookup.',
+    contactNote: '*Please enter this accurately. Support uses it to verify your order, and it can be used for future order lookup.',
     serviceLabel: 'Membership Service',
     paymentTitle: 'Payment Method',
     summaryTitle: 'Order Summary',
@@ -249,15 +249,18 @@ function planCopy(plan, field){
     if(!document.querySelector('[data-contact-note-style]')){
       const style = document.createElement('style');
       style.dataset.contactNoteStyle = 'true';
-      style.textContent = '.contactNote{display:block;margin-top:2px;color:#b42318;background:#fff4f3;border-left:3px solid #e5484d;border-radius:6px;padding:8px 10px;font-size:12px;font-weight:900;line-height:1.55}.contactNote[hidden]{display:none!important}';
+      style.textContent = '.contactInlineNote{color:#c42121;font-size:12px;font-weight:950;line-height:1.35}.field label.contactLabelWithNote{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}.field label.contactLabelWithNote .contactInlineNote{flex:1 1 260px}@media(max-width:560px){.field label.contactLabelWithNote{display:grid;gap:4px}}';
       document.head.appendChild(style);
     }
-    let note = contactField.querySelector('[data-contact-note]');
+    const label = contactField.querySelector("label[for='contact']");
+    if(!label) return;
+    label.classList.add('contactLabelWithNote');
+    let note = label.querySelector('[data-contact-note]');
     if(!note){
-      note = document.createElement('small');
-      note.className = 'contactNote';
+      note = document.createElement('span');
+      note.className = 'contactInlineNote';
       note.dataset.contactNote = 'true';
-      contactInput.insertAdjacentElement('afterend', note);
+      label.appendChild(note);
     }
     note.textContent = orderText('contactNote');
   }
@@ -279,7 +282,7 @@ function planCopy(plan, field){
     if(serviceLabelNode) serviceLabelNode.textContent = orderText('serviceLabel');
     if(customAmountLabel) customAmountLabel.textContent = orderText('customAmountLabel');
     if(passwordLabel) passwordLabel.textContent = orderLang() === 'en' ? 'Password' : '密码';
-    if(contactLabel) contactLabel.textContent = orderText('contactLabel');
+    if(contactLabel) contactLabel.firstChild ? contactLabel.firstChild.textContent = orderText('contactLabel') : contactLabel.textContent = orderText('contactLabel');
     installContactNote();
     if(customAmount) customAmount.placeholder = orderLang() === 'en' ? 'Amount quoted by support' : '填写客服报价金额';
     if(passwordInput) passwordInput.placeholder = orderLang() === 'en' ? 'Account password' : '账号密码';
