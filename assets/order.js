@@ -289,7 +289,7 @@ function planCopy(plan, field){
 
     const payLabels = Array.from(document.querySelectorAll('.payTabs label span'));
     setHtml(payLabels[0], orderText('alipayTitle'));
-    setHtml(payLabels[1], orderText('usdtTitle') + '<small>' + orderText('usdtHint') + '</small>');
+    setHtml(payLabels[1], orderText('usdtTitle') + ' <small>' + orderText('usdtHint') + '</small>');
 
     const amountRows = Array.from(document.querySelectorAll('.amountPanel .amountRow span'));
     if(amountRows[0]) amountRows[0].textContent = orderText('originalPrice');
