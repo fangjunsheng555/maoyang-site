@@ -61,6 +61,7 @@ const ORDER_TEXT = {
     accountPlaceholder: '需要开通的账号',
     customAmountLabel: '报价金额',
     contactLabel: '联系方式',
+    contactNote: '请准确填写，客服订单核实凭证并可用于日后订单查询。',
     serviceLabel: '会员服务',
     paymentTitle: '支付方式',
     summaryTitle: '订单摘要',
@@ -103,6 +104,7 @@ const ORDER_TEXT = {
     accountPlaceholder: 'Account to activate',
     customAmountLabel: 'Quoted Amount',
     contactLabel: 'Contact Information',
+    contactNote: 'Please enter this accurately. Support uses it to verify your order, and it can be used for future order lookup.',
     serviceLabel: 'Membership Service',
     paymentTitle: 'Payment Method',
     summaryTitle: 'Order Summary',
@@ -173,6 +175,7 @@ function planCopy(plan, field){
   const remarkInput = form.querySelector('#remark');
   const accountField = accountInput ? accountInput.closest('.field') : null;
   const passwordField = passwordInput ? passwordInput.closest('.field') : null;
+  const contactField = contactInput ? contactInput.closest('.field') : null;
   const accountLabel = form.querySelector("label[for='account']");
   const remarkLabel = form.querySelector("label[for='remark']");
   const customWrap = document.querySelector('[data-custom-amount-wrap]');
@@ -192,6 +195,7 @@ function planCopy(plan, field){
   installServiceOptions();
   installPlanField();
   installRemarkHint();
+  installContactNote();
   installPasswordToggle();
   installValidityMessages();
   applyStaticText();
@@ -240,6 +244,24 @@ function planCopy(plan, field){
     if(remarkInput) remarkInput.placeholder = orderText('remarkPlaceholder');
   }
 
+  function installContactNote(){
+    if(!contactField || !contactInput) return;
+    if(!document.querySelector('[data-contact-note-style]')){
+      const style = document.createElement('style');
+      style.dataset.contactNoteStyle = 'true';
+      style.textContent = '.contactNote{display:block;margin-top:2px;color:#b42318;background:#fff4f3;border-left:3px solid #e5484d;border-radius:6px;padding:8px 10px;font-size:12px;font-weight:900;line-height:1.55}.contactNote[hidden]{display:none!important}';
+      document.head.appendChild(style);
+    }
+    let note = contactField.querySelector('[data-contact-note]');
+    if(!note){
+      note = document.createElement('small');
+      note.className = 'contactNote';
+      note.dataset.contactNote = 'true';
+      contactInput.insertAdjacentElement('afterend', note);
+    }
+    note.textContent = orderText('contactNote');
+  }
+
   function setHtml(node, value){
     if(node) node.innerHTML = value;
   }
@@ -258,6 +280,7 @@ function planCopy(plan, field){
     if(customAmountLabel) customAmountLabel.textContent = orderText('customAmountLabel');
     if(passwordLabel) passwordLabel.textContent = orderLang() === 'en' ? 'Password' : '密码';
     if(contactLabel) contactLabel.textContent = orderText('contactLabel');
+    installContactNote();
     if(customAmount) customAmount.placeholder = orderLang() === 'en' ? 'Amount quoted by support' : '填写客服报价金额';
     if(passwordInput) passwordInput.placeholder = orderLang() === 'en' ? 'Account password' : '账号密码';
 
