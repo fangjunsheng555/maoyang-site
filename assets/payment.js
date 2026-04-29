@@ -193,10 +193,6 @@
     if(usernameDetail) usernameDetail.textContent = tr('usernameLabel');
     if(detailRows[detailRows.length - 1]) detailRows[detailRows.length - 1].textContent = tr('contact');
 
-    const actions = Array.from(document.querySelectorAll('.paymentActions a'));
-    if(actions[0]) actions[0].textContent = tr('backToEdit');
-    if(actions[1]) actions[1].textContent = tr('contactSupport');
-
     const walletLines = Array.from(document.querySelectorAll('.walletLine'));
     setLinePrefix(walletLines[0], tr('network'));
     setLinePrefix(walletLines[1], tr('address'));
