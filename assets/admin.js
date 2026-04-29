@@ -21,13 +21,19 @@
     return '￥' + safe(order.finalAmount);
   }
 
+  function orderTime(order){
+    if(order.createdAtBeijing) return order.createdAtBeijing;
+    if(!order.createdAt) return '';
+    return new Date(order.createdAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) + ' 北京时间';
+  }
+
   function render(orders){
     tableBody.innerHTML = '';
     emptyState.hidden = orders.length > 0;
     orders.forEach((order) => {
       const tr = document.createElement('tr');
       const values = [
-        order.createdAt ? new Date(order.createdAt).toLocaleString('zh-CN') : '',
+        orderTime(order),
         order.orderId,
         order.serviceLabel,
         order.paymentMethod === 'usdt' ? 'USDT' : '支付宝',

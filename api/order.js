@@ -29,6 +29,25 @@ function subscriptionLinks(username) {
   };
 }
 
+function pad2(value) {
+  return String(value).padStart(2, '0');
+}
+
+function formatBeijingTime(value = new Date()) {
+  const date = value instanceof Date ? value : new Date(value);
+  const timestamp = Number.isNaN(date.getTime()) ? Date.now() : date.getTime();
+  const beijing = new Date(timestamp + 8 * 60 * 60 * 1000);
+  return [
+    beijing.getUTCFullYear(),
+    pad2(beijing.getUTCMonth() + 1),
+    pad2(beijing.getUTCDate())
+  ].join('-') + ' ' + [
+    pad2(beijing.getUTCHours()),
+    pad2(beijing.getUTCMinutes()),
+    pad2(beijing.getUTCSeconds())
+  ].join(':') + ' 北京时间 (UTC+8)';
+}
+
 function redisConfig() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -62,9 +81,10 @@ async function saveOrder(order) {
 
 function orderText(order) {
   const paymentName = order.paymentMethod === 'usdt' ? 'USDT' : '支付宝';
+  const displayTime = order.createdAtBeijing || formatBeijingTime(order.createdAt);
   const lines = [
     '新订单 ' + order.orderId,
-    '时间: ' + order.createdAt,
+    '时间: ' + displayTime,
     '服务: ' + order.serviceLabel,
     '周期: ' + order.cycle,
     '支付: ' + paymentName,
@@ -147,9 +167,11 @@ module.exports = async function handler(req, res) {
   }
 
   const orderId = 'MY' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+  const now = new Date();
   const order = {
     orderId,
-    createdAt: new Date().toISOString(),
+    createdAt: now.toISOString(),
+    createdAtBeijing: formatBeijingTime(now),
     service: clean(body.service, 40),
     serviceLabel: clean(body.serviceLabel, 80),
     cycle: clean(body.cycle, 40),
