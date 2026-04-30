@@ -32,6 +32,7 @@
     .amountPanel{display:grid;gap:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper-soft);padding:16px;margin-bottom:18px}.amountRow{display:flex;align-items:center;justify-content:space-between;gap:16px;color:#344054;font-weight:850}.amountRow strong{color:var(--ink);font-size:26px;line-height:1;text-align:right}.discountText{color:var(--teal-dark);font-weight:950;text-align:right}.rateNote{border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font-size:13px;font-weight:850;line-height:1.55}.summaryList{display:grid;gap:12px}.summaryItem{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding-bottom:12px;color:#344054;font-weight:850}.summaryItem:last-child{border-bottom:0;padding-bottom:0}.summaryItem b{text-align:right;color:var(--ink)}
     .submitBtn{border:0;border-radius:999px;background:var(--teal);color:#fff;font-weight:950;min-height:46px;padding:12px 18px;cursor:pointer;box-shadow:0 12px 24px rgba(15,118,110,.2);width:100%;margin-top:18px}.statusBox{display:none;margin-top:16px;border-radius:8px;padding:14px 16px;background:#ecfdf3;color:#065f46;font-weight:850;white-space:pre-wrap}.statusBox.show{display:block}.statusBox.warn{background:#fff7ed;color:#9a3412}.customAmount{display:none}.customAmount.show{display:grid}.orderFooterActions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.orderFooterActions .ghostCta{color:var(--ink);border-color:var(--line);background:#fff}
     @media (max-width:920px){#orderForm{padding-top:26px}.orderWrap{grid-template-columns:1fr}.formGrid{grid-template-columns:1fr}.orderBox{padding:22px}.payTabs{grid-template-columns:1fr}.orderHero{min-height:286px}.orderHero .inner{padding:52px 0 44px}.orderHero .subtitle{margin-top:12px;font-size:15px;line-height:1.65}.amountRow strong{font-size:23px}}
+    @media (max-width:760px){.paymentHeading,.orderBox .payTabs,.orderBox .submitBtn{display:none!important}}
   </style>
 </head>
 <body>
@@ -89,7 +90,7 @@
                   </div>
                 </div>
 
-                <h2 style='margin-top:26px'>支付方式</h2>
+                <h2 class='paymentHeading' style='margin-top:26px'>支付方式</h2>
                 <div class='payTabs'>
                   <label><span>支付宝/Alipay扫码支付</span><input type='radio' name='paymentMethod' value='alipay' checked data-pay-method></label>
                   <label><span>USDT 支付<small>9 折优惠</small></span><input type='radio' name='paymentMethod' value='usdt' data-pay-method></label>
