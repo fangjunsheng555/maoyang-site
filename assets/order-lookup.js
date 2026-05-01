@@ -206,15 +206,18 @@
     return summary;
   }
 
-  function renderDetailRows(order){
+  function renderDetailRows(order, options = {}){
+    const omitSummaryFields = options.omitSummaryFields === true;
     const rows = document.createElement('div');
     rows.className = 'lookupRows';
-    rows.append(row(t('orderId'), safe(order.orderId)));
-    rows.append(row(t('time'), safe(order.createdAtBeijing || order.createdAt)));
-    rows.append(row(t('service'), serviceName(order)));
+    if(!omitSummaryFields){
+      rows.append(row(t('orderId'), safe(order.orderId)));
+      rows.append(row(t('time'), safe(order.createdAtBeijing || order.createdAt)));
+      rows.append(row(t('service'), serviceName(order)));
+    }
     rows.append(row(t('cycle'), safe(order.cycle)));
     rows.append(row(t('payment'), paymentName(order)));
-    rows.append(row(t('amount'), amountText(order)));
+    if(!omitSummaryFields) rows.append(row(t('amount'), amountText(order)));
     rows.append(row(t('originalAmount'), money(order.originalAmount, 'CNY')));
     if(order.paymentMethod === 'usdt'){
       rows.append(row(t('discountedCny'), money(order.discountedCnyAmount, 'CNY')));
@@ -249,10 +252,10 @@
     return links;
   }
 
-  function renderDetails(order){
+  function renderDetails(order, options = {}){
     const details = document.createElement('div');
     details.className = 'lookupDetails';
-    details.appendChild(renderDetailRows(order));
+    details.appendChild(renderDetailRows(order, options));
     const links = renderLinks(order);
     if(links) details.appendChild(links);
     return details;
@@ -283,7 +286,7 @@
 
       if(order.matchType === 'contact'){
         card.appendChild(renderSummary(order));
-        const details = renderDetails(order);
+        const details = renderDetails(order, { omitSummaryFields: true });
         details.hidden = true;
         const button = document.createElement('button');
         button.type = 'button';
