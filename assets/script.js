@@ -2,25 +2,25 @@
   var contacts=[['QQ','2802632995'],['WhatsApp','+1 4315093334'],['Telegram','+44 7707489977']];
   var media={spotify:'assets/img/product-spotify.jpg',netflix:'assets/img/product-netflix.jpg',chatgpt:'assets/img/product-chatgpt.jpg',disney:'assets/img/product-disney.jpg',hbomax:'assets/img/product-hbomax.jpg',network:'assets/img/product-network.jpg',hero:'assets/img/hero-membership.jpg',support:'assets/img/service-premium.jpg',company:'assets/img/company-premium.jpg'};
   var extra=[
-    ['disney','productDisney','Disney+','Disney+','年付','年付108','独立车位全球可用4K杜比套餐',['4K杜比','位置上锁','不被挤不排队'],'4K画质，杜比音效，离线下载，全球可用不限制地区，顶规4K杜比套餐，4人一车绝不超售，高峰不排队不被挤，位置可上锁，用户互不干扰，如需购买整号请联系在线客服'],
-    ['hbomax','productHbomax','HBO Max','HBO Max','年付','年付148','独立车位全球可用4K杜比套餐',['4K杜比','全球可用','实时售后保障'],'4K画质，杜比音效，离线下载，全球可用不限制地区，顶规4K杜比套餐，4人一车绝不超售，高峰不排队不被挤，位置可上锁，用户互不干扰，如需购买整号请联系在线客服'],
-    ['network','productNetwork','VPN','网络节点服务','年付','年付99','不限设备·不限流量·最高5Gbps·解锁全球平台',['不限设备/流量','高速稳定多节点','全加密无日志'],'大厂机房多线路，最高5Gbps带宽，解锁所有流媒体/AI/社交软件，高峰不卡顿']
+    ['disney','productDisney','Disney+','Disney+','年付','4K杜比套餐一人一位，年108','4K杜比套餐一人一位，4K 画质、杜比音效、离线下载与位置上锁。',['4K杜比','位置上锁','不被挤不排队'],'4K画质，杜比音效，离线下载，全球可用不限制地区，顶规4K杜比套餐，4人一车绝不超售，高峰不排队不被挤，位置可上锁，用户互不干扰，如需购买整号请联系在线客服'],
+    ['hbomax','productHbomax','HBO Max','HBO Max','年付','4K杜比套餐一人一位，年148','4K杜比套餐一人一位，4K 画质、杜比音效、离线下载与位置上锁。',['4K杜比','全球可用','实时售后保障'],'4K画质，杜比音效，离线下载，全球可用不限制地区，顶规4K杜比套餐，4人一车绝不超售，高峰不排队不被挤，位置可上锁，用户互不干扰，如需购买整号请联系在线客服'],
+    ['network','productNetwork','VPN','网络节点服务','年付','不限流量不限设备，年99','不限流量不限设备，最高5Gbps，解锁全球平台',['不限设备/流量','高速稳定多节点','全加密无日志'],'大厂机房多线路，最高5Gbps带宽，解锁所有流媒体/AI/社交软件，高峰不卡顿']
   ];
   var enProducts={
     productSpotify:['Annual','Premium family plan in high-value US/EU/JP regions, ¥128/year',['Lossless audio','Podcasts','Offline downloads','Playlist mix','DJX feature','Full music library'],'Includes available Spotify Premium features. Individual, Duo, and Family options are available on request.'],
-    productNetflix:['Annual','High-value region, one profile per user, ¥168/year',['4K quality','Dolby audio','Offline downloads','Profile lock','Netflix games'],'Dedicated line option for mainland users supports fast 4K streaming and stable daily use.'],
+    productNetflix:['Annual','Global 4K Dolby plan, one profile per user, ¥168/year',['4K quality','Dolby audio','Offline downloads','Profile lock','Netflix games'],'Dedicated line option for mainland users supports fast 4K streaming and stable daily use.'],
     productChatgpt:['Monthly','Dedicated account use, ¥75/month',['codeX','5.5+ access','High-quality VPN route'],'ChatGPT Plus includes a low-risk dedicated line for smoother model performance.'],
-    productDisney:['Annual','Independent profile, global 4K Dolby plan, ¥108/year',['4K Dolby','Profile lock','No crowding or queueing'],'Global 4K Dolby access with profile lock, offline downloads, and stable peak-hour use.'],
-    productHbomax:['Annual','Independent profile, global 4K Dolby plan, ¥148/year',['4K Dolby','Global availability','After-sales support'],'Global 4K Dolby access with responsive support and no overselling.'],
-    productNetwork:['Annual','Unlimited devices and traffic, up to 5Gbps, ¥99/year',['Unlimited devices/traffic','Stable multi-node access','Encrypted and no logs'],'Multi-line VPN routes unlock streaming, AI, and social platforms with smooth peak-hour performance.']
+    productDisney:['Annual','Global 4K Dolby plan, one profile per user, ¥108/year',['4K Dolby','Profile lock','No crowding or queueing'],'Global 4K Dolby access with profile lock, offline downloads, and stable peak-hour use.','Global 4K Dolby plan, one profile per user, 4K quality, Dolby audio, offline downloads, and profile lock.'],
+    productHbomax:['Annual','Global 4K Dolby plan, one profile per user, ¥148/year',['4K Dolby','Global availability','After-sales support'],'Global 4K Dolby access with responsive support and no overselling.','Global 4K Dolby plan, one profile per user, 4K quality, Dolby audio, offline downloads, and profile lock.'],
+    productNetwork:['Annual','Unlimited traffic and devices, up to 5Gbps, ¥99/year',['Unlimited devices/traffic','Stable multi-node access','Encrypted and no logs'],'Multi-line VPN routes unlock streaming, AI, and social platforms with smooth peak-hour performance.','Unlimited traffic and devices, up to 5Gbps, with access to global platforms.']
   };
   var enNames={productSpotify:'Spotify Premium',productNetflix:'Netflix Premium',productChatgpt:'ChatGPT Plus',productDisney:'Disney+',productHbomax:'HBO Max',productNetwork:'VPN Service'};
   var tileEn={
     spotify:['Spotify','Spotify Premium','Premium family plan in high-value US/EU/JP regions with lossless audio, podcasts, offline downloads, and a full music library.'],
-    netflix:['Netflix','Netflix Premium','One dedicated profile in a high-value region with 4K quality, Dolby audio, offline downloads, and profile lock.'],
+    netflix:['Netflix','Netflix Premium','Global 4K Dolby plan, one profile per user, with 4K quality, Dolby audio, offline downloads, and profile lock.'],
     chatgpt:['AI','ChatGPT Plus','Dedicated account use with official paid access and a low-risk dedicated VPN route for a smoother experience.'],
-    disney:['Disney+','Disney+','Independent profile with global 4K Dolby access, profile lock, and stable peak-hour use.'],
-    hbomax:['HBO Max','HBO Max','Independent global 4K Dolby profile with responsive support and no overselling.'],
+    disney:['Disney+','Disney+','Global 4K Dolby plan, one profile per user, with 4K quality, Dolby audio, offline downloads, and profile lock.'],
+    hbomax:['HBO Max','HBO Max','Global 4K Dolby plan, one profile per user, with 4K quality, Dolby audio, offline downloads, and profile lock.'],
     network:['VPN','VPN Service','Unlimited devices and traffic, up to 5Gbps, with access to global streaming, AI, and social platforms.']
   };
   var langKey='maoyangLang',lang=(localStorage.getItem(langKey)||'').match(/^(zh|en)$/)?localStorage.getItem(langKey):(/^zh/i.test(navigator.language||'')?'zh':'en');
@@ -53,7 +53,7 @@
   function addCards(){
     var contact=one('.contactPanel'),products=one('#products');if(contact&&products){var sec=contact.closest('.section');sec?sec.remove():contact.remove()}
     var home=one('.tile')&&one('.tile').parentElement;if(home)extra.forEach(function(p){if(one('[data-extra-tile="'+p[0]+'"]',home))return;var a=document.createElement('a');a.className='tile';a.href='services.html#service-'+p[0];a.dataset.extraTile=p[0];a.innerHTML="<img src='"+media[p[0]]+"' alt='"+p[3]+"' loading='lazy'><div class='tileBody'><span class='serviceTag'>"+p[2]+"</span><h3>"+p[3]+"</h3><p>"+p[6]+"</p></div>";home.appendChild(a)});
-    var grid=one('#products .grid3');if(grid)extra.forEach(function(p){if(one('.'+p[1],grid))return;var c=document.createElement('article');c.className='card productCard '+p[1];c.innerHTML="<img src='"+media[p[0]]+"' alt='"+p[3]+"' loading='lazy'><div class='pad'><div class='productTop'><span class='brandPill'>"+p[2]+"</span><span class='miniPill'>"+p[4]+"</span></div><h2>"+p[3]+"</h2><p class='price'>"+p[5]+"</p><p>"+p[6]+"</p><ul>"+p[7].map(function(v){return'<li>'+v+'</li>'}).join('')+"</ul><p>"+p[8]+"</p></div>";grid.appendChild(c)});
+    var grid=one('#products .grid3');if(grid)extra.forEach(function(p){if(one('.'+p[1],grid))return;var c=document.createElement('article'),intro=page()==='services.html'?'':"<p class='productIntro'>"+p[6]+"</p>";c.className='card productCard '+p[1];c.innerHTML="<img src='"+media[p[0]]+"' alt='"+p[3]+"' loading='lazy'><div class='pad'><div class='productTop'><span class='brandPill'>"+p[2]+"</span><span class='miniPill'>"+p[4]+"</span></div><h2>"+p[3]+"</h2><p class='price'>"+p[5]+"</p>"+intro+"<ul>"+p[7].map(function(v){return'<li>'+v+'</li>'}).join('')+"</ul><p class='productDetail'>"+p[8]+"</p></div>";grid.appendChild(c)});
     [['.productSpotify','spotify'],['.productNetflix','netflix'],['.productChatgpt','chatgpt'],['.productDisney','disney'],['.productHbomax','hbomax'],['.productNetwork','network']].forEach(function(p){var c=one(p[0]),pad=c&&one('.pad',c);if(!pad||one('[data-order-link]',pad))return;var a=document.createElement('a');a.className='cta';a.dataset.orderLink=p[1];a.href='order.html?service='+p[1];a.textContent='立即下单';var price=one('.price',pad);price?price.insertAdjacentElement('afterend',a):pad.appendChild(a)})
   }
   function productKeyFromText(v){v=String(v||'');if(/Spotify/i.test(v))return'spotify';if(/Netflix/i.test(v))return'netflix';if(/ChatGPT|Openai|AI/i.test(v))return'chatgpt';if(/Disney/i.test(v))return'disney';if(/HBO/i.test(v))return'hbomax';if(/网络|节点|Network/i.test(v))return'network';return''}
@@ -73,7 +73,7 @@
     order:{hero:['Order & Payment','Submit Order','Choose a membership service and payment method, then fill in the required order information. Contact support if you have any questions.','Fill Order','Contact Support']},
     payment:{hero:['Payment','Payment Confirmation','Complete payment using the QR code shown on this page. After payment, return and click “I have completed payment”.']}
   };
-  function productEnApply(){Object.keys(enProducts).forEach(function(k){var c=one('.'+k),d=enProducts[k];if(!c)return;text(one('h2',c),enNames[k]||'');text(one('.miniPill',c),d[0]);text(one('.price',c),d[1]);$('li',c).forEach(function(li,i){if(d[2][i])text(li,d[2][i])});var ps=$('.pad>p:not(.price)',c);if(ps[0])text(ps[ps.length>1?1:0],d[3])});$('[data-order-link]').forEach(function(a){text(a,'Order Now')})}
+  function productEnApply(){Object.keys(enProducts).forEach(function(k){var c=one('.'+k),d=enProducts[k];if(!c)return;text(one('h2',c),enNames[k]||'');text(one('.miniPill',c),d[0]);text(one('.price',c),d[1]);$('li',c).forEach(function(li,i){if(d[2][i])text(li,d[2][i])});var intro=one('.productIntro',c),detail=one('.productDetail',c);if(intro&&d[4])text(intro,d[4]);if(detail)text(detail,d[3]);else{var ps=$('.pad>p:not(.price)',c);if(ps[0])text(ps[ps.length>1?1:0],d[3])}});$('[data-order-link]').forEach(function(a){text(a,'Order Now')})}
   function tileEnApply(){$('.tile').forEach(function(t){var key=t.dataset.extraTile||productKeyFromText((one('h3',t)||{}).textContent||(one('.serviceTag',t)||{}).textContent),d=tileEn[key];if(!d)return;text(one('.serviceTag',t),d[0]);text(one('h3',t),d[1]);text(one('p',t),d[2])})}
   function metricEnApply(){var labels=['Years of service','Customers served','Orders completed','Positive feedback'],nums=['5+','500k+','1M+','100%'];$('.heroMetrics span').forEach(function(s,i){keep(s,'zhHtml',s.innerHTML);if(lang==='zh'){s.innerHTML=s.dataset.zhHtml;return}s.innerHTML='<b>'+nums[i]+'</b>'+labels[i]})}
   function supportEnApply(){
