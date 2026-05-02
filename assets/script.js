@@ -75,7 +75,7 @@
   };
   function productEnApply(){Object.keys(enProducts).forEach(function(k){var c=one('.'+k),d=enProducts[k];if(!c)return;text(one('h2',c),enNames[k]||'');text(one('.miniPill',c),d[0]);text(one('.price',c),d[1]);$('li',c).forEach(function(li,i){if(d[2][i])text(li,d[2][i])});var ps=$('.pad>p:not(.price)',c);if(ps[0])text(ps[ps.length>1?1:0],d[3])});$('[data-order-link]').forEach(function(a){text(a,'Order Now')})}
   function tileEnApply(){$('.tile').forEach(function(t){var key=t.dataset.extraTile||productKeyFromText((one('h3',t)||{}).textContent||(one('.serviceTag',t)||{}).textContent),d=tileEn[key];if(!d)return;text(one('.serviceTag',t),d[0]);text(one('h3',t),d[1]);text(one('p',t),d[2])})}
-  function metricEnApply(){var labels=['Years of service','Customers served','Orders completed','Positive feedback'],nums=['5+','50k+','100k+','100%'];$('.heroMetrics span').forEach(function(s,i){keep(s,'zhHtml',s.innerHTML);if(lang==='zh'){s.innerHTML=s.dataset.zhHtml;return}s.innerHTML='<b>'+nums[i]+'</b>'+labels[i]})}
+  function metricEnApply(){var labels=['Years of service','Customers served','Orders completed','Positive feedback'],nums=['5+','500k+','1M+','100%'];$('.heroMetrics span').forEach(function(s,i){keep(s,'zhHtml',s.innerHTML);if(lang==='zh'){s.innerHTML=s.dataset.zhHtml;return}s.innerHTML='<b>'+nums[i]+'</b>'+labels[i]})}
   function supportEnApply(){
     $('.supportList span').forEach(function(s){if(/在线时间|Beijing Time|Online/i.test(s.textContent))text(s,'Online hours: 9:00 AM-11:00 PM Beijing Time')});
     $('.contactRows p').forEach(function(p){if(/在线时间|Beijing Time|Online/i.test(p.textContent))html(p,'Online hours: 9:00 AM-11:00 PM<small>Beijing Time 9:00 AM-11:00 PM UTC+8</small>')});
