@@ -1,0 +1,17 @@
+{
+  "name": "maoyang-site",
+  "version": "2.0.0",
+  "private": true,
+  "description": "冒央会社 - 高品质会员服务（静态站点 + Vercel API）",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'static site - no build step'",
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.16"
+  }
+}
