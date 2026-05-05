@@ -726,3 +726,199 @@ body.hasCartBar .toTop{bottom:calc(86px + env(safe-area-inset-bottom))}
   .section{padding:28px 0}
   .sectionTight{padding-top:24px}
 }
+
+/* Compact density pass */
+:root{--radius:8px;--shadow-sm:0 5px 16px rgba(15,23,42,.045);--shadow-md:0 10px 28px rgba(15,23,42,.08)}
+body{line-height:1.55}
+.container{padding:0 18px}
+.header{gap:12px;padding:8px 14px}
+.brand img{height:38px}
+.nav a{min-width:70px;padding:7px 12px;font-size:13px}
+.burger{width:38px;height:38px}
+.drawer .panel{padding:10px;border-radius:10px}
+.drawer nav{gap:5px;padding-top:8px}
+.drawer nav a{padding:9px 11px;border-radius:8px}
+.hero{min-height:260px}
+.hero .inner{padding:42px 0 30px}
+.eyebrow{margin-bottom:7px;font-size:11px}
+.hero .title{font-size:clamp(32px,5vw,56px);line-height:1.02}
+.hero .subtitle{margin-top:9px;font-size:14px;line-height:1.45}
+.heroActions{gap:8px;margin-top:14px}
+.cta,.ghostCta{min-height:40px;padding:9px 16px;font-size:13px}
+.heroMetrics{gap:8px;margin-top:14px}
+.heroMetrics span{min-height:40px;padding-right:8px;font-size:11px}
+.heroMetrics b{font-size:18px;margin-bottom:2px}
+.servicesHero{min-height:190px}
+.servicesHero .inner{padding:34px 0 26px}
+.section{padding:22px 0}
+.sectionTight{padding-top:14px}
+.sectionHead{margin-bottom:11px}
+.sectionHead .kicker{margin-bottom:4px}
+.sectionHead .kicker,.kicker{font-size:11px}
+.sectionHead h1,.sectionHead h2{font-size:clamp(20px,2.4vw,28px);line-height:1.16}
+.sectionHead p{margin-top:5px;font-size:12.5px;line-height:1.45}
+.grid3,.grid2{gap:9px}
+.tileBody{padding:11px}
+.tile img{aspect-ratio:16/9}
+.tileBody h3{font-size:15.5px;line-height:1.16}
+.tileBody p{margin-top:5px;font-size:12px;line-height:1.42;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.serviceTag{margin-bottom:6px;padding:3px 8px;font-size:10.5px}
+.card .pad{padding:13px}
+.card h2{margin-bottom:7px;font-size:18px}
+.pbox{padding:13px;font-size:13px;line-height:1.6}
+.storyGrid .storyBox{padding:14px 16px}
+.storyGrid .storyLead,.storyLead{font-size:13px;line-height:1.62}
+.contactPanel{padding:12px;gap:9px}
+.contactTitle{font-size:17px}
+.contactRows,.supportList{gap:6px}
+.contactRows p,.supportList span{padding:8px 10px;font-size:12px}
+.supportList{margin-top:8px}
+.brandPill,.miniPill{min-height:24px;padding:4px 8px;font-size:10.5px}
+.trustStrip{gap:7px;padding:8px 9px}
+.trustItem{gap:7px}
+.trustItem svg{width:15px;height:15px}
+.trustItem b{font-size:12px}
+.trustItem span{font-size:10px;margin-top:0}
+.liveTicker{margin-bottom:8px;padding:4px 8px;font-size:10.5px;gap:5px}
+.productGrid{gap:8px}
+.productCard{padding:8px;border-radius:10px}
+.productMedia{height:56px;margin-bottom:6px;border-radius:8px}
+.productMediaIcon,.productMediaIcon svg{width:30px;height:30px}
+.productBadge{top:4px;left:4px;padding:2px 6px;font-size:9px}
+.productHeading h3{font-size:13.5px}
+.productHeading p{font-size:10px;line-height:1.28;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.priceBox{margin:6px 0;padding:6px 7px;gap:1px;border-radius:8px}
+.priceMain{gap:4px}
+.priceMain b{font-size:16px}
+.priceMain span,.priceMain s{font-size:10px}
+.priceMeta{gap:3px 5px;font-size:9.5px}
+.productHl{gap:2px}
+.productHl li{padding-left:12px;font-size:10px;line-height:1.28}
+.productHl li:before{width:4px;height:4px;box-shadow:0 0 0 3px rgba(15,118,110,.1)}
+.productSold{margin-top:6px;padding:2px 6px;font-size:9px}
+.addToCartBtn{margin-top:7px;min-height:32px;padding:7px 8px;border-radius:8px;font-size:11.5px}
+.bundleNote{margin-top:9px;padding:8px 9px;gap:7px;border-radius:9px}
+.bundlePill{padding:3px 7px;font-size:9.5px}
+.bundleNote p{font-size:11px;line-height:1.38}
+.centerRow{margin-top:12px}
+.reviewsHead{gap:8px;margin-bottom:8px}
+.reviewsTitle{font-size:15px}
+.rvTip,.reviewsSub{font-size:10.5px}
+.reviewsBadge{padding:3px 8px;font-size:10px}
+.reviewsBadge b{font-size:11px}
+.reviewsList{gap:6px}
+.reviewItem{padding:8px;border-radius:8px}
+.reviewTop{gap:8px}
+.reviewName{font-size:12px}
+.reviewStars{font-size:10.5px}
+.reviewText{margin-top:4px;font-size:11.5px;line-height:1.42}
+.lookupPanel{padding:12px;gap:8px;border-radius:10px}
+.lookupIntro{gap:3px}
+.lookupIntro h2{font-size:18px}
+.lookupIntro p{font-size:12px;line-height:1.45}
+.lookupForm{gap:7px}
+.lookupLabel{font-size:11px}
+.lookupForm input{padding:9px 11px}
+.lookupForm button{min-height:40px;padding:9px 16px;font-size:13px}
+.lookupStatus{padding:8px 10px;font-size:12px}
+.lookupResults{gap:6px}
+.lookupHint{padding:6px 9px;font-size:11.5px}
+.lookupRow{padding:8px 10px;gap:7px;border-radius:9px}
+.lookupModalBody{padding:18px;gap:9px}
+.lookupModalAmount,.lookupModalRows > div,.lookupModalItem{padding:8px 10px}
+.footer{padding:18px 12px 24px;font-size:11.5px}
+.checkoutMain{gap:8px;margin:10px auto 22px}
+.checkoutGrid{gap:9px}
+.checkoutLeft,.checkoutRight{gap:8px}
+.checkoutStepper{padding:4px}
+.checkoutStep{padding:5px 8px;font-size:11px}
+.checkoutStep b{width:19px;height:19px}
+.checkoutCard{padding:11px 12px;border-radius:10px}
+.checkoutCardHead{margin-bottom:8px;padding-bottom:7px}
+.checkoutCardHead h3{font-size:13px}
+.checkoutTrust{gap:5px 10px;padding:7px 9px;font-size:10.5px}
+.checkoutItems{gap:4px}
+.checkoutItem{gap:7px;padding:6px 8px}
+.checkoutItemMedia{width:34px;height:34px}
+.field{gap:3px;margin-bottom:6px}
+.field input,.field textarea{padding:9px 11px;min-height:40px}
+.field textarea{min-height:50px}
+.productFields{gap:6px}
+.productFieldGroup{padding:8px 9px}
+.cartSummary{padding:8px 9px}
+.paymentMethodGroup{gap:5px;margin-top:8px}
+.paymentMethodOptions{gap:6px}
+.paymentMethodOption{padding:8px 9px}
+.primaryBtn,.ghostBtn{min-height:40px;padding:9px 14px}
+.primaryBtnLg{min-height:42px;padding:10px 16px}
+.payCardTight{gap:8px;padding:12px;border-radius:12px}
+.payAmountProminent{padding:10px 12px}
+.payAmountProminent b{font-size:26px}
+.payTip{padding:8px 10px;font-size:11.5px}
+.qrCompact{gap:6px;padding:9px}
+.qrCompact .qrFrame{min-height:168px}
+.qrCompact .qrFrame img{max-width:158px}
+.paySummaryFold summary{padding:7px 0}
+.paySubmitBtn{min-height:42px}
+.paySuccess{padding:18px 14px;border-radius:12px}
+.paySuccessIcon{width:50px;height:50px;margin-bottom:10px}
+.paySuccessIcon svg{width:26px;height:26px}
+.paySuccess h2{font-size:18px}
+.paySuccess > p{margin-bottom:12px;font-size:12px}
+.paySuccessOrder{padding:9px;margin-bottom:12px}
+.paySuccessOrderItems{gap:5px}
+.paySuccessItem{padding:7px}
+.emptyCart{padding:26px 16px}
+.emptyCart svg{width:42px;height:42px;margin-bottom:9px}
+.emptyCart h2{font-size:17px}
+.emptyCart p{margin-bottom:12px;font-size:12px}
+@media (max-width:920px){
+  .container{padding:0 10px}
+  .header{padding:7px 10px}
+  .brand img{height:30px}
+  .hero .inner{width:calc(100% - 20px);padding:30px 0 24px}
+  .servicesHero{min-height:160px}
+  .servicesHero .inner{padding:26px 0 22px}
+  .section{padding:16px 0}
+  .sectionTight{padding-top:10px}
+  .sectionHead{margin-bottom:9px}
+  .grid2,.grid3,.productGrid{gap:6px}
+  .card .pad,.pbox,.contactPanel{padding:10px}
+  .trustStrip{gap:6px;padding:7px}
+  .productCard{padding:7px;border-radius:9px}
+  .productMedia{height:48px;margin-bottom:5px}
+  .priceBox{margin:5px 0;padding:5px 6px}
+  .addToCartBtn{min-height:30px;margin-top:6px;padding:6px}
+  .lookupPanel{padding:10px;gap:7px}
+  .checkoutMain{width:calc(100% - 10px);margin-top:7px}
+  .checkoutCard{padding:9px 10px}
+  .payCardTight{padding:10px}
+}
+@media (max-width:560px){
+  .hero{min-height:220px}
+  .hero .inner{padding:24px 0 18px}
+  .hero .title{font-size:28px}
+  .hero .subtitle{font-size:12px;line-height:1.38}
+  .heroActions{margin-top:10px}
+  .heroActions a{max-width:240px;min-height:36px}
+  .heroMetrics{gap:5px;margin-top:9px}
+  .heroMetrics span{min-height:34px;font-size:9.8px}
+  .heroMetrics b{font-size:15px}
+  .section{padding:12px 0}
+  .sectionTight{padding-top:8px}
+  .sectionHead h1,.sectionHead h2{font-size:18px}
+  .sectionHead p{font-size:11.5px}
+  .tileBody{padding:8px}
+  .tileBody h3{font-size:13.5px}
+  .tileBody p{font-size:10.8px;line-height:1.35}
+  .productMedia{height:42px}
+  .productHeading h3{font-size:12.5px}
+  .productHeading p,.productHl li{font-size:9.5px}
+  .priceMain b{font-size:14px}
+  .reviewItem{padding:7px}
+  .lookupPanel{padding:9px}
+  .checkoutCard{padding:8px 9px}
+  .payAmountProminent b{font-size:22px}
+  .qrCompact .qrFrame{min-height:148px}
+  .qrCompact .qrFrame img{max-width:142px}
+}
