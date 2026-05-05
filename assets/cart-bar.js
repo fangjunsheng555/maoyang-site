@@ -86,16 +86,24 @@
       '<div class="cartPanelSummary" data-cart-panel-summary></div>';
     document.body.appendChild(panel);
 
-    bar.querySelector('[data-cart-info]').addEventListener('click', toggle);
-    panel.querySelector('.cartPanelClose').addEventListener('click', ()=>{ expanded = false; render(); });
+    bar.addEventListener('click', (event)=>{
+      if(event.target.closest('.cartBarGo')) return;
+      toggle();
+    });
+    panel.querySelector('.cartPanelClose').addEventListener('click', ()=>setExpanded(false));
 
     document.addEventListener('click', (e)=>{
       if(!expanded) return;
       if(panel.contains(e.target) || bar.contains(e.target)) return;
-      expanded = false; render();
+      setExpanded(false);
     });
   }
-  function toggle(){ expanded = !expanded; bar.querySelector('[data-cart-info]').setAttribute('aria-expanded', String(expanded)); render(); }
+  function setExpanded(next){
+    expanded = !!next;
+    bar.querySelector('[data-cart-info]').setAttribute('aria-expanded', String(expanded));
+    render();
+  }
+  function toggle(){ setExpanded(!expanded); }
 
   function showToast(label){
     if(toast) toast.remove();

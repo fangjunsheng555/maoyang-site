@@ -21,7 +21,7 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
   const itemsRows = items.map((it, idx) => {
     const accountRow = it.account
       ? '<div style="margin-top:6px;font-size:12px;color:#475569;line-height:1.65;">' +
-          '<span style="color:#94a3b8;">' + (it.service === 'network' ? '用户名' : '账号') + '：</span>' +
+          '<span style="color:#94a3b8;">' + (it.service === 'network' ? '订阅名' : '账号') + '：</span>' +
           '<span style="font-family:ui-monospace,Menlo,Consolas,monospace;color:#0f172a;font-weight:600;">' + escapeHtml(it.account) + '</span>' +
         '</div>'
       : '';
@@ -188,7 +188,7 @@ function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, usdtRate }
   ];
   items.forEach((it) => {
     lines.push('  · ' + (it.label || it.service) + ' (' + (it.cycle || '1年') + ') ¥' + (it.amount || 0));
-    if (it.account) lines.push('      ' + (it.service === 'network' ? '用户名' : '账号') + ': ' + it.account);
+    if (it.account) lines.push('      ' + (it.service === 'network' ? '订阅名' : '账号') + ': ' + it.account);
     if (it.password) lines.push('      密码: ' + it.password);
     if (it.subscriptionLinks) {
       lines.push('      Shadowrocket: ' + it.subscriptionLinks.shadowrocket);
@@ -211,4 +211,147 @@ function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, usdtRate }
   return lines.join('\n');
 }
 
-module.exports = { buildOrderEmailHtml, buildOrderEmailText };
+function buildFulfillmentEmailHtml({ order, brandName, siteDomain, siteUrl, supportContact }) {
+  const items = Array.isArray(order.items) && order.items.length > 0 ? order.items : [];
+  const orderQueryUrl = (siteUrl || ('https://' + (siteDomain || ''))) + '/?order=' + encodeURIComponent(order.orderId);
+
+  const itemRows = items.map((it, idx) => {
+    const accessRows = [];
+    if (it.account) {
+      accessRows.push(
+        '<div style="display:flex;gap:10px;align-items:flex-start;margin-top:8px;">' +
+          '<span style="min-width:54px;color:#64748b;font-size:12px;font-weight:700;">' + (it.service === 'network' ? '订阅名' : '账号') + '</span>' +
+          '<code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;word-break:break-all;">' + escapeHtml(it.account) + '</code>' +
+        '</div>'
+      );
+    }
+    if (it.password) {
+      accessRows.push(
+        '<div style="display:flex;gap:10px;align-items:flex-start;margin-top:6px;">' +
+          '<span style="min-width:54px;color:#64748b;font-size:12px;font-weight:700;">密码</span>' +
+          '<code style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 8px;word-break:break-all;">' + escapeHtml(it.password) + '</code>' +
+        '</div>'
+      );
+    }
+    if (it.subscriptionLinks) {
+      accessRows.push(
+        '<div style="margin-top:10px;padding:11px 12px;border-radius:12px;background:#f0fdfa;border:1px solid #a7f3d0;">' +
+          '<div style="font-size:11px;font-weight:900;color:#0f766e;margin-bottom:8px;">网络节点订阅链接</div>' +
+          '<div style="font-size:11px;color:#0f766e;font-weight:800;">Shadowrocket</div>' +
+          '<a href="' + escapeHtml(it.subscriptionLinks.shadowrocket) + '" style="display:block;margin-bottom:8px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:#134e4a;word-break:break-all;text-decoration:underline;">' + escapeHtml(it.subscriptionLinks.shadowrocket) + '</a>' +
+          '<div style="font-size:11px;color:#0f766e;font-weight:800;">Clash</div>' +
+          '<a href="' + escapeHtml(it.subscriptionLinks.clash) + '" style="display:block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:#134e4a;word-break:break-all;text-decoration:underline;">' + escapeHtml(it.subscriptionLinks.clash) + '</a>' +
+        '</div>'
+      );
+    }
+    if (it.fulfillmentNote) {
+      accessRows.push('<p style="margin:10px 0 0;color:#475569;font-size:12.5px;line-height:1.7;">' + escapeHtml(it.fulfillmentNote) + '</p>');
+    }
+    const accessHtml = accessRows.length
+      ? accessRows.join('')
+      : '<p style="margin:8px 0 0;color:#64748b;font-size:12.5px;line-height:1.7;">该服务已按订单信息处理完成。</p>';
+
+    return (
+      '<tr><td style="padding:16px 0;border-bottom:' + (idx === items.length - 1 ? '0' : '1px solid #f1f5f9') + ';">' +
+        '<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">' +
+          '<div style="min-width:0;">' +
+            '<div style="font-size:15px;font-weight:900;color:#0f172a;letter-spacing:-0.01em;">' + escapeHtml(it.label || it.service) + '</div>' +
+            '<div style="margin-top:2px;font-size:12px;color:#94a3b8;font-weight:700;">' + escapeHtml(it.cycle || '') + '</div>' +
+          '</div>' +
+          '<div style="white-space:nowrap;color:#0f766e;font-weight:900;font-size:14px;">已开通</div>' +
+        '</div>' +
+        accessHtml +
+      '</td></tr>'
+    );
+  }).join('');
+
+  const note = order.fulfillmentNote
+    ? '<tr><td style="padding:18px 28px 0;"><div style="border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;padding:13px 15px;color:#9a3412;font-size:13px;line-height:1.75;"><strong>开通备注：</strong>' + escapeHtml(order.fulfillmentNote) + '</div></td></tr>'
+    : '';
+
+  return (
+    '<!DOCTYPE html><html lang="zh-CN"><head>' +
+    '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>服务已开通 - ' + escapeHtml(brandName) + '</title></head>' +
+    '<body style="margin:0;padding:0;background:#f4f6fb;font-family:-apple-system,BlinkMacSystemFont,\'PingFang SC\',\'Microsoft YaHei\',sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;">' +
+      '<div style="display:none;max-height:0;overflow:hidden;">您的订单 ' + escapeHtml(order.orderId) + ' 已完成充值，请查看账号、密码或订阅链接。</div>' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f6fb;padding:32px 12px;"><tr><td align="center">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;background:#ffffff;border-radius:20px;box-shadow:0 8px 32px rgba(15,23,42,0.06);overflow:hidden;">' +
+          '<tr><td style="padding:26px 28px 18px;background:linear-gradient(135deg,#0f172a 0%,#0f766e 100%);">' +
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>' +
+              '<td style="color:#ffffff;font-size:18px;font-weight:900;">' + escapeHtml(brandName) + '</td>' +
+              '<td style="text-align:right;color:rgba(255,255,255,0.72);font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;">Fulfilled</td>' +
+            '</tr></table>' +
+          '</td></tr>' +
+          '<tr><td style="padding:32px 28px 12px;text-align:center;">' +
+            '<div style="display:inline-block;width:64px;height:64px;line-height:64px;border-radius:50%;background:linear-gradient(135deg,#d1fae5,#a7f3d0);margin-bottom:14px;"><span style="font-size:32px;color:#047857;">✓</span></div>' +
+            '<h1 style="margin:0 0 6px;font-size:22px;font-weight:950;letter-spacing:-0.03em;color:#0f172a;">服务已开通</h1>' +
+            '<p style="margin:0;color:#64748b;font-size:13.5px;line-height:1.65;">订单已完成充值，下面是您的服务信息。请妥善保存，不要公开分享。</p>' +
+          '</td></tr>' +
+          '<tr><td style="padding:18px 28px 0;">' +
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;"><tr>' +
+              '<td style="padding:14px 16px;">' +
+                '<div style="font-size:11px;color:#94a3b8;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;">订单号</div>' +
+                '<a href="' + escapeHtml(orderQueryUrl) + '" style="display:inline-block;margin-top:2px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;font-weight:800;color:#0f766e;text-decoration:underline;">' + escapeHtml(order.orderId) + '</a>' +
+              '</td>' +
+              '<td style="padding:14px 16px;text-align:right;border-left:1px solid #e2e8f0;">' +
+                '<div style="font-size:11px;color:#94a3b8;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;">完成时间</div>' +
+                '<div style="margin-top:2px;font-size:12.5px;font-weight:800;color:#0f172a;">' + escapeHtml(order.completedAtBeijing || order.updatedAtBeijing || '') + '</div>' +
+              '</td>' +
+            '</tr></table>' +
+          '</td></tr>' +
+          '<tr><td style="padding:24px 28px 0;">' +
+            '<div style="font-size:11px;color:#94a3b8;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">服务信息</div>' +
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + itemRows + '</table>' +
+          '</td></tr>' +
+          note +
+          '<tr><td style="padding:24px 28px 0;">' +
+            '<div style="border-radius:14px;background:#f0fdfa;border:1px solid #a7f3d0;padding:14px 16px;color:#134e4a;font-size:13px;line-height:1.75;">如遇登录、订阅或地区问题，请带上订单号联系在线客服。' + escapeHtml(supportContact || '') + '</div>' +
+          '</td></tr>' +
+          '<tr><td style="padding:28px 28px 30px;">' +
+            '<hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 18px;">' +
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>' +
+              '<td style="color:#0f172a;font-size:13px;font-weight:900;">' + escapeHtml(brandName) + '</td>' +
+              '<td style="text-align:right;color:#94a3b8;font-size:11.5px;">' + escapeHtml(siteDomain || '') + '</td>' +
+            '</tr></table>' +
+            '<p style="margin:10px 0 0;font-size:11px;color:#cbd5e1;line-height:1.6;">本邮件由系统自动发送，请勿直接回复。</p>' +
+          '</td></tr>' +
+        '</table>' +
+      '</td></tr></table>' +
+    '</body></html>'
+  );
+}
+
+function buildFulfillmentEmailText({ order, brandName, siteDomain, siteUrl, supportContact }) {
+  const items = Array.isArray(order.items) && order.items.length > 0 ? order.items : [];
+  const queryUrl = (siteUrl || ('https://' + (siteDomain || ''))) + '/?order=' + encodeURIComponent(order.orderId);
+  const lines = [
+    brandName + ' - 服务已开通',
+    '===========================',
+    '订单号: ' + order.orderId,
+    '查询: ' + queryUrl,
+    '完成时间: ' + (order.completedAtBeijing || order.updatedAtBeijing || ''),
+    '',
+    '服务信息:'
+  ];
+  items.forEach((it) => {
+    lines.push('  · ' + (it.label || it.service) + ' (' + (it.cycle || '') + ')');
+    if (it.account) lines.push('      ' + (it.service === 'network' ? '订阅名' : '账号') + ': ' + it.account);
+    if (it.password) lines.push('      密码: ' + it.password);
+    if (it.subscriptionLinks) {
+      lines.push('      Shadowrocket: ' + it.subscriptionLinks.shadowrocket);
+      lines.push('      Clash: ' + it.subscriptionLinks.clash);
+    }
+    if (it.fulfillmentNote) lines.push('      备注: ' + it.fulfillmentNote);
+  });
+  if (order.fulfillmentNote) lines.push('', '开通备注: ' + order.fulfillmentNote);
+  lines.push('', '如遇问题，请带上订单号联系在线客服。', supportContact || '', siteDomain || '');
+  return lines.join('\n');
+}
+
+module.exports = {
+  buildOrderEmailHtml,
+  buildOrderEmailText,
+  buildFulfillmentEmailHtml,
+  buildFulfillmentEmailText
+};

@@ -202,7 +202,13 @@
     }catch(error){
       finishBtn.disabled = false;
       finishBtn.innerHTML = originalLabel;
-      setStatus(error && error.message === 'delivery_failed' ? '订单提交失败：后台存储和通知通道都没有成功，请联系在线客服处理。' : '订单提交失败，请联系在线客服处理。', true);
+      if(error && error.message === 'storage_failed'){
+        setStatus('订单提交失败：后台订单存储没有成功，请联系在线客服处理。', true);
+      }else if(error && error.message === 'delivery_failed'){
+        setStatus('订单提交失败：订单已进入存储前检查，但通知/邮件通道没有成功，请联系在线客服处理。', true);
+      }else{
+        setStatus('订单提交失败，请联系在线客服处理。', true);
+      }
     }
   });
 

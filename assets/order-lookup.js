@@ -88,7 +88,7 @@
         '<div class="lookupModalItemHead"><strong>' + (it.label || it.service) + '</strong><span>' + (it.cycle || '') + ' · ¥' + (it.amount || 0) + '</span></div>';
       if(it.account || it.password){
         html += '<div class="lookupModalCreds">';
-        if(it.account) html += '<div><span>' + (it.service === 'network' ? '用户名' : '账号') + '</span><code>' + it.account + '</code></div>';
+        if(it.account) html += '<div><span>' + (it.service === 'network' ? '订阅名' : '账号') + '</span><code>' + it.account + '</code></div>';
         if(it.password) html += '<div><span>密码</span><code>' + it.password + '</code></div>';
         html += '</div>';
       }
@@ -104,6 +104,7 @@
 
     html += '<div class="lookupModalRows">' +
       '<div><span>订单时间</span><b>' + safe(order.createdAtBeijing || order.createdAt) + '</b></div>' +
+      '<div><span>订单状态</span><b>' + safe(order.statusLabel || (order.status === 'completed' ? '已完成充值' : '待处理')) + '</b></div>' +
       (order.email ? '<div><span>邮箱</span><b>' + order.email + '</b></div>' : '') +
       '<div><span>联系方式</span><b>' + safe(order.contact) + '</b></div>' +
       (order.subtotal && order.subtotal !== order.finalAmount ? '<div><span>商品总价</span><b>¥' + order.subtotal + '</b></div>' : '') +

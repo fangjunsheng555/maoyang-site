@@ -63,16 +63,17 @@ function publicOrder(order, type) {
   let items;
   if (Array.isArray(order.items) && order.items.length > 0) {
     items = order.items.map((it) => {
+      const account = it.account || (it.service === 'network' ? order.orderId : '');
       const out = {
         service: it.service || '',
         label: it.label || '',
         cycle: it.cycle || '',
         amount: Number(it.amount || 0),
-        account: it.account || '',
+        account,
         password: it.password || ''
       };
       if (it.subscriptionLinks) out.subscriptionLinks = it.subscriptionLinks;
-      else if (it.service === 'network' && it.account) out.subscriptionLinks = subscriptionLinks(it.account);
+      else if (it.service === 'network' && account) out.subscriptionLinks = subscriptionLinks(account);
       return out;
     });
   } else {
@@ -108,6 +109,11 @@ function publicOrder(order, type) {
     email: order.email || '',
     contact: order.contact || '',
     remark: order.remark || '',
+    status: order.status || 'pending',
+    statusLabel: order.statusLabel || (order.status === 'completed' ? '已完成充值' : '待处理'),
+    completedAt: order.completedAt || '',
+    completedAtBeijing: order.completedAtBeijing || '',
+    fulfillmentEmailSentAt: order.fulfillmentEmailSentAt || '',
     service: items[0] ? items[0].service : '',
     cycle: items[0] ? items[0].cycle : '',
     account: items[0] ? items[0].account : '',

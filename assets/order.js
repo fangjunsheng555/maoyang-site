@@ -14,12 +14,16 @@
   const mobileAmountEl = document.querySelector('[data-mobile-amount]');
   const submitBtn = document.querySelector('[data-checkout-submit]');
   const statusEl = document.querySelector('[data-status]');
+  const contactInput = form ? form.querySelector('input[name=contact]') : null;
+  const contactReqEl = document.querySelector('[data-contact-req]');
+  const contactNoteEl = document.querySelector('[data-contact-note]');
 
   if(!form) return;
 
   function money(v){ return '¥' + Number(v||0).toFixed(0); }
   function el(tag, cls, html){ const e = document.createElement(tag); if(cls) e.className = cls; if(html != null) e.innerHTML = html; return e; }
   function selectedMethod(){ const r = form.querySelector('input[name=paymentMethod]:checked'); return r ? r.value : 'alipay'; }
+  function needsContact(items){ return items.some((p)=>p.key === 'spotify'); }
   function setStatus(message, warn){
     if(!message){ statusEl.hidden = true; return; }
     statusEl.hidden = false;
@@ -78,7 +82,22 @@
     });
 
     renderProductFields(items);
+    syncContactRequirement(items);
     renderSummary(items);
+  }
+
+  function syncContactRequirement(items){
+    const required = needsContact(items);
+    if(contactInput) contactInput.required = required;
+    if(contactReqEl){
+      contactReqEl.textContent = required ? '*' : '非必填';
+      contactReqEl.className = required ? 'req' : 'opt';
+    }
+    if(contactNoteEl){
+      contactNoteEl.textContent = required
+        ? 'Spotify 订单需要留一个可联系账号，便于家庭组邀请或异常处理'
+        : '仅 Spotify 订单需要填写，其他订单可留空';
+    }
   }
 
   function renderProductFields(items){
@@ -201,7 +220,7 @@
     const contact = String(data.get('contact') || '').trim();
     const remark = String(data.get('remark') || '').trim();
     if(!validateEmail(email)){ setStatus('请填写有效的邮箱地址，订单确认与日后查询将发送到该邮箱。', true); return; }
-    if(!contact){ setStatus('请填写联系方式，必要时工作人员将通过此联系方式联系你。', true); return; }
+    if(needsContact(items) && !contact){ setStatus('Spotify 订单需要填写联系方式，便于家庭组邀请或异常处理。', true); return; }
 
     const fields = fieldsState();
     const orderItems = [];
@@ -215,7 +234,7 @@
       }
       orderItems.push({
         service: p.key,
-        account: p.needsUsername ? (f.username || '').trim() : (f.account || '').trim(),
+        account: p.needsUsername ? (f.username || '').trim() : (p.needsAccountPassword ? (f.account || '').trim() : ''),
         password: p.needsAccountPassword ? (f.password || '').trim() : ''
       });
     }

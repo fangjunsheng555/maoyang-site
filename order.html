@@ -64,9 +64,9 @@
                 <small class='fieldNote'>用于接收订单确认信息与日后订单查询</small>
               </label>
               <label class='field'>
-                <span>联系方式 <em class='req'>*</em></span>
-                <input name='contact' autocomplete='tel' placeholder='QQ / 微信 / WhatsApp / Telegram' required>
-                <small class='fieldNote'>必要时工作人员将通过此联系方式联系你</small>
+                <span>联系方式 <em class='opt' data-contact-req>非必填</em></span>
+                <input name='contact' autocomplete='tel' placeholder='QQ / 微信 / WhatsApp / Telegram'>
+                <small class='fieldNote' data-contact-note>仅 Spotify 订单需要填写，其他订单可留空</small>
               </label>
               <label class='field'>
                 <span>备注 <em class='opt'>非必填</em></span>

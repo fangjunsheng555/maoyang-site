@@ -7,8 +7,8 @@ const PRODUCTS = {
   netflix: { label:'Netflix Premium', amount:168, cycle:'1年' },
   disney:  { label:'Disney+',         amount:108, cycle:'1年' },
   hbomax:  { label:'HBO Max',         amount:148, cycle:'1年' },
-  chatgpt: { label:'ChatGPT Plus',    amount:75,  cycle:'1月', needsAccountPassword:true },
-  network: { label:'网络节点服务',     amount:99,  cycle:'1年', needsUsername:true }
+  chatgpt: { label:'ChatGPT Plus',    amount:75,  cycle:'1月' },
+  network: { label:'网络节点服务',     amount:99,  cycle:'1年' }
 };
 
 const BRAND_NAME = process.env.BRAND_NAME || '冒央会社';
@@ -91,7 +91,7 @@ function orderText(order) {
   ];
   order.items.forEach((it, i) => {
     lines.push((i + 1) + '. ' + it.label + '（' + it.cycle + '）¥' + it.amount);
-    if (it.account) lines.push('   ' + (it.service === 'network' ? '用户名' : '账号') + ': ' + it.account);
+    if (it.account) lines.push('   ' + (it.service === 'network' ? '订阅名' : '账号') + ': ' + it.account);
     if (it.password) lines.push('   密码: ' + it.password);
     if (it.subscriptionLinks) {
       lines.push('   Shadowrocket: ' + it.subscriptionLinks.shadowrocket);
@@ -218,8 +218,9 @@ module.exports = async function handler(req, res) {
   if (!validEmail(email)) {
     return res.status(400).json({ ok: false, error: 'invalid_email' });
   }
-  if (!contact) {
-    return res.status(400).json({ ok: false, error: 'missing_contact' });
+  const requiresContact = rawItems.some((raw) => clean(raw.service, 40) === 'spotify');
+  if (requiresContact && !contact) {
+    return res.status(400).json({ ok: false, error: 'missing_contact:spotify' });
   }
 
   const items = [];
@@ -231,9 +232,6 @@ module.exports = async function handler(req, res) {
     }
     const account = clean(raw.account, 80);
     const password = clean(raw.password, 120);
-    if (product.needsUsername && !validUsername(account)) {
-      return res.status(400).json({ ok: false, error: 'invalid_username:' + product.label });
-    }
     if (product.needsAccountPassword && (!account || !password)) {
       return res.status(400).json({ ok: false, error: 'missing_credentials:' + product.label });
     }
@@ -242,12 +240,9 @@ module.exports = async function handler(req, res) {
       label: product.label,
       cycle: product.cycle,
       amount: product.amount,
-      account: product.needsUsername || product.needsAccountPassword ? account : '',
+      account: product.needsAccountPassword ? account : '',
       password: product.needsAccountPassword ? password : ''
     };
-    if (product.needsUsername) {
-      item.subscriptionLinks = subscriptionLinks(account);
-    }
     items.push(item);
   }
 
@@ -277,6 +272,8 @@ module.exports = async function handler(req, res) {
     email,
     contact,
     remark,
+    status: 'pending',
+    statusLabel: '待处理',
     // Legacy flat fields for backward compat
     service: items[0].service,
     serviceLabel: items.length === 1 ? items[0].label : items.map(i => i.label).join(' + '),
@@ -287,6 +284,15 @@ module.exports = async function handler(req, res) {
     currency: paymentMethod === 'usdt' ? 'USDT' : 'CNY'
   };
 
+  order.items.forEach((item) => {
+    if (item.service === 'network') {
+      item.account = order.orderId;
+      item.subscriptionLinks = subscriptionLinks(order.orderId);
+    }
+  });
+  order.account = order.items[0] ? order.items[0].account : '';
+  order.password = order.items[0] ? order.items[0].password : '';
+
   const text = orderText(order);
   const deliveries = [];
   await Promise.all([
@@ -296,8 +302,10 @@ module.exports = async function handler(req, res) {
     sendOrderEmail(order).then((result) => deliveries.push({ channel: 'email', ok: result.ok, info: result })).catch((error) => deliveries.push({ channel: 'email', ok: false, error: error.message }))
   ]);
 
-  const delivered = deliveries.some((item) => item && item.ok);
   const stored = deliveries.some((item) => item && item.channel === 'storage' && item.ok);
+  const notified = deliveries.some((item) => item && item.channel !== 'storage' && item.ok);
+  const emailOk = deliveries.some((item) => item && item.channel === 'email' && item.ok);
+  const delivered = stored && notified;
   return res.status(delivered ? 200 : 502).json({
     ok: delivered,
     orderId: order.orderId,
@@ -306,7 +314,9 @@ module.exports = async function handler(req, res) {
     paidCurrency,
     delivered,
     stored,
+    notified,
+    emailOk,
     deliveries,
-    error: delivered ? '' : 'delivery_failed'
+    error: delivered ? '' : (stored ? 'delivery_failed' : 'storage_failed')
   });
 };
