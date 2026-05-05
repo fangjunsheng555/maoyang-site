@@ -14,7 +14,7 @@ const PRODUCTS = {
 const BRAND_NAME = process.env.BRAND_NAME || '冒央会社';
 const SITE_DOMAIN = process.env.SITE_DOMAIN || 'joinvip.vip';
 const SITE_URL = process.env.SITE_URL || ('https://' + SITE_DOMAIN);
-const SUPPORT_CONTACT = process.env.SUPPORT_CONTACT || '请通过 QQ 2802632995 / WhatsApp +1 4315093334 / Telegram +44 7707489977 联系在线客服';
+const SUPPORT_CONTACT = process.env.SUPPORT_CONTACT || '请通过 QQ 2802632995 / WhatsApp +1 4315093334 / Telegram @MaoyangSupport 联系在线客服';
 const USDT_DISCOUNT = 0.9;
 const USDT_RATE = 6.85;
 

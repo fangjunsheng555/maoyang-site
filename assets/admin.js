@@ -3,6 +3,7 @@
   const keyInput = document.querySelector('[data-admin-key]');
   const statusBox = document.querySelector('[data-admin-status]');
   const tableBody = document.querySelector('[data-order-rows]');
+  const mobileOrdersEl = document.querySelector('[data-mobile-orders]');
   const emptyState = document.querySelector('[data-empty-state]');
   const searchInput = document.querySelector('[data-admin-search]');
   const selectAllInput = document.querySelector('[data-select-all]');
@@ -96,6 +97,9 @@
       selectAllInput.indeterminate = selectedVisible > 0 && selectedVisible < visibleIds.length;
       selectAllInput.disabled = visibleIds.length === 0;
     }
+    document.querySelectorAll('[data-order-select]').forEach((input)=>{
+      input.checked = selectedIds.has(input.value);
+    });
   }
   function applyFilter(){
     const query = searchInput ? searchInput.value : '';
@@ -117,6 +121,8 @@
       selectTd.className = 'adminSelectCell';
       const selectBox = document.createElement('input');
       selectBox.type = 'checkbox';
+      selectBox.dataset.orderSelect = '1';
+      selectBox.value = id;
       selectBox.checked = selectedIds.has(id);
       selectBox.disabled = !id;
       selectBox.setAttribute('aria-label', '选择订单 ' + id);
@@ -160,7 +166,107 @@
 
       tableBody.appendChild(tr);
     });
+    renderMobileOrders(list);
     syncSelectionUi();
+  }
+
+  function appendMobileInfo(parent, label, value){
+    const text = safe(value).trim();
+    if(!text) return;
+    const row = document.createElement('div');
+    const name = document.createElement('span');
+    const body = document.createElement('b');
+    name.textContent = label;
+    body.textContent = text;
+    body.style.whiteSpace = 'pre-wrap';
+    row.appendChild(name);
+    row.appendChild(body);
+    parent.appendChild(row);
+  }
+
+  function renderMobileOrders(list){
+    if(!mobileOrdersEl) return;
+    mobileOrdersEl.innerHTML = '';
+    list.forEach((o)=>{
+      const id = orderId(o);
+      const card = document.createElement('article');
+      card.className = 'adminMobileOrder';
+
+      const top = document.createElement('div');
+      top.className = 'adminMobileOrderTop';
+
+      const selectBox = document.createElement('input');
+      selectBox.type = 'checkbox';
+      selectBox.className = 'adminMobileSelect';
+      selectBox.dataset.orderSelect = '1';
+      selectBox.value = id;
+      selectBox.checked = selectedIds.has(id);
+      selectBox.disabled = !id;
+      selectBox.setAttribute('aria-label', '选择订单 ' + id);
+      selectBox.addEventListener('change', ()=>{
+        if(selectBox.checked) selectedIds.add(id);
+        else selectedIds.delete(id);
+        syncSelectionUi();
+      });
+
+      const main = document.createElement('div');
+      main.className = 'adminMobileMain';
+      const title = document.createElement('div');
+      title.className = 'adminMobileTitle';
+      title.textContent = itemsLabel(o) + (o.discountLabel ? ' · ' + o.discountLabel : '');
+      const code = document.createElement('div');
+      code.className = 'adminMobileCode';
+      code.textContent = id || '未生成订单号';
+      const meta = document.createElement('div');
+      meta.className = 'adminMobileMeta';
+      const pill = document.createElement('span');
+      pill.className = 'adminStatusPill' + statusClass(o);
+      pill.textContent = statusText(o);
+      const pay = document.createElement('span');
+      pay.className = 'adminMobilePay';
+      pay.textContent = paid(o);
+      const method = document.createElement('span');
+      method.textContent = o.paymentMethod === 'usdt' ? 'USDT' : '支付宝';
+      meta.appendChild(pill);
+      meta.appendChild(pay);
+      meta.appendChild(method);
+      main.appendChild(title);
+      main.appendChild(code);
+      main.appendChild(meta);
+
+      const actionBtn = document.createElement('button');
+      actionBtn.type = 'button';
+      actionBtn.className = 'adminAction';
+      actionBtn.textContent = '处理';
+      actionBtn.addEventListener('click', ()=>toggleMobileEditor(o, card));
+
+      top.appendChild(selectBox);
+      top.appendChild(main);
+      top.appendChild(actionBtn);
+      card.appendChild(top);
+
+      const info = document.createElement('div');
+      info.className = 'adminMobileInfo';
+      appendMobileInfo(info, '时间', orderTime(o));
+      appendMobileInfo(info, '邮箱', o.email || '');
+      appendMobileInfo(info, '联系', o.contact || '');
+      appendMobileInfo(info, '交付', itemsCreds(o));
+      card.appendChild(info);
+
+      const remarkText = [
+        o.remark ? ('用户备注: ' + o.remark) : '',
+        o.adminNote ? ('内部备注: ' + o.adminNote) : '',
+        o.fulfillmentNote ? ('开通备注: ' + o.fulfillmentNote) : ''
+      ].filter(Boolean).join('\n');
+      if(remarkText){
+        const remark = document.createElement('div');
+        remark.className = 'adminMobileRemark';
+        remark.textContent = remarkText;
+        card.appendChild(remark);
+      }
+
+      mobileOrdersEl.appendChild(card);
+    });
   }
 
   function field(label, input){
@@ -187,20 +293,12 @@
     return input;
   }
 
-  function toggleEditor(order, afterRow){
-    const next = afterRow.nextElementSibling;
-    if(next && next.classList.contains('adminEditRow')){
-      next.remove();
-      return;
-    }
-    removeEditors();
+  function removeMobileEditors(){
+    if(!mobileOrdersEl) return;
+    mobileOrdersEl.querySelectorAll('.adminMobileEditor').forEach((editor)=>editor.remove());
+  }
 
-    const editorRow = document.createElement('tr');
-    editorRow.className = 'adminEditRow';
-    const td = document.createElement('td');
-    td.colSpan = 12;
-    editorRow.appendChild(td);
-
+  function buildEditorBox(order, onClose){
     const box = document.createElement('form');
     box.className = 'adminEditBox';
     box.dataset.orderId = order.orderId || '';
@@ -280,7 +378,7 @@
     cancel.type = 'button';
     cancel.className = 'adminGhost';
     cancel.textContent = '收起';
-    cancel.addEventListener('click', ()=>editorRow.remove());
+    cancel.addEventListener('click', ()=>{ if(onClose) onClose(); });
     actions.appendChild(save);
     actions.appendChild(cancel);
     actions.appendChild(resend);
@@ -288,8 +386,40 @@
 
     box.addEventListener('submit', (event)=>saveOrder(event, order.orderId, box, save));
 
-    td.appendChild(box);
+    return box;
+  }
+
+  function toggleEditor(order, afterRow){
+    const next = afterRow.nextElementSibling;
+    if(next && next.classList.contains('adminEditRow')){
+      next.remove();
+      return;
+    }
+    removeEditors();
+    removeMobileEditors();
+
+    const editorRow = document.createElement('tr');
+    editorRow.className = 'adminEditRow';
+    const td = document.createElement('td');
+    td.colSpan = 12;
+    editorRow.appendChild(td);
+    td.appendChild(buildEditorBox(order, ()=>editorRow.remove()));
     afterRow.after(editorRow);
+  }
+
+  function toggleMobileEditor(order, card){
+    const current = card.querySelector('.adminMobileEditor');
+    if(current){
+      current.remove();
+      return;
+    }
+    removeEditors();
+    removeMobileEditors();
+
+    const wrap = document.createElement('div');
+    wrap.className = 'adminMobileEditor';
+    wrap.appendChild(buildEditorBox(order, ()=>wrap.remove()));
+    card.appendChild(wrap);
   }
 
   function collectItems(box){

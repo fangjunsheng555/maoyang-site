@@ -71,7 +71,7 @@
   }, true);
 
   // Contact copy buttons
-  const contacts = [['QQ','2802632995'], ['WhatsApp','+1 4315093334'], ['Telegram','+44 7707489977']];
+  const contacts = [['QQ','2802632995'], ['WhatsApp','+1 4315093334'], ['Telegram','@MaoyangSupport']];
   function buildContactGrid(){
     const g = document.createElement('div');
     g.className = 'copyContactGrid';
