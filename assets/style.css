@@ -22,7 +22,7 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-html,body{min-height:100%}
+html,body{min-height:100%;overflow-x:hidden}
 body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,'PingFang SC','Microsoft YaHei',sans-serif;color:var(--ink);background:linear-gradient(180deg,#f2f7f5 0%,#fff 46%,#f7f8f5 100%);line-height:1.7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
@@ -110,6 +110,18 @@ img{max-width:100%;display:block}
 .storyGrid .storyBox{padding:28px 32px;border-left:3px solid rgba(15,118,110,.82);box-shadow:0 18px 46px rgba(15,23,42,.07)}
 .storyGrid .storyBox[hidden]{display:none!important}
 .storyGrid .storyLead{font-size:14.5px;line-height:1.85;font-weight:600;color:#4b5563}
+.aboutServiceBox{display:grid;gap:12px;border-left:0;background:linear-gradient(180deg,#fff,#fbfdfc)}
+.aboutServiceBox,.aboutTrustPad{overflow:hidden}
+.aboutServiceBox .storyLead{margin:0;color:var(--ink);font-size:17px;line-height:1.35;font-weight:950;text-align:center}
+.storyPointGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.storyPointGrid span{display:grid;gap:2px;min-width:0;padding:9px 10px;border:1px solid var(--line-soft);border-radius:9px;background:#f8fbfa;text-align:center}
+.storyPointGrid b{color:var(--teal-dark);font-size:13px;line-height:1.2;font-weight:950}
+.storyPointGrid em{color:#64748b;font-size:11px;line-height:1.25;font-style:normal;font-weight:850}
+.storyNote{margin:0;color:#475569;font-size:13.5px;line-height:1.65;font-weight:750;text-align:center;overflow-wrap:anywhere}
+.aboutTrustCard{background:linear-gradient(180deg,#fff,#fbfdfc)}
+.aboutTrustPad{justify-content:center;gap:12px}
+.aboutTrustHead{margin-bottom:0}
+.aboutStatsGrid span{background:var(--teal-soft);border-color:rgba(15,118,110,.16)}
 .contactPanel{padding:22px;display:grid;grid-template-columns:1.1fr 1.9fr;gap:18px;align-items:center}
 .contactTitle{font-size:20px;font-weight:950;color:var(--ink-soft);line-height:1.25}
 .contactRows{display:grid;gap:10px}
@@ -778,6 +790,14 @@ body{line-height:1.55}
 .pbox{padding:13px;font-size:13px;line-height:1.6}
 .storyGrid .storyBox{padding:14px 16px}
 .storyGrid .storyLead,.storyLead{font-size:13px;line-height:1.62}
+.aboutServiceBox{gap:8px}
+.aboutServiceBox .storyLead{font-size:14.5px;line-height:1.3}
+.storyPointGrid{gap:5px}
+.storyPointGrid span{padding:7px 6px;border-radius:8px}
+.storyPointGrid b{font-size:11.5px}
+.storyPointGrid em{font-size:9.8px}
+.storyNote{font-size:12px;line-height:1.48}
+.aboutTrustPad{gap:8px}
 .contactPanel{padding:12px;gap:9px}
 .contactTitle{font-size:17px}
 .contactRows,.supportList{gap:6px}
@@ -918,6 +938,13 @@ body{line-height:1.55}
   .sectionTight{padding-top:8px}
   .sectionHead h1,.sectionHead h2{font-size:18px}
   .sectionHead p{font-size:11.5px}
+  .aboutServiceBox .storyLead{font-size:13.5px}
+  .storyPointGrid{grid-template-columns:1fr}
+  .storyPointGrid span{display:block;padding:6px 8px;text-align:left}
+  .storyPointGrid b{font-size:10.8px}
+  .storyPointGrid b:after{content:'：'}
+  .storyPointGrid em{font-size:9.2px;text-align:left}
+  .storyNote{font-size:11.4px;line-height:1.42}
   .tileBody{padding:8px}
   .tileBody h3{font-size:13.5px}
   .tileBody p{font-size:10.8px;line-height:1.35}
