@@ -85,7 +85,7 @@
     if(isUsdt()){
       payTip.textContent = '请使用 TRON (TRC20) 网络转账精确金额 ' + (payload.finalUsdt) + ' USDT 到下方地址，付款完成后请记得返回本页面点击「付款完成」按钮提交订单。';
     }else{
-      payTip.textContent = '请按上方金额完成支付宝付款。付款完成后请记得返回本页面点击「付款完成」按钮，充值人员 30 分钟内处理。';
+      payTip.textContent = '请按上方金额完成支付宝付款。付款完成后请记得返回本页面点击「付款完成」按钮，充值人员 10 分钟内处理。';
     }
   }
 
