@@ -144,7 +144,10 @@
   function showSuccess(result){
     block.hidden = true;
     success.hidden = false;
-    if(stepperPay) stepperPay.classList.add('done');
+    if(stepperPay){
+      stepperPay.classList.remove('active');
+      stepperPay.classList.add('done');
+    }
     if(stepperSubmit) stepperSubmit.classList.add('done', 'active');
 
     successEmailEl.textContent = payload.email;

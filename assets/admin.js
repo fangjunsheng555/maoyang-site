@@ -59,8 +59,9 @@
       return lbl + ': --';
     }).join('\n');
   }
-  function setCellText(tr, text){
+  function setCellText(tr, label, text){
     const td = document.createElement('td');
+    td.dataset.label = label;
     td.style.whiteSpace = 'pre-wrap';
     td.textContent = safe(text);
     tr.appendChild(td);
@@ -78,25 +79,15 @@
       const tr = document.createElement('tr');
 
       const statusTd = document.createElement('td');
+      statusTd.dataset.label = '状态';
       const pill = document.createElement('span');
       pill.className = 'adminStatusPill' + statusClass(o);
       pill.textContent = statusText(o);
       statusTd.appendChild(pill);
       tr.appendChild(statusTd);
 
-      [
-        orderTime(o),
-        o.orderId,
-        itemsLabel(o) + (o.discountLabel ? '\n(' + o.discountLabel + ')' : ''),
-        o.paymentMethod === 'usdt' ? 'USDT' : '支付宝',
-        paid(o),
-        itemsCreds(o),
-        o.email || '',
-        o.contact || '--',
-        [o.remark ? ('用户备注: ' + o.remark) : '', o.adminNote ? ('内部备注: ' + o.adminNote) : ''].filter(Boolean).join('\n')
-      ].forEach((value)=>setCellText(tr, value));
-
       const actionTd = document.createElement('td');
+      actionTd.dataset.label = '操作';
       const actionBtn = document.createElement('button');
       actionBtn.type = 'button';
       actionBtn.className = 'adminAction';
@@ -104,6 +95,18 @@
       actionBtn.addEventListener('click', ()=>toggleEditor(o, tr));
       actionTd.appendChild(actionBtn);
       tr.appendChild(actionTd);
+
+      [
+        ['时间', orderTime(o)],
+        ['订单号', o.orderId],
+        ['服务', itemsLabel(o) + (o.discountLabel ? '\n(' + o.discountLabel + ')' : '')],
+        ['支付', o.paymentMethod === 'usdt' ? 'USDT' : '支付宝'],
+        ['应付', paid(o)],
+        ['交付信息', itemsCreds(o)],
+        ['邮箱', o.email || ''],
+        ['联系方式', o.contact || '--'],
+        ['备注', [o.remark ? ('用户备注: ' + o.remark) : '', o.adminNote ? ('内部备注: ' + o.adminNote) : ''].filter(Boolean).join('\n')]
+      ].forEach(([label, value])=>setCellText(tr, label, value));
 
       tableBody.appendChild(tr);
     });
