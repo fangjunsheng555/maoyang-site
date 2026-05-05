@@ -7,6 +7,23 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+const DEFAULT_SUPPORT_CONTACT = 'QQ：2802632995\nWhatsApp：+1 4315093334\nTelegram：@MaoyangSupport';
+
+function supportContactLines(value) {
+  return String(value || DEFAULT_SUPPORT_CONTACT)
+    .split(/\s*(?:\/|\r?\n)\s*/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function supportContactHtml(value) {
+  return supportContactLines(value).map(escapeHtml).join('<br>');
+}
+
+function supportContactText(value) {
+  return supportContactLines(value).join('\n');
+}
+
 function money(value) {
   return '¥' + Number(value || 0).toFixed(0);
 }
@@ -154,7 +171,7 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
           // Support
           '<tr><td style="padding:24px 28px 0;">' +
             '<div style="font-size:11px;color:#94a3b8;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;">需要帮助？</div>' +
-            '<p style="margin:0;font-size:13px;line-height:1.75;color:#475569;">' + escapeHtml(supportContact || '请通过 QQ 2802632995 / WhatsApp +1 4315093334 / Telegram @MaoyangSupport 联系在线客服') + '</p>' +
+            '<p style="margin:0;font-size:13px;line-height:1.75;color:#475569;">' + supportContactHtml(supportContact) + '</p>' +
             '<p style="margin:8px 0 0;font-size:12.5px;color:#94a3b8;">客服在线时间：北京时间 09:00 – 23:00 · 真人值守</p>' +
           '</td></tr>' +
           // Footer
@@ -172,7 +189,7 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
   );
 }
 
-function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, usdtRate }) {
+function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, supportContact, usdtRate }) {
   const isUsdt = order.paymentMethod === 'usdt';
   const items = Array.isArray(order.items) && order.items.length > 0 ? order.items : [];
   const isCart = items.length > 1;
@@ -207,7 +224,7 @@ function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, usdtRate }
   } else {
     lines.push('实付: ¥' + order.finalAmount);
   }
-  lines.push('', '客服将在 30 分钟内处理您的订单。', '查询订单请访问: ' + queryUrl);
+  lines.push('', '客服将在 30 分钟内处理您的订单。', '查询订单请访问: ' + queryUrl, '', '联系方式:', supportContactText(supportContact));
   return lines.join('\n');
 }
 
@@ -306,7 +323,7 @@ function buildFulfillmentEmailHtml({ order, brandName, siteDomain, siteUrl, supp
           '</td></tr>' +
           note +
           '<tr><td style="padding:24px 28px 0;">' +
-            '<div style="border-radius:14px;background:#f0fdfa;border:1px solid #a7f3d0;padding:14px 16px;color:#134e4a;font-size:13px;line-height:1.75;">如遇登录、订阅或地区问题，请带上订单号联系在线客服。' + escapeHtml(supportContact || '') + '</div>' +
+            '<div style="border-radius:14px;background:#f0fdfa;border:1px solid #a7f3d0;padding:14px 16px;color:#134e4a;font-size:13px;line-height:1.75;">如遇登录、订阅或地区问题，请带上订单号联系在线客服。<div style="margin-top:8px;font-weight:700;">' + supportContactHtml(supportContact) + '</div></div>' +
           '</td></tr>' +
           '<tr><td style="padding:28px 28px 30px;">' +
             '<hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 18px;">' +
@@ -345,7 +362,7 @@ function buildFulfillmentEmailText({ order, brandName, siteDomain, siteUrl, supp
     if (it.fulfillmentNote) lines.push('      备注: ' + it.fulfillmentNote);
   });
   if (order.fulfillmentNote) lines.push('', '开通备注: ' + order.fulfillmentNote);
-  lines.push('', '如遇问题，请带上订单号联系在线客服。', supportContact || '', siteDomain || '');
+  lines.push('', '如遇问题，请带上订单号联系在线客服。', supportContactText(supportContact), siteDomain || '');
   return lines.join('\n');
 }
 

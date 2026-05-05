@@ -78,14 +78,14 @@
     if(!one('[data-contact-style]')){
       const s = document.createElement('style');
       s.dataset.contactStyle = '1';
-      s.textContent = '.copyContactGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.copyContactBtn{display:grid;gap:2px;text-align:left;border:1px solid var(--line);border-radius:10px;background:#f8fbfa;color:var(--ink);padding:9px 11px;cursor:pointer;font:inherit;min-height:54px}.copyContactBtn b{font-size:11.5px;color:#0f766e;font-weight:900}.copyContactBtn span{font-size:13px;font-weight:900;overflow-wrap:anywhere}@media(max-width:720px){.copyContactGrid{grid-template-columns:1fr;gap:6px}.copyContactBtn{min-height:48px;padding:8px 11px}}';
+      s.textContent = '.copyContactGrid{display:grid;grid-template-columns:1fr;gap:5px}.copyContactBtn{display:flex!important;align-items:center;gap:0;text-align:left;border:1px solid var(--line);border-radius:9px;background:#f8fbfa;color:var(--ink);padding:7px 10px;cursor:pointer;font:inherit;min-height:34px}.copyContactBtn b{font-size:12px;color:#0f766e;font-weight:950;white-space:nowrap}.copyContactBtn span{display:inline!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:var(--ink)!important;font-size:12.5px;font-weight:900;overflow-wrap:anywhere}@media(max-width:720px){.copyContactGrid{gap:5px}.copyContactBtn{min-height:32px;padding:6px 9px}}';
       document.head.appendChild(s);
     }
     contacts.forEach((c)=>{
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'copyContactBtn';
-      b.innerHTML = '<b>' + c[0] + '</b><span>' + c[1] + '</span>';
+      b.innerHTML = '<b>' + c[0] + '：</b><span>' + c[1] + '</span>';
       b.addEventListener('click', ()=>{
         copyText(c[1]).then(()=>{
           const x = one('b', b), old = c[0];

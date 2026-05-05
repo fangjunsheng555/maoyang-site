@@ -14,7 +14,7 @@ const PRODUCTS = {
 const BRAND_NAME = process.env.BRAND_NAME || '冒央会社';
 const SITE_DOMAIN = process.env.SITE_DOMAIN || 'joinvip.vip';
 const SITE_URL = process.env.SITE_URL || ('https://' + SITE_DOMAIN);
-const SUPPORT_CONTACT = process.env.SUPPORT_CONTACT || '请通过 QQ 2802632995 / WhatsApp +1 4315093334 / Telegram @MaoyangSupport 联系在线客服';
+const SUPPORT_CONTACT = process.env.SUPPORT_CONTACT || 'QQ：2802632995\nWhatsApp：+1 4315093334\nTelegram：@MaoyangSupport';
 const USDT_DISCOUNT = 0.9;
 const USDT_RATE = 6.85;
 
@@ -174,7 +174,7 @@ async function sendOrderEmail(order) {
 
   try {
     const html = buildOrderEmailHtml({ order, brandName: BRAND_NAME, siteDomain: SITE_DOMAIN, siteUrl: SITE_URL, supportContact: SUPPORT_CONTACT, usdtRate: USDT_RATE });
-    const text = buildOrderEmailText({ order, brandName: BRAND_NAME, siteDomain: SITE_DOMAIN, siteUrl: SITE_URL, usdtRate: USDT_RATE });
+    const text = buildOrderEmailText({ order, brandName: BRAND_NAME, siteDomain: SITE_DOMAIN, siteUrl: SITE_URL, supportContact: SUPPORT_CONTACT, usdtRate: USDT_RATE });
     const subject = order.items.length > 1
       ? '订单确认 ' + order.orderId + ' · ' + order.items.length + ' 件 · ' + BRAND_NAME
       : '订单确认 ' + order.orderId + ' · ' + order.items[0].label + ' · ' + BRAND_NAME;

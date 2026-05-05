@@ -10,6 +10,9 @@
   const selectedCountEl = document.querySelector('[data-selected-count]');
   const bulkCancelBtn = document.querySelector('[data-bulk-cancel]');
   const bulkDeleteBtn = document.querySelector('[data-bulk-delete]');
+  const modalEl = document.querySelector('[data-admin-modal]');
+  const modalBodyEl = document.querySelector('[data-admin-modal-body]');
+  const modalTitleEl = document.querySelector('[data-admin-modal-title]');
   if(!form || !keyInput || !statusBox || !tableBody) return;
 
   const FULFILLABLE = new Set(['netflix', 'disney', 'hbomax', 'chatgpt']);
@@ -148,7 +151,7 @@
       actionBtn.type = 'button';
       actionBtn.className = 'adminAction';
       actionBtn.textContent = '处理';
-      actionBtn.addEventListener('click', ()=>toggleEditor(o, tr));
+      actionBtn.addEventListener('click', ()=>openEditorModal(o));
       actionTd.appendChild(actionBtn);
       tr.appendChild(actionTd);
 
@@ -238,7 +241,7 @@
       actionBtn.type = 'button';
       actionBtn.className = 'adminAction';
       actionBtn.textContent = '处理';
-      actionBtn.addEventListener('click', ()=>toggleMobileEditor(o, card));
+      actionBtn.addEventListener('click', ()=>openEditorModal(o));
 
       top.appendChild(selectBox);
       top.appendChild(main);
@@ -389,6 +392,26 @@
     return box;
   }
 
+  function closeEditorModal(){
+    if(!modalEl || !modalBodyEl) return;
+    modalEl.hidden = true;
+    modalBodyEl.innerHTML = '';
+    document.body.classList.remove('adminModalOpen');
+  }
+
+  function openEditorModal(order){
+    if(!modalEl || !modalBodyEl){
+      return;
+    }
+    removeEditors();
+    removeMobileEditors();
+    if(modalTitleEl) modalTitleEl.textContent = (order.orderId || '') + (order.orderId ? ' · ' : '') + itemsLabel(order);
+    modalBodyEl.innerHTML = '';
+    modalBodyEl.appendChild(buildEditorBox(order, closeEditorModal));
+    modalEl.hidden = false;
+    document.body.classList.add('adminModalOpen');
+  }
+
   function toggleEditor(order, afterRow){
     const next = afterRow.nextElementSibling;
     if(next && next.classList.contains('adminEditRow')){
@@ -465,6 +488,7 @@
         ? (data.email.ok ? '完成邮件已发送。' : '订单已保存，但完成邮件发送失败：' + (data.email.reason || data.email.error || '未知错误') + '。')
         : '订单已保存。';
       await loadOrders(key);
+      closeEditorModal();
       setStatus(emailNote, !!(data.email && !data.email.ok));
     }catch(error){
       if(error.message === 'missing_fulfillment'){
@@ -593,4 +617,12 @@
   }
   if(bulkCancelBtn) bulkCancelBtn.addEventListener('click', ()=>bulkAction('cancel'));
   if(bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', ()=>bulkAction('delete'));
+  if(modalEl){
+    modalEl.querySelectorAll('[data-admin-modal-close]').forEach((node)=>{
+      node.addEventListener('click', closeEditorModal);
+    });
+    document.addEventListener('keydown', (event)=>{
+      if(event.key === 'Escape' && !modalEl.hidden) closeEditorModal();
+    });
+  }
 })();
