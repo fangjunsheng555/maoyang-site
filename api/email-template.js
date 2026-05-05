@@ -323,7 +323,7 @@ function buildFulfillmentEmailHtml({ order, brandName, siteDomain, siteUrl, supp
           '</td></tr>' +
           note +
           '<tr><td style="padding:24px 28px 0;">' +
-            '<div style="border-radius:14px;background:#f0fdfa;border:1px solid #a7f3d0;padding:14px 16px;color:#134e4a;font-size:13px;line-height:1.75;">如遇登录、订阅或地区问题，请带上订单号联系在线客服<div style="margin-top:8px;font-weight:700;">' + supportContactHtml(supportContact) + '</div></div>' +
+            '<div style="border-radius:14px;background:#f0fdfa;border:1px solid #a7f3d0;padding:14px 16px;color:#134e4a;font-size:13px;line-height:1.75;">如遇登录、订阅等问题，请联系在线客服<div style="margin-top:8px;font-weight:700;">' + supportContactHtml(supportContact) + '</div></div>' +
           '</td></tr>' +
           '<tr><td style="padding:28px 28px 30px;">' +
             '<hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 18px;">' +
