@@ -731,6 +731,15 @@ body.hasCartBar .toTop{bottom:calc(86px + env(safe-area-inset-bottom))}
 .cartBarInfo,.cartBarGo,.cartPanel button{touch-action:manipulation}
 .cartPanel{z-index:2199}
 .cartBar[hidden],.cartPanel[hidden]{display:none!important}
+@media (max-width:720px){
+  .cartBar{left:0;right:0;bottom:0;width:100%;transform:none;border-left:0;border-right:0;border-bottom:0;border-radius:14px 14px 0 0;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+  .cartBarInfo{min-width:0}
+  .cartBarGo{padding:9px 13px}
+  .cartPanel{left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));width:100%;transform:none;border-left:0;border-right:0;border-radius:14px 14px 0 0;max-height:58vh}
+  body.hasCartBar{padding-bottom:calc(62px + env(safe-area-inset-bottom))}
+  .checkoutMobileCta{left:0;right:0;bottom:0;border-left:0;border-right:0;border-bottom:0;border-radius:14px 14px 0 0;padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+  body.hasCheckoutMobileCta .checkoutMain{padding-bottom:72px}
+}
 @media (max-width:920px){
   .section{padding:34px 0}
   .sectionTight{padding-top:28px}

@@ -103,7 +103,7 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
               '<span style="font-size:32px;color:#047857;">✓</span>' +
             '</div>' +
             '<h1 style="margin:0 0 6px;font-size:22px;font-weight:900;letter-spacing:-0.03em;color:#0f172a;">订单已收到</h1>' +
-            '<p style="margin:0;color:#64748b;font-size:13.5px;line-height:1.6;">客服将在 <strong style="color:#0f172a;">30 分钟内</strong> 处理您的订单<br>请保持邮箱及联系方式畅通。</p>' +
+            '<p style="margin:0;color:#64748b;font-size:13.5px;line-height:1.6;">客服将在 <strong style="color:#0f172a;">30 分钟内</strong> 处理您的订单<br>请保持邮箱及联系方式畅通</p>' +
           '</td></tr>' +
           // Order ID + paid
           '<tr><td style="padding:18px 28px 0;">' +
@@ -181,7 +181,7 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
               '<td style="color:#0f172a;font-size:13px;font-weight:800;letter-spacing:-0.01em;">' + escapeHtml(brandName) + '</td>' +
               '<td style="text-align:right;color:#94a3b8;font-size:11.5px;">' + escapeHtml(siteDomain || '') + '</td>' +
             '</tr></table>' +
-            '<p style="margin:10px 0 0;font-size:11px;color:#cbd5e1;line-height:1.6;">本邮件由系统自动发送，请勿直接回复。订单时间：' + escapeHtml(order.createdAtBeijing || '') + '</p>' +
+            '<p style="margin:10px 0 0;font-size:11px;color:#cbd5e1;line-height:1.6;">本邮件由系统自动发送，请勿直接回复<br>订单时间：' + escapeHtml(order.createdAtBeijing || '') + '</p>' +
           '</td></tr>' +
         '</table>' +
       '</td></tr></table>' +
@@ -224,7 +224,7 @@ function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, supportCon
   } else {
     lines.push('实付: ¥' + order.finalAmount);
   }
-  lines.push('', '客服将在 30 分钟内处理您的订单。', '查询订单请访问: ' + queryUrl, '', '联系方式:', supportContactText(supportContact));
+  lines.push('', '客服将在 30 分钟内处理您的订单', '查询订单请访问: ' + queryUrl, '', '联系方式:', supportContactText(supportContact));
   return lines.join('\n');
 }
 
@@ -266,7 +266,7 @@ function buildFulfillmentEmailHtml({ order, brandName, siteDomain, siteUrl, supp
     }
     const accessHtml = accessRows.length
       ? accessRows.join('')
-      : '<p style="margin:8px 0 0;color:#64748b;font-size:12.5px;line-height:1.7;">该服务已按订单信息处理完成。</p>';
+      : '<p style="margin:8px 0 0;color:#64748b;font-size:12.5px;line-height:1.7;">该服务已按订单信息处理完成</p>';
 
     return (
       '<tr><td style="padding:16px 0;border-bottom:' + (idx === items.length - 1 ? '0' : '1px solid #f1f5f9') + ';">' +
@@ -291,7 +291,7 @@ function buildFulfillmentEmailHtml({ order, brandName, siteDomain, siteUrl, supp
     '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
     '<title>服务已开通 - ' + escapeHtml(brandName) + '</title></head>' +
     '<body style="margin:0;padding:0;background:#f4f6fb;font-family:-apple-system,BlinkMacSystemFont,\'PingFang SC\',\'Microsoft YaHei\',sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;">' +
-      '<div style="display:none;max-height:0;overflow:hidden;">您的订单 ' + escapeHtml(order.orderId) + ' 已完成充值，请查看账号、密码或订阅链接。</div>' +
+      '<div style="display:none;max-height:0;overflow:hidden;">您的订单 ' + escapeHtml(order.orderId) + ' 已完成充值，请查看账号、密码或订阅链接</div>' +
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f6fb;padding:32px 12px;"><tr><td align="center">' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;background:#ffffff;border-radius:20px;box-shadow:0 8px 32px rgba(15,23,42,0.06);overflow:hidden;">' +
           '<tr><td style="padding:26px 28px 18px;background:linear-gradient(135deg,#0f172a 0%,#0f766e 100%);">' +
@@ -303,7 +303,7 @@ function buildFulfillmentEmailHtml({ order, brandName, siteDomain, siteUrl, supp
           '<tr><td style="padding:32px 28px 12px;text-align:center;">' +
             '<div style="display:inline-block;width:64px;height:64px;line-height:64px;border-radius:50%;background:linear-gradient(135deg,#d1fae5,#a7f3d0);margin-bottom:14px;"><span style="font-size:32px;color:#047857;">✓</span></div>' +
             '<h1 style="margin:0 0 6px;font-size:22px;font-weight:950;letter-spacing:-0.03em;color:#0f172a;">服务已开通</h1>' +
-            '<p style="margin:0;color:#64748b;font-size:13.5px;line-height:1.65;">订单已完成充值，下面是您的服务信息。请妥善保存，不要公开分享。</p>' +
+            '<p style="margin:0;color:#64748b;font-size:13.5px;line-height:1.65;">订单已完成充值，下面是您的服务信息<br>请妥善保存，不要公开分享</p>' +
           '</td></tr>' +
           '<tr><td style="padding:18px 28px 0;">' +
             '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;"><tr>' +
@@ -323,7 +323,7 @@ function buildFulfillmentEmailHtml({ order, brandName, siteDomain, siteUrl, supp
           '</td></tr>' +
           note +
           '<tr><td style="padding:24px 28px 0;">' +
-            '<div style="border-radius:14px;background:#f0fdfa;border:1px solid #a7f3d0;padding:14px 16px;color:#134e4a;font-size:13px;line-height:1.75;">如遇登录、订阅或地区问题，请带上订单号联系在线客服。<div style="margin-top:8px;font-weight:700;">' + supportContactHtml(supportContact) + '</div></div>' +
+            '<div style="border-radius:14px;background:#f0fdfa;border:1px solid #a7f3d0;padding:14px 16px;color:#134e4a;font-size:13px;line-height:1.75;">如遇登录、订阅或地区问题，请带上订单号联系在线客服<div style="margin-top:8px;font-weight:700;">' + supportContactHtml(supportContact) + '</div></div>' +
           '</td></tr>' +
           '<tr><td style="padding:28px 28px 30px;">' +
             '<hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 18px;">' +
@@ -331,7 +331,7 @@ function buildFulfillmentEmailHtml({ order, brandName, siteDomain, siteUrl, supp
               '<td style="color:#0f172a;font-size:13px;font-weight:900;">' + escapeHtml(brandName) + '</td>' +
               '<td style="text-align:right;color:#94a3b8;font-size:11.5px;">' + escapeHtml(siteDomain || '') + '</td>' +
             '</tr></table>' +
-            '<p style="margin:10px 0 0;font-size:11px;color:#cbd5e1;line-height:1.6;">本邮件由系统自动发送，请勿直接回复。</p>' +
+            '<p style="margin:10px 0 0;font-size:11px;color:#cbd5e1;line-height:1.6;">本邮件由系统自动发送，请勿直接回复</p>' +
           '</td></tr>' +
         '</table>' +
       '</td></tr></table>' +
@@ -362,7 +362,7 @@ function buildFulfillmentEmailText({ order, brandName, siteDomain, siteUrl, supp
     if (it.fulfillmentNote) lines.push('      备注: ' + it.fulfillmentNote);
   });
   if (order.fulfillmentNote) lines.push('', '开通备注: ' + order.fulfillmentNote);
-  lines.push('', '如遇问题，请带上订单号联系在线客服。', supportContactText(supportContact), siteDomain || '');
+  lines.push('', '如遇问题，请带上订单号联系在线客服', supportContactText(supportContact), siteDomain || '');
   return lines.join('\n');
 }
 

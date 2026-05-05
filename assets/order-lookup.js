@@ -137,20 +137,20 @@
   function renderResults(orders){
     resultsBox.innerHTML = '';
     if(!orders.length){
-      setStatus('未查询到订单，请核对订单编号或下单邮箱是否完整正确。', true);
+      setStatus('未查询到订单，请核对订单编号或下单邮箱是否完整正确', true);
       return;
     }
     setStatus('');
     if(orders.length === 1 && orders[0].matchType === 'orderId'){
       // Direct modal for orderId match
       openModal(orders[0]);
-      const hint = el('div','lookupHint','已自动打开订单详情，点击下方条目可重新查看。');
+      const hint = el('div','lookupHint','已自动打开订单详情，点击下方条目可重新查看');
       resultsBox.appendChild(hint);
       resultsBox.appendChild(renderSummaryRow(orders[0]));
       return;
     }
     // Email match - summary list
-    const head = el('div','lookupHint','找到 ' + orders.length + ' 条订单，点击查看完整详情。');
+    const head = el('div','lookupHint','找到 ' + orders.length + ' 条订单，点击查看完整详情');
     resultsBox.appendChild(head);
     orders.forEach((o)=>resultsBox.appendChild(renderSummaryRow(o)));
   }
@@ -170,16 +170,16 @@
     event.preventDefault();
     const query = (input.value || '').trim();
     resultsBox.innerHTML = '';
-    if(!query){ setStatus('请输入完整订单编号或下单时填写的邮箱。', true); return; }
+    if(!query){ setStatus('请输入完整订单编号或下单时填写的邮箱', true); return; }
     const button = form.querySelector('[data-lookup-submit]');
     button.disabled = true;
     setStatus('正在查询订单...');
     try{
       const data = await queryOrders(query);
-      if(!data.configured){ setStatus('订单存储尚未连接，请联系在线客服查询。', true); return; }
+      if(!data.configured){ setStatus('订单存储尚未连接，请联系在线客服查询', true); return; }
       renderResults(data.orders || []);
     }catch(error){
-      setStatus('订单查询失败，请稍后重试或联系在线客服。', true);
+      setStatus('订单查询失败，请稍后重试或联系在线客服', true);
     }finally{
       button.disabled = false;
     }

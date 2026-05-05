@@ -86,8 +86,15 @@
       '<div class="cartPanelSummary" data-cart-panel-summary></div>';
     document.body.appendChild(panel);
 
+    const infoBtn = bar.querySelector('[data-cart-info]');
+    infoBtn.addEventListener('click', (event)=>{
+      event.preventDefault();
+      event.stopPropagation();
+      toggle();
+    });
     bar.addEventListener('click', (event)=>{
       if(event.target.closest('.cartBarGo')) return;
+      if(event.target.closest('[data-cart-info]')) return;
       toggle();
     });
     panel.querySelector('.cartPanelClose').addEventListener('click', ()=>setExpanded(false));

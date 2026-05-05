@@ -214,23 +214,23 @@
     event.preventDefault();
     setStatus('');
     const items = Cart.items();
-    if(items.length === 0){ setStatus('购物车为空，请先选购商品。', true); return; }
+    if(items.length === 0){ setStatus('购物车为空，请先选购商品', true); return; }
     const data = new FormData(form);
     const email = String(data.get('email') || '').trim();
     const contact = String(data.get('contact') || '').trim();
     const remark = String(data.get('remark') || '').trim();
-    if(!validateEmail(email)){ setStatus('请填写有效的邮箱地址，订单确认与日后查询将发送到该邮箱。', true); return; }
-    if(needsContact(items) && !contact){ setStatus('Spotify 订单需要填写联系方式，便于家庭组邀请或异常处理。', true); return; }
+    if(!validateEmail(email)){ setStatus('请填写有效的邮箱地址，订单确认与日后查询将发送到该邮箱', true); return; }
+    if(needsContact(items) && !contact){ setStatus('Spotify 订单需要填写联系方式，便于家庭组邀请或异常处理', true); return; }
 
     const fields = fieldsState();
     const orderItems = [];
     for(const p of items){
       const f = fields[p.key] || {};
       if(p.needsUsername && !validateUsername(f.username)){
-        setStatus('请为「' + p.label + '」设置 4-10 位数字字母用户名。', true); return;
+        setStatus('请为「' + p.label + '」设置 4-10 位数字字母用户名', true); return;
       }
       if(p.needsAccountPassword && (!f.account || !f.password)){
-        setStatus('请为「' + p.label + '」填写需要开通的账号和密码。', true); return;
+        setStatus('请为「' + p.label + '」填写需要开通的账号和密码', true); return;
       }
       orderItems.push({
         service: p.key,

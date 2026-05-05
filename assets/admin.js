@@ -47,6 +47,9 @@
     if(!o.createdAt) return '';
     return new Date(o.createdAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) + ' 北京时间';
   }
+  function compactTime(o){
+    return orderTime(o).replace(/\s*北京时间$/, '');
+  }
   function orderItems(o){
     if(Array.isArray(o.items) && o.items.length > 0) return o.items;
     return [{
@@ -250,10 +253,9 @@
 
       const info = document.createElement('div');
       info.className = 'adminMobileInfo';
-      appendMobileInfo(info, '时间', orderTime(o));
+      appendMobileInfo(info, '时间', compactTime(o));
       appendMobileInfo(info, '邮箱', o.email || '');
-      appendMobileInfo(info, '联系', o.contact || '');
-      appendMobileInfo(info, '交付', itemsCreds(o));
+      if(o.contact) appendMobileInfo(info, '联系', o.contact);
       card.appendChild(info);
 
       const remarkText = [
@@ -264,7 +266,7 @@
       if(remarkText){
         const remark = document.createElement('div');
         remark.className = 'adminMobileRemark';
-        remark.textContent = remarkText;
+        remark.textContent = remarkText.replace(/\s+/g, ' ').slice(0, 72);
         card.appendChild(remark);
       }
 
@@ -351,9 +353,9 @@
         if(it.service === 'network'){
           readonly.textContent = '网络节点无需用户设置用户名，订阅名固定使用订单号：' + (order.orderId || '');
         }else if(it.service === 'spotify'){
-          readonly.textContent = 'Spotify 使用用户提交的账号密码处理，联系方式仅此服务需要。';
+          readonly.textContent = 'Spotify 使用用户提交的账号密码处理，联系方式仅此服务需要';
         }else{
-          readonly.textContent = '此服务无需后台填写账号密码。';
+          readonly.textContent = '此服务无需后台填写账号密码';
         }
         card.appendChild(readonly);
       }
@@ -458,7 +460,7 @@
   async function saveOrder(event, orderId, box, saveButton){
     event.preventDefault();
     const key = keyInput.value.trim();
-    if(!key){ setStatus('请输入管理密钥。', true); return; }
+    if(!key){ setStatus('请输入管理密钥', true); return; }
 
     const payload = {
       orderId,
@@ -485,8 +487,8 @@
         throw error;
       }
       const emailNote = data.email
-        ? (data.email.ok ? '完成邮件已发送。' : '订单已保存，但完成邮件发送失败：' + (data.email.reason || data.email.error || '未知错误') + '。')
-        : '订单已保存。';
+        ? (data.email.ok ? '完成邮件已发送' : '订单已保存，但完成邮件发送失败：' + (data.email.reason || data.email.error || '未知错误'))
+        : '订单已保存';
       await loadOrders(key);
       closeEditorModal();
       setStatus(emailNote, !!(data.email && !data.email.ok));
@@ -512,7 +514,7 @@
       visibleOrders = [];
       selectedIds.clear();
       render([]);
-      setStatus('订单存储尚未连接。', true);
+      setStatus('订单存储尚未连接', true);
       return;
     }
     currentOrders = data.orders || [];
@@ -520,17 +522,17 @@
     Array.from(selectedIds).forEach((id)=>{ if(!liveIds.has(id)) selectedIds.delete(id); });
     applyFilter();
     const query = searchInput ? searchInput.value.trim() : '';
-    setStatus('已读取 ' + currentOrders.length + ' 条订单' + (query ? '，当前显示 ' + visibleOrders.length + ' 条。' : '。'), false);
+    setStatus('已读取 ' + currentOrders.length + ' 条订单' + (query ? '，当前显示 ' + visibleOrders.length + ' 条' : ''), false);
   }
 
   async function bulkAction(action){
     const key = keyInput.value.trim();
-    if(!key){ setStatus('请输入管理密钥。', true); return; }
+    if(!key){ setStatus('请输入管理密钥', true); return; }
     const ids = Array.from(selectedIds).filter(Boolean);
-    if(ids.length === 0){ setStatus('请先选择订单。', true); return; }
+    if(ids.length === 0){ setStatus('请先选择订单', true); return; }
     const isDelete = action === 'delete';
     const message = isDelete
-      ? '确定删除选中的 ' + ids.length + ' 个订单吗？删除后后台不会再显示。'
+      ? '确定删除选中的 ' + ids.length + ' 个订单吗？删除后后台不会再显示'
       : '确定取消选中的 ' + ids.length + ' 个订单吗？';
     if(!window.confirm(message)) return;
 
@@ -547,7 +549,7 @@
       if(!response.ok || !data.ok) throw new Error(data.error || 'bulk_failed');
       selectedIds.clear();
       await loadOrders(key);
-      setStatus((isDelete ? '已删除 ' : '已取消 ') + data.affected + ' 个订单。', false);
+      setStatus((isDelete ? '已删除 ' : '已取消 ') + data.affected + ' 个订单', false);
     }catch(error){
       setStatus(errorMessage(error), true);
     }finally{
@@ -564,15 +566,15 @@
 
   function errorMessage(error){
     const code = error && error.message;
-    if(code === 'unauthorized') return '管理密钥不正确，请检查 ADMIN_KEY / MAOYANG_ADMIN_KEY。';
-    if(code === 'admin_key_not_configured') return '后台管理密钥未配置，请在部署环境设置 ADMIN_KEY 或 MAOYANG_ADMIN_KEY。';
-    if(code === 'storage_not_configured') return '订单存储尚未连接，请配置 KV_REST_API_URL 与 KV_REST_API_TOKEN。';
-    if(code === 'storage_read_failed') return '订单存储读取失败，请检查 Upstash / Vercel KV 配置。';
-    if(code === 'storage_write_failed') return '订单保存失败，请检查 Upstash / Vercel KV 写入权限。';
-    if(code === 'storage_unavailable') return '订单存储暂时不可用，请稍后重试。';
-    if(code === 'missing_order_ids') return '请先选择要操作的订单。';
-    if(code === 'invalid_action') return '批量操作类型无效，请刷新后台后重试。';
-    return '操作失败，请检查管理密钥、存储配置和邮箱配置。';
+    if(code === 'unauthorized') return '管理密钥不正确，请检查 ADMIN_KEY / MAOYANG_ADMIN_KEY';
+    if(code === 'admin_key_not_configured') return '后台管理密钥未配置，请在部署环境设置 ADMIN_KEY 或 MAOYANG_ADMIN_KEY';
+    if(code === 'storage_not_configured') return '订单存储尚未连接，请配置 KV_REST_API_URL 与 KV_REST_API_TOKEN';
+    if(code === 'storage_read_failed') return '订单存储读取失败，请检查 Upstash / Vercel KV 配置';
+    if(code === 'storage_write_failed') return '订单保存失败，请检查 Upstash / Vercel KV 写入权限';
+    if(code === 'storage_unavailable') return '订单存储暂时不可用，请稍后重试';
+    if(code === 'missing_order_ids') return '请先选择要操作的订单';
+    if(code === 'invalid_action') return '批量操作类型无效，请刷新后台后重试';
+    return '操作失败，请检查管理密钥、存储配置和邮箱配置';
   }
 
   const savedKey = keyFromLocation() || sessionStorage.getItem('maoyangAdminKey');
@@ -585,7 +587,7 @@
   form.addEventListener('submit', async (event)=>{
     event.preventDefault();
     const key = keyInput.value.trim();
-    if(!key){ setStatus('请输入管理密钥。', true); return; }
+    if(!key){ setStatus('请输入管理密钥', true); return; }
     sessionStorage.setItem('maoyangAdminKey', key);
     try{ await loadOrders(key); }
     catch(error){
@@ -602,7 +604,7 @@
       applyFilter();
       const query = searchInput.value.trim();
       if(currentOrders.length > 0){
-        setStatus(query ? ('当前显示 ' + visibleOrders.length + ' / ' + currentOrders.length + ' 条订单。') : ('已读取 ' + currentOrders.length + ' 条订单。'), false);
+        setStatus(query ? ('当前显示 ' + visibleOrders.length + ' / ' + currentOrders.length + ' 条订单') : ('已读取 ' + currentOrders.length + ' 条订单'), false);
       }
     });
   }

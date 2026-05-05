@@ -96,15 +96,15 @@
 
   // Reviews list (random 3)
   const reviews = [
-    { name:'Winton',     text:'你们的会员确实稳，比别家便宜还更好。' },
-    { name:'团团不委屈', text:'很不错，客服很有耐心解决问题。' },
-    { name:'Vin',        text:'速度太牛了，爽。' },
-    { name:'Ana',        text:'用了两年多了，有时候会掉出会员，但是客服都给解决了。' },
-    { name:'水水水',     text:'奈飞搭配客服给的专线太爽了，真秒开 4K。' },
-    { name:'YUQI',       text:'确实快，认准这家没错。' },
-    { name:'Martin',     text:'Perfect price with perfect service.' },
-    { name:'刘生',       text:'非常誠信的賣家，說到做到。' },
-    { name:'Yeffy Chan', text:'真是正，第一次見咁好嘅商家，祝興隆。' }
+    { name:'Winton',     text:'你们的会员确实稳，比别家便宜还更好' },
+    { name:'团团不委屈', text:'很不错，客服很有耐心解决问题' },
+    { name:'Vin',        text:'速度太牛了，爽' },
+    { name:'Ana',        text:'用了两年多了，有时候会掉出会员，但是客服都给解决了' },
+    { name:'水水水',     text:'奈飞搭配客服给的专线太爽了，真秒开 4K' },
+    { name:'YUQI',       text:'确实快，认准这家没错' },
+    { name:'Martin',     text:'Perfect price with perfect service' },
+    { name:'刘生',       text:'非常誠信的賣家，說到做到' },
+    { name:'Yeffy Chan', text:'真是正，第一次見咁好嘅商家，祝興隆' }
   ];
   const list = document.getElementById('rvList');
   if(list){
