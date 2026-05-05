@@ -39,7 +39,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(redis.url + '/lrange/' + encodeURIComponent(ORDERS_KEY) + '/0/99', {
+    const response = await fetch(redis.url + '/lrange/' + encodeURIComponent(ORDERS_KEY) + '/0/199', {
       headers: { Authorization: 'Bearer ' + redis.token }
     });
     const data = await response.json();

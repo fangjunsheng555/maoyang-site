@@ -4,10 +4,17 @@
   const statusBox = document.querySelector('[data-admin-status]');
   const tableBody = document.querySelector('[data-order-rows]');
   const emptyState = document.querySelector('[data-empty-state]');
+  const searchInput = document.querySelector('[data-admin-search]');
+  const selectAllInput = document.querySelector('[data-select-all]');
+  const selectedCountEl = document.querySelector('[data-selected-count]');
+  const bulkCancelBtn = document.querySelector('[data-bulk-cancel]');
+  const bulkDeleteBtn = document.querySelector('[data-bulk-delete]');
   if(!form || !keyInput || !statusBox || !tableBody) return;
 
   const FULFILLABLE = new Set(['netflix', 'disney', 'hbomax', 'chatgpt']);
   let currentOrders = [];
+  let visibleOrders = [];
+  const selectedIds = new Set();
 
   function setStatus(text, warn){
     statusBox.textContent = text;
@@ -70,13 +77,56 @@
   function removeEditors(){
     tableBody.querySelectorAll('.adminEditRow').forEach((row)=>row.remove());
   }
+  function norm(v){ return safe(v).trim().toLowerCase(); }
+  function orderId(o){ return safe(o.orderId).trim(); }
+  function matchesOrderSearch(o, query){
+    const q = norm(query);
+    if(!q) return true;
+    return norm(o.orderId).includes(q) || norm(o.email).includes(q);
+  }
+  function syncSelectionUi(){
+    const visibleIds = visibleOrders.map(orderId).filter(Boolean);
+    const selectedVisible = visibleIds.filter((id)=>selectedIds.has(id)).length;
+    const selectedTotal = selectedIds.size;
+    if(selectedCountEl) selectedCountEl.textContent = '已选 ' + selectedTotal + ' 单';
+    if(bulkCancelBtn) bulkCancelBtn.disabled = selectedTotal === 0;
+    if(bulkDeleteBtn) bulkDeleteBtn.disabled = selectedTotal === 0;
+    if(selectAllInput){
+      selectAllInput.checked = visibleIds.length > 0 && selectedVisible === visibleIds.length;
+      selectAllInput.indeterminate = selectedVisible > 0 && selectedVisible < visibleIds.length;
+      selectAllInput.disabled = visibleIds.length === 0;
+    }
+  }
+  function applyFilter(){
+    const query = searchInput ? searchInput.value : '';
+    visibleOrders = currentOrders.filter((order)=>matchesOrderSearch(order, query));
+    render(visibleOrders);
+  }
 
   function render(orders){
-    currentOrders = orders || [];
+    const list = orders || [];
     tableBody.innerHTML = '';
-    emptyState.hidden = currentOrders.length > 0;
-    currentOrders.forEach((o)=>{
+    emptyState.textContent = currentOrders.length > 0 ? '没有匹配订单' : '暂无订单';
+    emptyState.hidden = list.length > 0;
+    list.forEach((o)=>{
       const tr = document.createElement('tr');
+      const id = orderId(o);
+
+      const selectTd = document.createElement('td');
+      selectTd.dataset.label = '选择';
+      selectTd.className = 'adminSelectCell';
+      const selectBox = document.createElement('input');
+      selectBox.type = 'checkbox';
+      selectBox.checked = selectedIds.has(id);
+      selectBox.disabled = !id;
+      selectBox.setAttribute('aria-label', '选择订单 ' + id);
+      selectBox.addEventListener('change', ()=>{
+        if(selectBox.checked) selectedIds.add(id);
+        else selectedIds.delete(id);
+        syncSelectionUi();
+      });
+      selectTd.appendChild(selectBox);
+      tr.appendChild(selectTd);
 
       const statusTd = document.createElement('td');
       statusTd.dataset.label = '状态';
@@ -110,6 +160,7 @@
 
       tableBody.appendChild(tr);
     });
+    syncSelectionUi();
   }
 
   function field(label, input){
@@ -147,7 +198,7 @@
     const editorRow = document.createElement('tr');
     editorRow.className = 'adminEditRow';
     const td = document.createElement('td');
-    td.colSpan = 11;
+    td.colSpan = 12;
     editorRow.appendChild(td);
 
     const box = document.createElement('form');
@@ -303,12 +354,51 @@
     const data = await response.json();
     if(!response.ok || !data.ok) throw new Error(data.error || '读取失败');
     if(!data.configured){
+      currentOrders = [];
+      visibleOrders = [];
+      selectedIds.clear();
       render([]);
       setStatus('订单存储尚未连接。', true);
       return;
     }
-    render(data.orders || []);
-    setStatus('已读取 ' + (data.orders || []).length + ' 条订单。', false);
+    currentOrders = data.orders || [];
+    const liveIds = new Set(currentOrders.map(orderId).filter(Boolean));
+    Array.from(selectedIds).forEach((id)=>{ if(!liveIds.has(id)) selectedIds.delete(id); });
+    applyFilter();
+    const query = searchInput ? searchInput.value.trim() : '';
+    setStatus('已读取 ' + currentOrders.length + ' 条订单' + (query ? '，当前显示 ' + visibleOrders.length + ' 条。' : '。'), false);
+  }
+
+  async function bulkAction(action){
+    const key = keyInput.value.trim();
+    if(!key){ setStatus('请输入管理密钥。', true); return; }
+    const ids = Array.from(selectedIds).filter(Boolean);
+    if(ids.length === 0){ setStatus('请先选择订单。', true); return; }
+    const isDelete = action === 'delete';
+    const message = isDelete
+      ? '确定删除选中的 ' + ids.length + ' 个订单吗？删除后后台不会再显示。'
+      : '确定取消选中的 ' + ids.length + ' 个订单吗？';
+    if(!window.confirm(message)) return;
+
+    const btn = isDelete ? bulkDeleteBtn : bulkCancelBtn;
+    const original = btn ? btn.textContent : '';
+    if(btn){ btn.disabled = true; btn.textContent = isDelete ? '删除中...' : '取消中...'; }
+    try{
+      const response = await fetch('/api/order-bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': key },
+        body: JSON.stringify({ action, orderIds: ids })
+      });
+      const data = await response.json();
+      if(!response.ok || !data.ok) throw new Error(data.error || 'bulk_failed');
+      selectedIds.clear();
+      await loadOrders(key);
+      setStatus((isDelete ? '已删除 ' : '已取消 ') + data.affected + ' 个订单。', false);
+    }catch(error){
+      setStatus(errorMessage(error), true);
+    }finally{
+      if(btn){ btn.textContent = original; syncSelectionUi(); }
+    }
   }
 
   function keyFromLocation(){
@@ -326,6 +416,8 @@
     if(code === 'storage_read_failed') return '订单存储读取失败，请检查 Upstash / Vercel KV 配置。';
     if(code === 'storage_write_failed') return '订单保存失败，请检查 Upstash / Vercel KV 写入权限。';
     if(code === 'storage_unavailable') return '订单存储暂时不可用，请稍后重试。';
+    if(code === 'missing_order_ids') return '请先选择要操作的订单。';
+    if(code === 'invalid_action') return '批量操作类型无效，请刷新后台后重试。';
     return '操作失败，请检查管理密钥、存储配置和邮箱配置。';
   }
 
@@ -342,6 +434,33 @@
     if(!key){ setStatus('请输入管理密钥。', true); return; }
     sessionStorage.setItem('maoyangAdminKey', key);
     try{ await loadOrders(key); }
-    catch(error){ render([]); setStatus(errorMessage(error), true); }
+    catch(error){
+      currentOrders = [];
+      visibleOrders = [];
+      selectedIds.clear();
+      render([]);
+      setStatus(errorMessage(error), true);
+    }
   });
+
+  if(searchInput){
+    searchInput.addEventListener('input', ()=>{
+      applyFilter();
+      const query = searchInput.value.trim();
+      if(currentOrders.length > 0){
+        setStatus(query ? ('当前显示 ' + visibleOrders.length + ' / ' + currentOrders.length + ' 条订单。') : ('已读取 ' + currentOrders.length + ' 条订单。'), false);
+      }
+    });
+  }
+  if(selectAllInput){
+    selectAllInput.addEventListener('change', ()=>{
+      visibleOrders.map(orderId).filter(Boolean).forEach((id)=>{
+        if(selectAllInput.checked) selectedIds.add(id);
+        else selectedIds.delete(id);
+      });
+      render(visibleOrders);
+    });
+  }
+  if(bulkCancelBtn) bulkCancelBtn.addEventListener('click', ()=>bulkAction('cancel'));
+  if(bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', ()=>bulkAction('delete'));
 })();
