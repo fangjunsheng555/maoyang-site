@@ -47,6 +47,11 @@
     statusBox.textContent = message;
     statusBox.classList.toggle('warn', !!warn);
   }
+  function emailWarning(result){
+    const deliveries = Array.isArray(result && result.deliveries) ? result.deliveries : [];
+    const email = deliveries.find((item)=>item && item.channel === 'email');
+    return email && !email.ok;
+  }
 
   if(!payload || !Array.isArray(payload.items) || payload.items.length === 0){
     block.hidden = true;
@@ -184,14 +189,20 @@
         body: JSON.stringify(payload)
       });
       const result = await response.json();
-      if(!response.ok || !result.ok) throw new Error(result.error || 'submit_failed');
+      if(!response.ok || !result.ok || !result.delivered) throw new Error(result.error || 'submit_failed');
       sessionStorage.removeItem('maoyangPendingOrder');
       Cart.clear();
       showSuccess(result);
+      if(emailWarning(result)){
+        const warn = document.createElement('div');
+        warn.className = 'checkoutAlert warn';
+        warn.textContent = '订单已提交，但邮件发送失败。请保存订单号并联系在线客服确认。';
+        success.insertBefore(warn, success.firstChild);
+      }
     }catch(error){
       finishBtn.disabled = false;
       finishBtn.innerHTML = originalLabel;
-      setStatus('订单提交失败，请联系在线客服处理。', true);
+      setStatus(error && error.message === 'delivery_failed' ? '订单提交失败：后台存储和通知通道都没有成功，请联系在线客服处理。' : '订单提交失败，请联系在线客服处理。', true);
     }
   });
 

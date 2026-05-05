@@ -1,8 +1,16 @@
 const ORDERS_KEY = 'maoyang:orders';
 
+function envFirst(...names) {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value) return value;
+  }
+  return '';
+}
+
 function redisConfig() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = envFirst('KV_REST_API_URL', 'UPSTASH_REDIS_REST_URL');
+  const token = envFirst('KV_REST_API_TOKEN', 'UPSTASH_REDIS_REST_TOKEN');
   if (!url || !token) return null;
   return { url: url.replace(/\/$/, ''), token };
 }
@@ -17,8 +25,11 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'method_not_allowed' });
   }
 
-  const expectedKey = process.env.ADMIN_KEY;
-  if (!expectedKey || adminKey(req) !== expectedKey) {
+  const expectedKey = envFirst('ADMIN_KEY', 'MAOYANG_ADMIN_KEY', 'ORDER_ADMIN_KEY');
+  if (!expectedKey) {
+    return res.status(503).json({ ok: false, error: 'admin_key_not_configured' });
+  }
+  if (adminKey(req) !== expectedKey) {
     return res.status(401).json({ ok: false, error: 'unauthorized' });
   }
 

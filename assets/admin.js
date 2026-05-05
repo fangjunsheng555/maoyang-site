@@ -77,8 +77,28 @@
     setStatus('已读取 ' + (data.orders || []).length + ' 条订单。', false);
   }
 
-  const savedKey = sessionStorage.getItem('maoyangAdminKey');
-  if(savedKey) keyInput.value = savedKey;
+  function keyFromLocation(){
+    const queryKey = new URLSearchParams(window.location.search).get('key');
+    if(queryKey) return queryKey.trim();
+    const hash = String(window.location.hash || '').replace(/^#/, '');
+    return new URLSearchParams(hash).get('key') || '';
+  }
+
+  function errorMessage(error){
+    const code = error && error.message;
+    if(code === 'unauthorized') return '管理密钥不正确，请检查 ADMIN_KEY / MAOYANG_ADMIN_KEY。';
+    if(code === 'admin_key_not_configured') return '后台管理密钥未配置，请在部署环境设置 ADMIN_KEY 或 MAOYANG_ADMIN_KEY。';
+    if(code === 'storage_read_failed') return '订单存储读取失败，请检查 Upstash / Vercel KV 配置。';
+    if(code === 'storage_unavailable') return '订单存储暂时不可用，请稍后重试。';
+    return '读取失败，请检查管理密钥和存储配置。';
+  }
+
+  const savedKey = keyFromLocation() || sessionStorage.getItem('maoyangAdminKey');
+  if(savedKey){
+    keyInput.value = savedKey;
+    sessionStorage.setItem('maoyangAdminKey', savedKey);
+    loadOrders(savedKey).catch((error)=>{ render([]); setStatus(errorMessage(error), true); });
+  }
 
   form.addEventListener('submit', async (event)=>{
     event.preventDefault();
@@ -86,6 +106,6 @@
     if(!key){ setStatus('请输入管理密钥。', true); return; }
     sessionStorage.setItem('maoyangAdminKey', key);
     try{ await loadOrders(key); }
-    catch(error){ render([]); setStatus('读取失败，请检查管理密钥和存储配置。', true); }
+    catch(error){ render([]); setStatus(errorMessage(error), true); }
   });
 })();

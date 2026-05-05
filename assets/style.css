@@ -700,3 +700,25 @@ body.hasCartBar .toTop{bottom:calc(86px + env(safe-area-inset-bottom))}
 @media (hover:none){
   .tile:hover,.card:hover,.productCard:hover{transform:none;border-color:var(--line);box-shadow:var(--shadow-sm)}
 }
+
+/* Codex mobile repair pass */
+.hero{min-height:min(520px,calc(100svh - 18px));background-image:linear-gradient(90deg,rgba(6,18,28,.88),rgba(6,18,28,.58) 48%,rgba(6,18,28,.32)),var(--hero,url('img/hero-membership.jpg'))}
+.section{padding:48px 0}
+.sectionTight{padding-top:34px}
+.grid3{gap:14px}
+.grid2{gap:16px}
+.productMediaImage{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.96}
+.productMedia:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,8,23,.05),rgba(2,8,23,.42));pointer-events:none}
+.productMediaIcon{position:relative;z-index:1}
+@media (max-width:920px){
+  .section{padding:34px 0}
+  .sectionTight{padding-top:28px}
+}
+@media (max-width:560px){
+  .hero{min-height:300px}
+  .hero .inner{padding:42px 0 34px}
+  .hero .title{font-size:32px}
+  .hero .subtitle{font-size:13px;line-height:1.52}
+  .section{padding:28px 0}
+  .sectionTight{padding-top:24px}
+}

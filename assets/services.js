@@ -25,9 +25,11 @@
     const saved = (p.original || 0) - p.amount;
     const card = el('article','productCard');
     card.dataset.product = p.key;
+    card.id = p.key;
     card.style.setProperty('--accent', p.accent);
     card.innerHTML =
       '<div class="productMedia">' +
+        (p.image ? '<img class="productMediaImage" src="' + p.image + '" alt="' + p.label + '" loading="lazy">' : '') +
         '<div class="productMediaIcon">' + brandIcon(p.key) + '</div>' +
         (p.badge ? '<div class="productBadge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 9 8l-6 1 4.5 4.4L6 20l6-3 6 3-1.5-6.6L21 9l-6-1Z"/></svg>' + p.badge + '</div>' : '') +
       '</div>' +
