@@ -120,6 +120,23 @@
           </div>
         </section>
 
+        <section class='section sectionTight' id='redeemCode'>
+          <div class='container'>
+            <div class='redeemPanel'>
+              <div class='redeemIntro'>
+                <span class='kicker'>兑换码</span>
+                <h2>兑换余额或商品</h2>
+                <p>输入兑换码后自动识别类型，余额码需登录账户领取，商品码会直接进入对应商品订单。</p>
+              </div>
+              <form class='redeemForm' data-home-redeem-form>
+                <input name='code' autocomplete='off' placeholder='输入兑换码' required>
+                <button type='submit'>立即兑换</button>
+              </form>
+              <div class='redeemStatus' data-home-redeem-status hidden></div>
+            </div>
+          </div>
+        </section>
+
         <section class='section sectionTight' id='orderLookup'>
           <div class='container'>
             <div class='lookupPanel'>
@@ -190,6 +207,7 @@
   <script src='assets/cart.js'></script>
   <script src='assets/cart-bar.js'></script>
   <script src='assets/auth.js'></script>
+  <script src='assets/redeem.js'></script>
   <script src='assets/script.js'></script>
   <script src='assets/order-lookup.js'></script>
 </body>

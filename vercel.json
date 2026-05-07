@@ -37,6 +37,10 @@
       "destination": "/api/account?route=user-redeem"
     },
     {
+      "source": "/api/redeem-preview",
+      "destination": "/api/account?route=redeem-preview"
+    },
+    {
       "source": "/api/user-withdraw",
       "destination": "/api/account?route=user-withdraw"
     },

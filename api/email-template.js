@@ -30,6 +30,7 @@ function money(value) {
 
 function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportContact, usdtRate }) {
   const isUsdt = order.paymentMethod === 'usdt';
+  const isRedeem = order.paymentMethod === 'redeem_code';
   const items = Array.isArray(order.items) && order.items.length > 0 ? order.items : [];
   const itemCount = items.length;
   const isCart = itemCount > 1;
@@ -77,10 +78,12 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
     );
   }).join('');
 
-  const paidValue = isUsdt
+  const paidValue = isRedeem
+    ? '¥0'
+    : isUsdt
     ? ((order.paidAmount || order.finalUsdt) + ' <span style="font-size:18px;color:#0f766e;font-weight:800;">USDT</span>')
     : money(order.paidAmount || order.finalAmount);
-  const paidNote = isUsdt ? '已通过 USDT-TRC20 网络支付（已享 9 折）' : '已通过支付宝担保支付';
+  const paidNote = isRedeem ? '已通过商品兑换码抵扣，无需付款' : (isUsdt ? '已通过 USDT-TRC20 网络支付（已享 9 折）' : '已通过支付宝担保支付');
 
   return (
     '<!DOCTYPE html><html lang="zh-CN"><head>' +
@@ -134,6 +137,10 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
               (isCart && order.discountRate > 0 ? (
                 '<tr><td style="padding:4px 16px;color:#d97706;font-size:13px;">组合优惠 · ' + escapeHtml(order.discountLabel || '') + '</td>' +
                 '<td style="padding:4px 16px;color:#d97706;font-size:13px;font-weight:600;text-align:right;">−' + money(order.subtotal - (order.baseFinalAmount || order.finalAmount)) + '</td></tr>'
+              ) : '') +
+              (order.couponDeduction > 0 ? (
+                '<tr><td style="padding:4px 16px;color:#0f766e;font-size:13px;">优惠券抵扣</td>' +
+                '<td style="padding:4px 16px;color:#0f766e;font-size:13px;font-weight:600;text-align:right;">−' + money(order.couponDeduction) + '</td></tr>'
               ) : '') +
               (order.walletDeduction > 0 ? (
                 '<tr><td style="padding:4px 16px;color:#0f766e;font-size:13px;">账户立减</td>' +
@@ -195,6 +202,7 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
 
 function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, supportContact, usdtRate }) {
   const isUsdt = order.paymentMethod === 'usdt';
+  const isRedeem = order.paymentMethod === 'redeem_code';
   const items = Array.isArray(order.items) && order.items.length > 0 ? order.items : [];
   const isCart = items.length > 1;
   const queryUrl = (siteUrl || ('https://' + (siteDomain || ''))) + '/?order=' + encodeURIComponent(order.orderId);
@@ -222,10 +230,13 @@ function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, supportCon
       lines.push('组合优惠 ' + order.discountLabel + ': −¥' + (order.subtotal - (order.baseFinalAmount || order.finalAmount)));
     }
   }
+  if (order.couponDeduction > 0) lines.push('优惠券抵扣: −¥' + order.couponDeduction);
   if (order.walletDeduction > 0) lines.push('账户立减: −¥' + order.walletDeduction);
   if (isUsdt) {
     lines.push('折后人民币: ¥' + order.finalAmount);
     lines.push('实付: ' + order.paidAmount + ' USDT (× 0.9 ÷ ' + (usdtRate || 6.85) + ')');
+  } else if (isRedeem) {
+    lines.push('实付: ¥0（商品兑换码）');
   } else {
     lines.push('实付: ¥' + order.finalAmount);
   }

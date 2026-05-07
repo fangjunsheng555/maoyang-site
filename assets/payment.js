@@ -62,7 +62,11 @@
   function isUsdt(){ return payload.paymentMethod === 'usdt'; }
 
   function renderHeader(){
-    if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+    if(payload.paymentMethod === 'redeem_code'){
+      methodTag.textContent = '商品兑换码';
+      if(secureLabel) secureLabel.textContent = '兑换码安全核销';
+      if(finishBtn) finishBtn.textContent = '提交兑换订单';
+    }else if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
       methodTag.textContent = '余额支付';
       if(secureLabel) secureLabel.textContent = '账户余额安全结算';
     }else if(isUsdt()){
@@ -75,9 +79,12 @@
   }
 
   function renderAmount(){
-    if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+    if(payload.paymentMethod === 'redeem_code'){
       amountDisplay.textContent = '¥0';
-      amountNote.textContent = '账户余额已全额抵扣';
+      amountNote.textContent = '商品兑换码已抵扣';
+    }else if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+      amountDisplay.textContent = '¥0';
+      amountNote.textContent = '账户优惠已全额抵扣';
     }else if(isUsdt()){
       amountDisplay.innerHTML = (payload.finalUsdt || payload.paidAmount) + ' <em>USDT</em>';
       amountNote.textContent = '¥' + payload.finalAmount + ' × 0.9 ÷ ' + (Number(cfg.usdtRateCnyPerUsdt || 6.85)).toFixed(2);
@@ -88,8 +95,10 @@
   }
 
   function renderTip(){
-    if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
-      payTip.textContent = '本单已由账户余额全额抵扣，无需扫码付款，直接点击下方按钮提交订单即可。';
+    if(payload.paymentMethod === 'redeem_code'){
+      payTip.textContent = '商品兑换码已识别，无需扫码付款。请确认订单信息后点击下方按钮提交，后台会按兑换码对应商品处理。';
+    }else if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+      payTip.textContent = '本单已由账户优惠全额抵扣，无需扫码付款，直接点击下方按钮提交订单即可。';
     }else if(isUsdt()){
       payTip.textContent = '请使用 TRON (TRC20) 网络转账精确金额 ' + (payload.finalUsdt) + ' USDT 到下方地址，付款完成后请记得返回本页面点击「付款完成」按钮提交订单。';
     }else{
@@ -103,8 +112,13 @@
   }
 
   function renderQr(){
-    if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
-      qrLabel.textContent = '余额已抵扣，无需扫码';
+    if(payload.paymentMethod === 'redeem_code'){
+      qrLabel.textContent = '兑换码已抵扣，无需扫码';
+      qrEmpty.textContent = '可直接提交订单';
+      syncQr('');
+      usdtBox.hidden = true;
+    }else if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+      qrLabel.textContent = '账户优惠已抵扣，无需扫码';
       qrEmpty.textContent = '可直接提交订单';
       syncQr('');
       usdtBox.hidden = true;
@@ -135,6 +149,12 @@
     }
     if(payload.walletDeduction > 0){
       html += '<div class="paySummaryRow wallet"><span>账户立减</span><b>−' + money(payload.walletDeduction) + '</b></div>';
+    }
+    if(payload.couponDeduction > 0){
+      html += '<div class="paySummaryRow wallet"><span>优惠券抵扣</span><b>−' + money(payload.couponDeduction) + '</b></div>';
+    }
+    if(payload.paymentMethod === 'redeem_code'){
+      html += '<div class="paySummaryRow wallet"><span>商品兑换码</span><b>−' + money(payload.baseFinalAmount || payload.subtotal || 0) + '</b></div>';
     }
     html += '<div class="paySummaryRow total"><span>' + (isUsdt() ? '实付 USDT' : '实付总额') + '</span><b>' + (isUsdt() ? (payload.finalUsdt + ' USDT') : money(payload.finalAmount)) + '</b></div>';
     summaryTotals.innerHTML = html;
@@ -211,6 +231,7 @@
       const result = await response.json();
       if(!response.ok || !result.ok || !result.delivered) throw new Error(result.error || 'submit_failed');
       sessionStorage.removeItem('maoyangPendingOrder');
+      sessionStorage.removeItem('maoyangRedeemCheckout');
       Cart.clear();
       showSuccess(result);
       if(emailWarning(result)){

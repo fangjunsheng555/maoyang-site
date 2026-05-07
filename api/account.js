@@ -8,6 +8,7 @@ const routes = {
   'auth-logout': require('../lib/account/auth-logout.js'),
   'user-me': require('../lib/account/user-me.js'),
   'user-redeem': require('../lib/account/user-redeem.js'),
+  'redeem-preview': require('../lib/account/redeem-preview.js'),
   'user-withdraw': require('../lib/account/user-withdraw.js'),
   'admin-users': require('../lib/account/admin-users.js'),
   'admin-user-update': require('../lib/account/admin-user-update.js')

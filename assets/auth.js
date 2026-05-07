@@ -11,6 +11,8 @@
   let modal = null;
   let detailModal = null;
   let googleLoaded = false;
+  let codeTimer = 0;
+  let codeTimerId = null;
 
   function one(s, r){ return (r || document).querySelector(s); }
   function all(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -92,6 +94,7 @@
       code_used_up:'兑换码已被使用完',
       invalid_balance_code:'余额兑换码金额无效',
       invalid_product_code:'商品兑换码无效',
+      redeem_product_mismatch:'兑换码商品与当前订单不匹配',
       invalid_amount:'请输入正确金额',
       insufficient_balance:'余额不足',
       missing_withdraw_account:'请填写收款账户',
@@ -144,17 +147,6 @@
     });
   }
   function injectEntries(){
-    all('.header').forEach((header)=>{
-      if(one('[data-auth-entry]', header)) return;
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'accountEntry';
-      btn.dataset.authOpen = '1';
-      btn.dataset.authEntry = '1';
-      btn.textContent = state.user ? '我的' : '登录';
-      const burger = one('[data-burger]', header);
-      header.insertBefore(btn, burger || null);
-    });
     all('.drawer nav').forEach((nav)=>{
       if(one('[data-auth-drawer]', nav)) return;
       const a = document.createElement('a');
@@ -188,8 +180,6 @@
         '<div class="authHead"><div><span>Maoyang Account</span><strong id="authTitle">登录/注册</strong></div><button type="button" class="authClose" data-auth-close aria-label="关闭">×</button></div>' +
         '<div class="authBody">' +
           '<div class="authGuest" data-auth-guest>' +
-            '<div class="authWelcome"><div><span>账户中心</span><strong>登录后自动归集订单、余额与兑换码</strong></div><b>' + esc(bonusText()) + '</b></div>' +
-            '<div class="authBonus"><b>新用户注册立减 ' + esc(bonusText()) + '</b><span>注册后自动入账户余额，下单可直接抵扣，订单查询、余额提现和售后信息都在账户内查看。</span></div>' +
             '<div class="authTabs authTabsTwo"><button type="button" class="active" data-auth-tab="login">登录</button><button type="button" data-auth-tab="register">注册</button></div>' +
             '<div class="authStatus" data-auth-status hidden></div>' +
             '<form class="authPane" data-auth-pane="login" data-login-form>' +
@@ -197,14 +187,15 @@
               '<label class="field"><span>密码</span><input type="password" name="password" autocomplete="current-password" required></label>' +
               '<div class="authFormLine"><button type="button" data-auth-tab="reset">忘记密码？邮箱验证码找回</button></div>' +
               '<button class="primaryBtn primaryBtnLg" type="submit">登录</button>' +
-              '<div class="authDivider"><span>或使用 Google 快速登录</span></div><div class="googleBox" data-google-login><button type="button" class="googlePlaceholder" disabled>Google 登录</button></div>' +
+              '<div class="authDivider"><span>或使用 Google 登录</span></div><div class="googleBox" data-google-login><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
             '</form>' +
             '<form class="authPane" data-auth-pane="register" data-register-form hidden>' +
+              '<div class="authBonus"><b>新用户注册领取 ' + esc(bonusText()) + ' 优惠券</b><span>优惠券用于下单抵扣，不计入账户余额，不参与提现。</span></div>' +
               '<label class="field"><span>称呼</span><input name="name" autocomplete="name" placeholder="怎么称呼你"></label>' +
               '<label class="field"><span>邮箱</span><input type="email" name="email" autocomplete="email" required></label>' +
               '<label class="field"><span>密码</span><input type="password" name="password" autocomplete="new-password" required></label>' +
-              '<button class="primaryBtn primaryBtnLg" type="submit">注册并领取 ' + esc(bonusText()) + '</button>' +
-              '<div class="authDivider"><span>或使用 Google 一键注册</span></div><div class="googleBox" data-google-register><button type="button" class="googlePlaceholder" disabled>Google 注册</button></div>' +
+              '<button class="primaryBtn primaryBtnLg" type="submit">注册并领取优惠券</button>' +
+              '<div class="authDivider"><span>或使用 Google 登录</span></div><div class="googleBox" data-google-register><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
             '</form>' +
             '<form class="authPane" data-auth-pane="reset" data-reset-form hidden>' +
               '<div class="authResetIntro"><strong>邮箱验证码找回密码</strong><span>验证码 10 分钟内有效，重设后会自动登录。</span></div>' +
@@ -269,17 +260,36 @@
       }catch(error){ status(statusEl, errorText(error), true); }
       finally{ btn.disabled = false; }
     });
+    function startCodeCountdown(btn){
+      clearInterval(codeTimerId);
+      codeTimer = 60;
+      btn.disabled = true;
+      btn.textContent = codeTimer + 's';
+      codeTimerId = setInterval(()=>{
+        codeTimer -= 1;
+        if(codeTimer <= 0){
+          clearInterval(codeTimerId);
+          codeTimerId = null;
+          btn.disabled = false;
+          btn.textContent = '发送验证码';
+          return;
+        }
+        btn.textContent = codeTimer + 's';
+      }, 1000);
+    }
     one('[data-send-code]', modal).addEventListener('click', async (event)=>{
       const form = one('[data-reset-form]', modal);
       const email = (new FormData(form).get('email') || '').trim();
       const btn = event.currentTarget;
+      if(codeTimer > 0) return;
       btn.disabled = true;
       status(statusEl, '正在发送验证码...');
       try{
         await api('/api/auth-code', { method:'POST', body:JSON.stringify({ email, purpose:'reset' }) });
         status(statusEl, '验证码已发送，请查看邮箱');
+        startCodeCountdown(btn);
       }catch(error){ status(statusEl, errorText(error), true); }
-      finally{ setTimeout(()=>{ btn.disabled = false; }, 1200); }
+      finally{ if(codeTimer <= 0) btn.disabled = false; }
     });
     one('[data-reset-form]', modal).addEventListener('submit', async (event)=>{
       event.preventDefault();
@@ -310,7 +320,7 @@
         '<div><span>当前账户</span><strong>' + esc(state.user.name || state.user.email) + '</strong><em>' + esc(state.user.email) + '</em></div>' +
         '<button type="button" class="ghostBtn" data-auth-logout>退出</button>' +
       '</div>' +
-      '<div class="authBalanceCard"><span>账户余额</span><b>' + money(state.user.balance) + '</b><small>新用户注册立减 ' + esc(bonusText()) + ' 已自动计入余额</small></div>' +
+      '<div class="authBalanceCard"><span>账户余额</span><b>' + money(state.user.balance) + '</b><small>余额可用于下单抵扣，也可提交提现申请。</small></div>' +
       '<div class="authMiniGrid"><span><b>' + state.orders.length + '</b>账户订单</span><span><b>' + money(pendingWithdraw) + '</b>提现处理中</span></div>' +
       '<form class="authTool" data-redeem-form><div><strong>兑换码</strong><small>支持余额码与商品兑换码</small></div><div class="authInline"><input name="code" placeholder="输入兑换码" autocomplete="off"><button type="submit" class="primaryBtn">兑换</button></div><p data-redeem-status hidden></p></form>' +
       '<form class="authTool" data-withdraw-form><div><strong>余额提现</strong><small>提交后后台审核处理，驳回会自动退回余额</small></div><label class="field"><span>提现金额</span><input name="amount" inputmode="decimal" placeholder="例如 20"></label><label class="field"><span>收款方式</span><input name="method" placeholder="支付宝 / USDT / 其他"></label><label class="field"><span>收款账户</span><input name="account" placeholder="账号 / 地址" required></label><button type="submit" class="ghostBtn">提交提现</button><p data-withdraw-status hidden></p></form>' +
@@ -346,6 +356,15 @@
     try{
       const data = Object.fromEntries(new FormData(form).entries());
       const result = await api('/api/user-redeem', { method:'POST', body:JSON.stringify(data) });
+      if(result.action === 'checkout' && result.product){
+        sessionStorage.setItem('maoyangRedeemCheckout', JSON.stringify({ code:data.code, service:result.product.service, label:result.product.label }));
+        if(window.MAOYANG_CART){
+          window.MAOYANG_CART.clear();
+          window.MAOYANG_CART.add(result.product.service);
+        }
+        window.location.href = 'order.html?redeem=' + encodeURIComponent(data.code || '');
+        return;
+      }
       status(p, result.message || '兑换成功');
       form.reset();
       await refresh();
@@ -424,7 +443,8 @@
     if(!modal) return;
     all('.googlePlaceholder', modal).forEach((btn)=>{
       btn.disabled = !clientId;
-      btn.textContent = clientId ? '正在加载 Google 登录...' : 'Google 登录待配置';
+      btn.innerHTML = '<span class="googleIcon"></span><b>Google登录</b>';
+      btn.title = clientId ? 'Google登录' : '请先配置 Google Client ID';
     });
     if(!clientId) return;
     function render(){
@@ -446,14 +466,14 @@
         if(box.dataset.rendered) return;
         box.dataset.rendered = '1';
         box.innerHTML = '';
-        google.accounts.id.renderButton(box, { theme:'outline', size:'large', shape:'pill', width: box.clientWidth || 280, text:'continue_with' });
+        google.accounts.id.renderButton(box, { theme:'outline', size:'large', shape:'pill', width: box.clientWidth || 280, text:'signin_with', locale:'zh_CN' });
       });
     }
     if(window.google && window.google.accounts){ render(); return; }
     if(googleLoaded) return;
     googleLoaded = true;
     const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
+    script.src = 'https://accounts.google.com/gsi/client?hl=zh-CN';
     script.async = true;
     script.defer = true;
     script.onload = render;

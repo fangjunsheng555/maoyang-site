@@ -45,6 +45,16 @@ function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '')
 
 function bundleDiscountRate(n){ if (n >= 3) return 0.10; if (n === 2) return 0.05; return 0; }
 function bundleDiscountLabel(n){ if (n >= 3) return '3 件起 9 折'; if (n === 2) return '2 件 9.5 折'; return ''; }
+function normalizeCode(value){ return clean(value, 80).replace(/\s+/g, '').toUpperCase(); }
+function codeUnavailable(code, email) {
+  if (!code || code.status === 'disabled') return 'code_disabled';
+  if (code.expiresAt && new Date(code.expiresAt).getTime() < Date.now()) return 'code_expired';
+  const usedBy = Array.isArray(code.usedBy) ? code.usedBy : [];
+  if (usedBy.length >= Math.max(1, Number(code.maxUses || 1))) return 'code_used_up';
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (normalizedEmail && usedBy.some((item) => String((item && item.email) || '').trim().toLowerCase() === normalizedEmail)) return 'code_already_used';
+  return '';
+}
 
 function subscriptionLinks(username) {
   const encoded = encodeURIComponent(String(username || '').trim());
@@ -86,7 +96,7 @@ function orderText(order) {
     '━━━━━━━━━━━━━━━━',
     '时间: ' + order.createdAtBeijing,
     '件数: ' + order.items.length + ' 件',
-    '支付: ' + (isUsdt ? 'USDT-TRC20' : '支付宝'),
+    '支付: ' + (order.paymentMethod === 'redeem_code' ? '商品兑换码' : (isUsdt ? 'USDT-TRC20' : '支付宝')),
     '邮箱: ' + order.email,
     '联系: ' + order.contact,
     '━━ 商品明细 ━━'
@@ -105,14 +115,19 @@ function orderText(order) {
   if (order.discountRate > 0) {
     lines.push('组合优惠 ' + order.discountLabel + ': −¥' + (order.subtotal - (order.baseFinalAmount || order.finalAmount)));
   }
+  if (order.couponDeduction > 0) {
+    lines.push('优惠券抵扣: −¥' + order.couponDeduction);
+  }
   if (order.walletDeduction > 0) {
     lines.push('账户立减: −¥' + order.walletDeduction);
   }
   if (isUsdt) {
     lines.push('折后人民币: ¥' + order.finalAmount);
     lines.push('💰 实付: ' + order.paidAmount + ' USDT');
+  } else if (order.paymentMethod === 'redeem_code') {
+    lines.push('💰 实付: ¥0（商品兑换码）');
   } else if (order.paymentMethod === 'balance') {
-    lines.push('💰 实付: ¥0（余额全额抵扣）');
+    lines.push('💰 实付: ¥0（账户优惠全额抵扣）');
   } else {
     lines.push('💰 实付: ¥' + order.finalAmount);
   }
@@ -220,7 +235,7 @@ module.exports = async function handler(req, res) {
   const email = clean(body.email, 200);
   const contact = clean(body.contact, 200);
   const remark = clean(body.remark, 1500);
-  const paymentMethod = body.paymentMethod === 'usdt' ? 'usdt' : 'alipay';
+  const paymentMethod = body.paymentMethod === 'usdt' ? 'usdt' : (body.paymentMethod === 'redeem_code' ? 'redeem_code' : 'alipay');
 
   if (!validEmail(email)) {
     return res.status(400).json({ ok: false, error: 'invalid_email' });
@@ -271,18 +286,45 @@ module.exports = async function handler(req, res) {
   const discountRate = bundleDiscountRate(items.length);
   const discountLabel = bundleDiscountLabel(items.length);
   const baseFinalAmount = Math.round(subtotal * (1 - discountRate));
+  const redeemCode = normalizeCode(body.redeemCode || body.code || '');
+  let redeemRecord = null;
+  let redeemCodes = null;
+  if (paymentMethod === 'redeem_code' || redeemCode) {
+    if (!redeemCode) return res.status(400).json({ ok:false, error:'missing_code' });
+    if (!authRedis) return res.status(503).json({ ok:false, error:'storage_not_configured' });
+    redeemCodes = await store.readCodes(authRedis);
+    redeemRecord = redeemCodes.find((item) => normalizeCode(item.code) === redeemCode);
+    const unavailable = codeUnavailable(redeemRecord, email);
+    if (unavailable) return res.status(400).json({ ok:false, error:unavailable });
+    if (redeemRecord.type !== 'product') return res.status(400).json({ ok:false, error:'invalid_product_code' });
+    const redeemService = clean(redeemRecord.service, 40);
+    if (items.length !== 1 || items[0].service !== redeemService) return res.status(400).json({ ok:false, error:'redeem_product_mismatch' });
+  }
+  let couponDeduction = 0;
+  let couponId = '';
+  let couponNote = '';
+  if (!redeemRecord && authUser && (body.useCoupon !== false)) {
+    const coupons = auth.activeCoupons(authUser);
+    const coupon = coupons[0];
+    if (coupon) {
+      couponDeduction = auth.roundMoney(Math.max(0, Math.min(Number(coupon.amount || 0), baseFinalAmount)));
+      couponId = coupon.id || '';
+      couponNote = coupon.note || '账户优惠券';
+    }
+  }
   let walletDeduction = 0;
   let walletBalanceBefore = 0;
   let walletBalanceAfter = 0;
-  if (authUser && (body.useBalance === true || Number(body.walletDeduction || 0) > 0)) {
+  const afterCouponAmount = auth.roundMoney(Math.max(0, baseFinalAmount - couponDeduction));
+  if (!redeemRecord && authUser && (body.useBalance === true || Number(body.walletDeduction || 0) > 0)) {
     walletBalanceBefore = auth.roundMoney(authUser.balance || 0);
-    const requested = Number(body.walletDeduction || baseFinalAmount);
-    walletDeduction = auth.roundMoney(Math.max(0, Math.min(walletBalanceBefore, baseFinalAmount, requested)));
+    const requested = Number(body.walletDeduction || afterCouponAmount);
+    walletDeduction = auth.roundMoney(Math.max(0, Math.min(walletBalanceBefore, afterCouponAmount, requested)));
     walletBalanceAfter = auth.roundMoney(walletBalanceBefore - walletDeduction);
   }
-  const finalAmount = auth.roundMoney(Math.max(0, baseFinalAmount - walletDeduction));
+  const finalAmount = redeemRecord ? 0 : auth.roundMoney(Math.max(0, baseFinalAmount - couponDeduction - walletDeduction));
   const finalUsdt = Math.round((finalAmount * USDT_DISCOUNT / USDT_RATE) * 100) / 100;
-  const actualPaymentMethod = finalAmount <= 0 && walletDeduction > 0 ? 'balance' : paymentMethod;
+  const actualPaymentMethod = redeemRecord ? 'redeem_code' : (finalAmount <= 0 && (walletDeduction > 0 || couponDeduction > 0) ? 'balance' : paymentMethod);
   const paidAmount = actualPaymentMethod === 'usdt' ? finalUsdt : finalAmount;
   const paidCurrency = actualPaymentMethod === 'usdt' ? 'USDT' : 'CNY';
 
@@ -297,6 +339,9 @@ module.exports = async function handler(req, res) {
     discountRate,
     discountLabel,
     baseFinalAmount,
+    couponDeduction,
+    couponId,
+    couponNote,
     walletDeduction,
     walletBalanceBefore,
     walletBalanceAfter,
@@ -318,7 +363,8 @@ module.exports = async function handler(req, res) {
     account: items[0].account,
     password: items[0].password,
     originalAmount: subtotal,
-    currency: actualPaymentMethod === 'usdt' ? 'USDT' : 'CNY'
+    currency: actualPaymentMethod === 'usdt' ? 'USDT' : 'CNY',
+    redeemCode: redeemRecord ? redeemCode : ''
   };
 
   order.items.forEach((item) => {
@@ -330,6 +376,17 @@ module.exports = async function handler(req, res) {
   order.account = order.items[0] ? order.items[0].account : '';
   order.password = order.items[0] ? order.items[0].password : '';
 
+  if (authUser && couponDeduction > 0) {
+    authUser.coupons = Array.isArray(authUser.coupons) ? authUser.coupons : [];
+    const coupon = authUser.coupons.find((item) => item && item.id === couponId);
+    if (coupon) {
+      coupon.status = 'used';
+      coupon.usedAt = now.toISOString();
+      coupon.usedAtBeijing = formatBeijingTime(now);
+      coupon.orderId = order.orderId;
+    }
+  }
+
   if (authUser && walletDeduction > 0) {
     authUser.balance = walletBalanceAfter;
     authUser.ledger = Array.isArray(authUser.ledger) ? authUser.ledger : [];
@@ -339,7 +396,20 @@ module.exports = async function handler(req, res) {
 
   const text = orderText(order);
   const deliveries = [];
-  const storageDelivery = authUser && walletDeduction > 0 && authRedis && authUsers
+  if (redeemRecord && redeemCodes) {
+    redeemRecord.usedBy = Array.isArray(redeemRecord.usedBy) ? redeemRecord.usedBy : [];
+    redeemRecord.usedBy.unshift({
+      userId: authUser ? authUser.id : '',
+      email,
+      orderId: order.orderId,
+      usedAt: now.toISOString(),
+      usedAtBeijing: formatBeijingTime(now)
+    });
+    redeemRecord.usedCount = redeemRecord.usedBy.length;
+  }
+  const storageDelivery = redeemRecord && authRedis && redeemCodes
+    ? store.pushOrderAndWriteCodes(authRedis, order, redeemCodes).then((stored) => deliveries.push({ channel: 'storage', ok: stored }))
+    : authUser && (walletDeduction > 0 || couponDeduction > 0) && authRedis && authUsers
     ? store.pushOrderAndWriteUsers(authRedis, order, authUsers).then((stored) => deliveries.push({ channel: 'storage', ok: stored }))
     : saveOrder(order).then((stored) => stored !== null && deliveries.push({ channel: 'storage', ok: stored }));
   await Promise.all([

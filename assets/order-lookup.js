@@ -114,6 +114,7 @@
       '<div><span>联系方式</span><b>' + safe(order.contact) + '</b></div>' +
       (order.subtotal && order.subtotal !== order.finalAmount ? '<div><span>商品总价</span><b>¥' + order.subtotal + '</b></div>' : '') +
       (order.discountLabel ? '<div><span>组合优惠</span><b>' + order.discountLabel + '</b></div>' : '') +
+      (order.couponDeduction ? '<div><span>优惠券抵扣</span><b>−¥' + order.couponDeduction + '</b></div>' : '') +
       (order.walletDeduction ? '<div><span>账户立减</span><b>−¥' + order.walletDeduction + '</b></div>' : '') +
       (order.remark ? '<div class="lookupModalRowWide"><span>备注</span><b>' + order.remark + '</b></div>' : '') +
       '</div>';
