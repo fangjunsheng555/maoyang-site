@@ -1,5 +1,5 @@
-const { redisConfig, readUsers, readOrders, readWithdrawals } = require('./lib/maoyang-store.js');
-const { currentUser, publicUser, normalizeEmail } = require('./lib/maoyang-auth.js');
+const { redisConfig, readUsers, readOrders, readWithdrawals } = require('../lib/maoyang-store.js');
+const { currentUser, publicUser, normalizeEmail } = require('../lib/maoyang-auth.js');
 function subscriptionLinks(username){ const encoded=encodeURIComponent(String(username||'').trim()); return { shadowrocket:'https://hk.joinvip.vip:2056/sub/'+encoded, clash:'https://hk.joinvip.vip:2056/sub/'+encoded+'?format=clash' }; }
 function publicOrder(order){
   const items = Array.isArray(order.items) && order.items.length > 0 ? order.items.map((it)=>{

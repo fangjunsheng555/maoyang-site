@@ -1,7 +1,7 @@
 const crypto = require('crypto');
-const { redisConfig, readUsers, writeUsers } = require('./lib/maoyang-store.js');
-const { normalizeEmail, validEmail, findUserByEmail, codeHash, formatBeijingTime } = require('./lib/maoyang-auth.js');
-const { sendVerifyCodeEmail } = require('./lib/maoyang-mail.js');
+const { redisConfig, readUsers, writeUsers } = require('../lib/maoyang-store.js');
+const { normalizeEmail, validEmail, findUserByEmail, codeHash, formatBeijingTime } = require('../lib/maoyang-auth.js');
+const { sendVerifyCodeEmail } = require('../lib/maoyang-mail.js');
 function parseBody(req){ const body=req.body||{}; if(typeof body==='string'){ try{return JSON.parse(body);}catch(e){return{};} } return body; }
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, max-age=0');

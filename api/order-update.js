@@ -1,6 +1,6 @@
 const { buildFulfillmentEmailHtml, buildFulfillmentEmailText } = require('./email-template.js');
-const store = require('./lib/maoyang-store.js');
-const { findUserById, findUserByEmail, roundMoney, newLedger } = require('./lib/maoyang-auth.js');
+const store = require('../lib/maoyang-store.js');
+const { findUserById, findUserByEmail, roundMoney, newLedger } = require('../lib/maoyang-auth.js');
 
 const ORDERS_KEY = 'maoyang:orders';
 const FULFILLMENT_REQUIRED = new Set(['netflix', 'disney', 'hbomax']);

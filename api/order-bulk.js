@@ -1,6 +1,6 @@
 const ORDERS_KEY = 'maoyang:orders';
-const store = require('./lib/maoyang-store.js');
-const { findUserById, findUserByEmail, roundMoney, newLedger } = require('./lib/maoyang-auth.js');
+const store = require('../lib/maoyang-store.js');
+const { findUserById, findUserByEmail, roundMoney, newLedger } = require('../lib/maoyang-auth.js');
 
 function envFirst(...names) {
   for (const name of names) {

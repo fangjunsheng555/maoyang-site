@@ -1,5 +1,5 @@
-const { redisConfig, readUsers, writeUsers } = require('./lib/maoyang-store.js');
-const { normalizeEmail, validEmail, validPassword, hashPassword, codeHash, findUserByEmail, formatBeijingTime, attachSession } = require('./lib/maoyang-auth.js');
+const { redisConfig, readUsers, writeUsers } = require('../lib/maoyang-store.js');
+const { normalizeEmail, validEmail, validPassword, hashPassword, codeHash, findUserByEmail, formatBeijingTime, attachSession } = require('../lib/maoyang-auth.js');
 function parseBody(req){ const body=req.body||{}; if(typeof body==='string'){ try{return JSON.parse(body);}catch(e){return{};} } return body; }
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, max-age=0');

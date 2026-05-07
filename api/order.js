@@ -1,6 +1,6 @@
 const { buildOrderEmailHtml, buildOrderEmailText } = require('./email-template.js');
-const store = require('./lib/maoyang-store.js');
-const auth = require('./lib/maoyang-auth.js');
+const store = require('../lib/maoyang-store.js');
+const auth = require('../lib/maoyang-auth.js');
 
 const ORDERS_KEY = 'maoyang:orders';
 

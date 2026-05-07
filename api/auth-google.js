@@ -1,5 +1,5 @@
-const { redisConfig, readUsers, writeUsers } = require('./lib/maoyang-store.js');
-const { clean, normalizeEmail, randomId, formatBeijingTime, grantNewUserBonus, findUserByEmail, attachSession } = require('./lib/maoyang-auth.js');
+const { redisConfig, readUsers, writeUsers } = require('../lib/maoyang-store.js');
+const { clean, normalizeEmail, randomId, formatBeijingTime, grantNewUserBonus, findUserByEmail, attachSession } = require('../lib/maoyang-auth.js');
 function parseBody(req){ const body=req.body||{}; if(typeof body==='string'){ try{return JSON.parse(body);}catch(e){return{};} } return body; }
 async function verifyGoogleCredential(credential) {
   const expectedClientId = process.env.GOOGLE_CLIENT_ID || process.env.MAOYANG_GOOGLE_CLIENT_ID || '';
