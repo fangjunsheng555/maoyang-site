@@ -187,15 +187,15 @@
               '<label class="field"><span>密码</span><input type="password" name="password" autocomplete="current-password" required></label>' +
               '<div class="authFormLine"><button type="button" data-auth-tab="reset">忘记密码？邮箱验证码找回</button></div>' +
               '<button class="primaryBtn primaryBtnLg" type="submit">登录</button>' +
-              '<div class="authDivider"><span>或使用 Google 登录</span></div><div class="googleBox" data-google-login><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
+              '<div class="authDivider"><span>或</span></div><div class="googleBox" data-google-login><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
             '</form>' +
             '<form class="authPane" data-auth-pane="register" data-register-form hidden>' +
-              '<div class="authBonus"><b>新用户注册领取 ' + esc(bonusText()) + ' 优惠券</b><span>优惠券用于下单抵扣，不计入账户余额，不参与提现。</span></div>' +
+              '<div class="authBonus"><b>新用户注册立减 ' + esc(bonusText()) + ' </b><span>下单付款时自动抵扣</span></div>' +
               '<label class="field"><span>称呼</span><input name="name" autocomplete="name" placeholder="怎么称呼你"></label>' +
               '<label class="field"><span>邮箱</span><input type="email" name="email" autocomplete="email" required></label>' +
               '<label class="field"><span>密码</span><input type="password" name="password" autocomplete="new-password" required></label>' +
               '<button class="primaryBtn primaryBtnLg" type="submit">注册并领取优惠券</button>' +
-              '<div class="authDivider"><span>或使用 Google 登录</span></div><div class="googleBox" data-google-register><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
+              '<div class="authDivider"><span>或</span></div><div class="googleBox" data-google-register><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
             '</form>' +
             '<form class="authPane" data-auth-pane="reset" data-reset-form hidden>' +
               '<div class="authResetIntro"><strong>邮箱验证码找回密码</strong><span>验证码 10 分钟内有效，重设后会自动登录。</span></div>' +
