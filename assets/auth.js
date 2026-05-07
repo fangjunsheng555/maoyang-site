@@ -190,7 +190,7 @@
               '<div class="authDivider"><span>或</span></div><div class="googleBox" data-google-login><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
             '</form>' +
             '<form class="authPane" data-auth-pane="register" data-register-form hidden>' +
-              '<div class="authBonus"><b>新用户注册立减 ' + esc(bonusText()) + ' </b><span></span></div>' +
+              '<div class="authBonus"><b>新用户注册立减 ' + esc(bonusText()) + ' </b><span>新用户注册立减 ¥8.88</span></div>' +
               '<label class="field"><span>称呼</span><input name="name" autocomplete="name" placeholder="怎么称呼你"></label>' +
               '<label class="field"><span>邮箱</span><input type="email" name="email" autocomplete="email" required></label>' +
               '<label class="field"><span>密码</span><input type="password" name="password" autocomplete="new-password" required></label>' +
