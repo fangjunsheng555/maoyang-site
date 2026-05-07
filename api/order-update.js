@@ -1,4 +1,6 @@
 const { buildFulfillmentEmailHtml, buildFulfillmentEmailText } = require('./email-template.js');
+const store = require('./lib/maoyang-store.js');
+const { findUserById, findUserByEmail, roundMoney, newLedger } = require('./lib/maoyang-auth.js');
 
 const ORDERS_KEY = 'maoyang:orders';
 const FULFILLMENT_REQUIRED = new Set(['netflix', 'disney', 'hbomax']);
@@ -167,7 +169,8 @@ function applyUpdate(order, body) {
 
   return {
     order,
-    shouldSendCompletionEmail: status === 'completed' && (previousStatus !== 'completed' || body.resendEmail === true)
+    shouldSendCompletionEmail: status === 'completed' && (previousStatus !== 'completed' || body.resendEmail === true),
+    shouldRefundWallet: status === 'cancelled' && previousStatus !== 'cancelled' && Number(order.walletDeduction || 0) > 0 && !order.walletRefundedAt
   };
 }
 
@@ -236,8 +239,25 @@ module.exports = async function handler(req, res) {
     if (updated.error) return res.status(400).json({ ok: false, error: updated.error, missing: updated.missing || [] });
 
     orders[index] = updated.order;
+    let usersToWrite = null;
+    if (updated.shouldRefundWallet) {
+      usersToWrite = await store.readUsers(redis);
+      const user = findUserById(usersToWrite, updated.order.userId) || findUserByEmail(usersToWrite, updated.order.email);
+      if (user) {
+        const amount = roundMoney(updated.order.walletDeduction || 0);
+        user.balance = roundMoney(Number(user.balance || 0) + amount);
+        user.ledger = Array.isArray(user.ledger) ? user.ledger : [];
+        user.ledger.unshift(newLedger('order_refund', amount, user.balance, '订单取消退回余额：' + updated.order.orderId));
+        user.ledger = user.ledger.slice(0, 80);
+        const now = new Date();
+        updated.order.walletRefundedAt = now.toISOString();
+        updated.order.walletRefundedAtBeijing = formatBeijingTime(now);
+        orders[index] = updated.order;
+      }
+    }
     const stored = await writeOrders(redis, orders);
     if (!stored) return res.status(502).json({ ok: false, error: 'storage_write_failed' });
+    if (usersToWrite) await store.writeUsers(redis, usersToWrite);
 
     let email = null;
     if (updated.shouldSendCompletionEmail) {

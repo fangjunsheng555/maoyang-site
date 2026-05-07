@@ -62,7 +62,10 @@
   function isUsdt(){ return payload.paymentMethod === 'usdt'; }
 
   function renderHeader(){
-    if(isUsdt()){
+    if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+      methodTag.textContent = '余额支付';
+      if(secureLabel) secureLabel.textContent = '账户余额安全结算';
+    }else if(isUsdt()){
       methodTag.textContent = 'USDT · TRC20';
       if(secureLabel) secureLabel.textContent = 'USDT-TRC20 安全结算';
     }else{
@@ -72,7 +75,10 @@
   }
 
   function renderAmount(){
-    if(isUsdt()){
+    if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+      amountDisplay.textContent = '¥0';
+      amountNote.textContent = '账户余额已全额抵扣';
+    }else if(isUsdt()){
       amountDisplay.innerHTML = (payload.finalUsdt || payload.paidAmount) + ' <em>USDT</em>';
       amountNote.textContent = '¥' + payload.finalAmount + ' × 0.9 ÷ ' + (Number(cfg.usdtRateCnyPerUsdt || 6.85)).toFixed(2);
     }else{
@@ -82,7 +88,9 @@
   }
 
   function renderTip(){
-    if(isUsdt()){
+    if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+      payTip.textContent = '本单已由账户余额全额抵扣，无需扫码付款，直接点击下方按钮提交订单即可。';
+    }else if(isUsdt()){
       payTip.textContent = '请使用 TRON (TRC20) 网络转账精确金额 ' + (payload.finalUsdt) + ' USDT 到下方地址，付款完成后请记得返回本页面点击「付款完成」按钮提交订单。';
     }else{
       payTip.textContent = '请按上方金额完成支付宝付款。付款完成后请记得返回本页面点击「付款完成」按钮，充值人员 10 分钟内处理。';
@@ -95,7 +103,12 @@
   }
 
   function renderQr(){
-    if(isUsdt()){
+    if(payload.paymentMethod === 'balance' || Number(payload.finalAmount || 0) <= 0){
+      qrLabel.textContent = '余额已抵扣，无需扫码';
+      qrEmpty.textContent = '可直接提交订单';
+      syncQr('');
+      usdtBox.hidden = true;
+    }else if(isUsdt()){
       qrLabel.textContent = 'TRC20 钱包扫一扫或复制下方地址';
       syncQr(cfg.usdtQr);
       usdtBox.hidden = false;
@@ -118,7 +131,10 @@
     });
     let html = '';
     if(payload.discountRate > 0){
-      html += '<div class="paySummaryRow discount"><span>组合优惠 · ' + payload.discountLabel + '</span><b>−' + money(payload.subtotal - payload.finalAmount) + '</b></div>';
+      html += '<div class="paySummaryRow discount"><span>组合优惠 · ' + payload.discountLabel + '</span><b>−' + money(payload.subtotal - (payload.baseFinalAmount || payload.finalAmount)) + '</b></div>';
+    }
+    if(payload.walletDeduction > 0){
+      html += '<div class="paySummaryRow wallet"><span>账户立减</span><b>−' + money(payload.walletDeduction) + '</b></div>';
     }
     html += '<div class="paySummaryRow total"><span>' + (isUsdt() ? '实付 USDT' : '实付总额') + '</span><b>' + (isUsdt() ? (payload.finalUsdt + ' USDT') : money(payload.finalAmount)) + '</b></div>';
     summaryTotals.innerHTML = html;
@@ -186,9 +202,10 @@
     finishBtn.innerHTML = '<svg class="spinIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/></svg>正在提交订单';
     setStatus('');
     try{
+      const authToken = (window.MAOYANG_AUTH && window.MAOYANG_AUTH.getToken && window.MAOYANG_AUTH.getToken()) || payload.userToken || '';
       const response = await fetch('/api/order', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: Object.assign({ 'Content-Type': 'application/json' }, authToken ? { Authorization: 'Bearer ' + authToken } : {}),
         body: JSON.stringify(payload)
       });
       const result = await response.json();

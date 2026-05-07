@@ -1,4 +1,6 @@
 const ORDERS_KEY = 'maoyang:orders';
+const store = require('./lib/maoyang-store.js');
+const { findUserById, findUserByEmail, roundMoney, newLedger } = require('./lib/maoyang-auth.js');
 
 function envFirst(...names) {
   for (const name of names) {
@@ -113,10 +115,11 @@ module.exports = async function handler(req, res) {
       const now = new Date();
       const cancelledAt = now.toISOString();
       const cancelledAtBeijing = formatBeijingTime(now);
+      let users = null;
       nextOrders = orders.map((order) => {
         if (!idSet.has(clean(order.orderId, 80).toUpperCase())) return order;
         affected += 1;
-        return {
+        const next = {
           ...order,
           status: 'cancelled',
           statusLabel: '已取消',
@@ -125,7 +128,32 @@ module.exports = async function handler(req, res) {
           updatedAt: cancelledAt,
           updatedAtBeijing: cancelledAtBeijing
         };
+        if (order.status !== 'cancelled' && Number(order.walletDeduction || 0) > 0 && !order.walletRefundedAt) {
+          users = users || [];
+          next.walletRefundPending = true;
+        }
+        return next;
       });
+      if (nextOrders.some((order) => order.walletRefundPending)) {
+        users = await store.readUsers(redis);
+        nextOrders = nextOrders.map((order) => {
+          if (!order.walletRefundPending) return order;
+          const user = findUserById(users, order.userId) || findUserByEmail(users, order.email);
+          const next = { ...order };
+          delete next.walletRefundPending;
+          if (user) {
+            const amount = roundMoney(order.walletDeduction || 0);
+            user.balance = roundMoney(Number(user.balance || 0) + amount);
+            user.ledger = Array.isArray(user.ledger) ? user.ledger : [];
+            user.ledger.unshift(newLedger('order_refund', amount, user.balance, '订单取消退回余额：' + order.orderId));
+            user.ledger = user.ledger.slice(0, 80);
+            next.walletRefundedAt = cancelledAt;
+            next.walletRefundedAtBeijing = cancelledAtBeijing;
+          }
+          return next;
+        });
+        await store.writeUsers(redis, users);
+      }
     }
 
     const stored = await writeOrders(redis, nextOrders);

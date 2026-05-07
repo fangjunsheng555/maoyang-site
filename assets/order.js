@@ -15,15 +15,32 @@
   const submitBtn = document.querySelector('[data-checkout-submit]');
   const statusEl = document.querySelector('[data-status]');
   const contactInput = form ? form.querySelector('input[name=contact]') : null;
+  const emailInput = form ? form.querySelector('input[name=email]') : null;
   const contactReqEl = document.querySelector('[data-contact-req]');
   const contactNoteEl = document.querySelector('[data-contact-note]');
+  const accountCard = document.querySelector('[data-account-checkout]');
+  const accountBody = document.querySelector('[data-account-checkout-body]');
+  const accountLoginBtn = document.querySelector('[data-account-login]');
 
   if(!form) return;
+  let useWallet = true;
 
   function money(v){ return '¥' + Number(v||0).toFixed(0); }
   function el(tag, cls, html){ const e = document.createElement(tag); if(cls) e.className = cls; if(html != null) e.innerHTML = html; return e; }
   function selectedMethod(){ const r = form.querySelector('input[name=paymentMethod]:checked'); return r ? r.value : 'alipay'; }
   function needsContact(items){ return items.some((p)=>p.key === 'spotify'); }
+  function authState(){ return window.MAOYANG_AUTH && window.MAOYANG_AUTH.getState ? window.MAOYANG_AUTH.getState() : { user:null }; }
+  function walletDeduction(items){
+    const user = authState().user;
+    if(!user || !useWallet) return 0;
+    return Math.round(Math.max(0, Math.min(Number(user.balance || 0), Cart.finalCny(items))) * 100) / 100;
+  }
+  function payableCny(items){
+    return Math.round(Math.max(0, Cart.finalCny(items) - walletDeduction(items)) * 100) / 100;
+  }
+  function payableUsdt(items){
+    return Math.round((payableCny(items) * Cart.usdtDiscount() / Cart.usdtRate()) * 100) / 100;
+  }
   function setStatus(message, warn){
     if(!message){ statusEl.hidden = true; return; }
     statusEl.hidden = false;
@@ -83,6 +100,7 @@
 
     renderProductFields(items);
     syncContactRequirement(items);
+    renderAccountPanel(items);
     renderSummary(items);
   }
 
@@ -150,7 +168,9 @@
   function renderSummary(items){
     const subtotal = Cart.subtotal(items);
     const final = Cart.finalCny(items);
-    const usdt = Cart.finalUsdt(items);
+    const wallet = walletDeduction(items);
+    const payable = payableCny(items);
+    const usdt = payableUsdt(items);
     const rate = Cart.bundleRate(items.length);
     const label = Cart.bundleLabel(items.length);
     const savings = subtotal - final;
@@ -160,20 +180,48 @@
       html += '<div class="cartSummaryRow discount"><span>组合优惠 · ' + label + '</span><b>−' + money(savings) + '</b></div>';
     }
     html += '<div class="cartSummaryRow total"><span>折后总额</span><b>' + money(final) + '</b></div>';
+    if(wallet > 0){
+      html += '<div class="cartSummaryRow wallet"><span>账户立减</span><b>−' + money(wallet) + '</b></div>';
+      html += '<div class="cartSummaryRow total"><span>应付金额</span><b>' + money(payable) + '</b></div>';
+    }
     if(items.length === 1) html += '<div class="bundleHint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>再加 1 件享 9.5 折，加满 3 件享 9 折</div>';
     else if(items.length === 2) html += '<div class="bundleHint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>再加 1 件升级到 9 折</div>';
 
     summaryEl.innerHTML = html;
-    payCnyEl.textContent = money(final);
+    payCnyEl.textContent = money(payable);
     payUsdtEl.textContent = usdt + ' USDT';
 
     syncMobileCta();
   }
 
+  function renderAccountPanel(items){
+    if(!accountCard || !accountBody) return;
+    const user = authState().user;
+    if(user){
+      if(emailInput && !emailInput.value) emailInput.value = user.email || '';
+      if(accountLoginBtn) accountLoginBtn.textContent = '我的账户';
+      const balance = Number(user.balance || 0);
+      const canUse = balance > 0 && Cart.finalCny(items) > 0;
+      const deduct = walletDeduction(items);
+      accountBody.innerHTML = '<label class="walletToggle"><span>使用账户余额抵扣 · 当前 ' + money(balance) + (deduct > 0 ? '，本单立减 ' + money(deduct) : '') + '</span><input type="checkbox" data-use-wallet ' + (useWallet && canUse ? 'checked' : '') + ' ' + (!canUse ? 'disabled' : '') + '></label>';
+      const checkbox = accountBody.querySelector('[data-use-wallet]');
+      if(checkbox){
+        checkbox.addEventListener('change', ()=>{
+          useWallet = checkbox.checked;
+          renderAccountPanel(Cart.items());
+          renderSummary(Cart.items());
+        });
+      }
+    }else{
+      if(accountLoginBtn) accountLoginBtn.textContent = '登录/注册';
+      accountBody.innerHTML = '<div class="authBonusLine">登录/注册后，新用户立减 ¥8.88 自动入余额，本单可直接抵扣。</div>';
+    }
+  }
+
   function syncMobileCta(){
     const items = Cart.items();
-    const final = Cart.finalCny(items);
-    const usdt = Cart.finalUsdt(items);
+    const final = payableCny(items);
+    const usdt = payableUsdt(items);
     const isUsdt = selectedMethod() === 'usdt';
     mobileMethodEl.textContent = isUsdt ? 'USDT-TRC20' : '支付宝';
     mobileAmountEl.textContent = isUsdt ? (usdt + ' USDT') : money(final);
@@ -240,22 +288,28 @@
     }
 
     const subtotal = Cart.subtotal(items);
-    const finalCny = Cart.finalCny(items);
-    const finalUsdt = Cart.finalUsdt(items);
+    const finalCny = payableCny(items);
+    const finalUsdt = payableUsdt(items);
+    const wallet = walletDeduction(items);
     const method = selectedMethod();
     const isUsdt = method === 'usdt';
+    const authToken = window.MAOYANG_AUTH && window.MAOYANG_AUTH.getToken ? window.MAOYANG_AUTH.getToken() : '';
 
     const payload = {
       email, contact, remark,
       paymentMethod: method,
       items: orderItems,
       subtotal,
+      baseFinalAmount: Cart.finalCny(items),
       finalAmount: finalCny,
       finalUsdt: finalUsdt,
       paidAmount: isUsdt ? finalUsdt : finalCny,
       paidCurrency: isUsdt ? 'USDT' : 'CNY',
       discountRate: Cart.bundleRate(items.length),
-      discountLabel: Cart.bundleLabel(items.length)
+      discountLabel: Cart.bundleLabel(items.length),
+      walletDeduction: wallet,
+      useBalance: wallet > 0,
+      userToken: wallet > 0 ? authToken : ''
     };
 
     sessionStorage.setItem('maoyangPendingOrder', JSON.stringify(payload));
@@ -263,5 +317,6 @@
   });
 
   Cart.on(()=>{ preserveFields(); renderItems(); });
+  window.addEventListener('maoyang:auth-update', ()=>{ renderAccountPanel(Cart.items()); renderSummary(Cart.items()); });
   renderItems();
 })();

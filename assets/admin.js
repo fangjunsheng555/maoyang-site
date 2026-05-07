@@ -31,6 +31,12 @@
     if(o.paymentMethod === 'usdt') return safe(o.paidAmount || o.finalUsdt || o.finalAmount) + ' USDT';
     return money(o.paidAmount || o.finalAmount);
   }
+  function paymentName(o){
+    if(o.paymentMethod === 'usdt') return 'USDT';
+    if(o.paymentMethod === 'balance') return '余额';
+    if(o.paymentMethod === 'redeem_code') return '兑换码';
+    return '支付宝';
+  }
   function statusText(o){
     if(o.statusLabel) return o.statusLabel;
     if(o.status === 'completed') return '已完成充值';
@@ -162,7 +168,7 @@
         ['时间', orderTime(o)],
         ['订单号', o.orderId],
         ['服务', itemsLabel(o) + (o.discountLabel ? '\n(' + o.discountLabel + ')' : '')],
-        ['支付', o.paymentMethod === 'usdt' ? 'USDT' : '支付宝'],
+        ['支付', paymentName(o) + (o.walletDeduction ? '\n账户立减 ' + money(o.walletDeduction) : '')],
         ['应付', paid(o)],
         ['交付信息', itemsCreds(o)],
         ['邮箱', o.email || ''],
@@ -232,7 +238,7 @@
       pay.className = 'adminMobilePay';
       pay.textContent = paid(o);
       const method = document.createElement('span');
-      method.textContent = o.paymentMethod === 'usdt' ? 'USDT' : '支付宝';
+      method.textContent = paymentName(o);
       meta.appendChild(pill);
       meta.appendChild(pay);
       meta.appendChild(method);

@@ -133,7 +133,11 @@ function buildOrderEmailHtml({ order, brandName, siteDomain, siteUrl, supportCon
               ) : '') +
               (isCart && order.discountRate > 0 ? (
                 '<tr><td style="padding:4px 16px;color:#d97706;font-size:13px;">组合优惠 · ' + escapeHtml(order.discountLabel || '') + '</td>' +
-                '<td style="padding:4px 16px;color:#d97706;font-size:13px;font-weight:600;text-align:right;">−' + money(order.subtotal - order.finalAmount) + '</td></tr>'
+                '<td style="padding:4px 16px;color:#d97706;font-size:13px;font-weight:600;text-align:right;">−' + money(order.subtotal - (order.baseFinalAmount || order.finalAmount)) + '</td></tr>'
+              ) : '') +
+              (order.walletDeduction > 0 ? (
+                '<tr><td style="padding:4px 16px;color:#0f766e;font-size:13px;">账户立减</td>' +
+                '<td style="padding:4px 16px;color:#0f766e;font-size:13px;font-weight:600;text-align:right;">−' + money(order.walletDeduction) + '</td></tr>'
               ) : '') +
               (isUsdt ? (
                 '<tr><td style="padding:4px 16px;color:#64748b;font-size:13px;">折后人民币</td>' +
@@ -215,9 +219,10 @@ function buildOrderEmailText({ order, brandName, siteDomain, siteUrl, supportCon
   if (isCart) {
     lines.push('', '商品总价: ¥' + order.subtotal);
     if (order.discountRate > 0) {
-      lines.push('组合优惠 ' + order.discountLabel + ': −¥' + (order.subtotal - order.finalAmount));
+      lines.push('组合优惠 ' + order.discountLabel + ': −¥' + (order.subtotal - (order.baseFinalAmount || order.finalAmount)));
     }
   }
+  if (order.walletDeduction > 0) lines.push('账户立减: −¥' + order.walletDeduction);
   if (isUsdt) {
     lines.push('折后人民币: ¥' + order.finalAmount);
     lines.push('实付: ' + order.paidAmount + ' USDT (× 0.9 ÷ ' + (usdtRate || 6.85) + ')');

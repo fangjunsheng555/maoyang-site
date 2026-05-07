@@ -101,6 +101,8 @@ function publicOrder(order, type) {
     subtotal: Number(order.subtotal || order.originalAmount || items.reduce((s, i) => s + i.amount, 0)),
     discountRate: Number(order.discountRate || 0),
     discountLabel: order.discountLabel || '',
+    baseFinalAmount: Number(order.baseFinalAmount || order.finalAmount || 0),
+    walletDeduction: Number(order.walletDeduction || 0),
     finalAmount: Number(order.finalAmount || 0),
     finalUsdt: Number(order.finalUsdt || 0),
     paidAmount: Number(order.paidAmount || (order.paymentMethod === 'usdt' ? order.finalUsdt : order.finalAmount) || 0),

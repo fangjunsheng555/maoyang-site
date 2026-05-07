@@ -52,11 +52,11 @@
   if(!one('[data-tap-style]')){
     const s = document.createElement('style');
     s.dataset.tapStyle = '1';
-    s.textContent = '.cta,.ghostCta,.primaryBtn,.ghostBtn,.addToCartBtn,.cartBarGo,.cartBarInfo,.lookupForm button,.checkoutMobileCtaBtn,.paySubmitBtn,.lookupRow,.checkoutItem,.copyContactBtn,.paymentMethodOption{position:relative;overflow:hidden}.tapRipple{position:absolute;border-radius:999px;transform:translate(-50%,-50%) scale(0);background:rgba(15,118,110,.18);pointer-events:none;animation:tapRipple .58s ease-out forwards}@keyframes tapRipple{to{transform:translate(-50%,-50%) scale(1);opacity:0}}';
+    s.textContent = '.cta,.ghostCta,.accountEntry,.primaryBtn,.ghostBtn,.addToCartBtn,.cartBarGo,.cartBarInfo,.lookupForm button,.checkoutMobileCtaBtn,.paySubmitBtn,.lookupRow,.checkoutItem,.copyContactBtn,.paymentMethodOption{position:relative;overflow:hidden}.tapRipple{position:absolute;border-radius:999px;transform:translate(-50%,-50%) scale(0);background:rgba(15,118,110,.18);pointer-events:none;animation:tapRipple .58s ease-out forwards}@keyframes tapRipple{to{transform:translate(-50%,-50%) scale(1);opacity:0}}';
     document.head.appendChild(s);
   }
   document.addEventListener('click', (e)=>{
-    const target = e.target.closest('.cta,.ghostCta,.primaryBtn,.ghostBtn,.addToCartBtn,.cartBarGo,.cartBarInfo,.lookupForm button,.checkoutMobileCtaBtn,.paySubmitBtn,.lookupRow,.copyContactBtn,.paymentMethodOption');
+    const target = e.target.closest('.cta,.ghostCta,.accountEntry,.primaryBtn,.ghostBtn,.addToCartBtn,.cartBarGo,.cartBarInfo,.lookupForm button,.checkoutMobileCtaBtn,.paySubmitBtn,.lookupRow,.copyContactBtn,.paymentMethodOption');
     if(!target) return;
     const r = target.getBoundingClientRect();
     const d = Math.max(r.width, r.height) * 1.8;

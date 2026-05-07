@@ -73,6 +73,11 @@
                 <textarea name='remark' rows='2' placeholder='地区 / 时长 / 特殊需求等'></textarea>
               </label>
             </section>
+
+            <section class='checkoutCard checkoutAccountCard' data-account-checkout>
+              <div class='checkoutCardHead'><h3>账户优惠</h3><button type='button' class='textLink' data-account-login data-auth-open>登录/注册</button></div>
+              <div data-account-checkout-body></div>
+            </section>
           </div>
 
           <aside class='checkoutRight'>
@@ -130,6 +135,7 @@
 
   <script src='assets/cart.js'></script>
   <script src='assets/payment-config.js'></script>
+  <script src='assets/auth.js'></script>
   <script src='assets/order.js'></script>
 </body>
 </html>

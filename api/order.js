@@ -1,4 +1,6 @@
 const { buildOrderEmailHtml, buildOrderEmailText } = require('./email-template.js');
+const store = require('./lib/maoyang-store.js');
+const auth = require('./lib/maoyang-auth.js');
 
 const ORDERS_KEY = 'maoyang:orders';
 
@@ -101,11 +103,16 @@ function orderText(order) {
   lines.push('━━ 价格 ━━');
   lines.push('商品总价: ¥' + order.subtotal);
   if (order.discountRate > 0) {
-    lines.push('组合优惠 ' + order.discountLabel + ': −¥' + (order.subtotal - order.finalAmount));
+    lines.push('组合优惠 ' + order.discountLabel + ': −¥' + (order.subtotal - (order.baseFinalAmount || order.finalAmount)));
+  }
+  if (order.walletDeduction > 0) {
+    lines.push('账户立减: −¥' + order.walletDeduction);
   }
   if (isUsdt) {
     lines.push('折后人民币: ¥' + order.finalAmount);
     lines.push('💰 实付: ' + order.paidAmount + ' USDT');
+  } else if (order.paymentMethod === 'balance') {
+    lines.push('💰 实付: ¥0（余额全额抵扣）');
   } else {
     lines.push('💰 实付: ¥' + order.finalAmount);
   }
@@ -246,13 +253,38 @@ module.exports = async function handler(req, res) {
     items.push(item);
   }
 
+  let authUsers = null;
+  let authUser = null;
+  let authRedis = null;
+  try {
+    authRedis = store.redisConfig();
+    if (authRedis) {
+      authUsers = await store.readUsers(authRedis);
+      authUser = auth.currentUser(req, authUsers);
+    }
+  } catch (error) {
+    authUsers = null;
+    authUser = null;
+  }
+
   const subtotal = items.reduce((s, i) => s + i.amount, 0);
   const discountRate = bundleDiscountRate(items.length);
   const discountLabel = bundleDiscountLabel(items.length);
-  const finalAmount = Math.round(subtotal * (1 - discountRate));
+  const baseFinalAmount = Math.round(subtotal * (1 - discountRate));
+  let walletDeduction = 0;
+  let walletBalanceBefore = 0;
+  let walletBalanceAfter = 0;
+  if (authUser && (body.useBalance === true || Number(body.walletDeduction || 0) > 0)) {
+    walletBalanceBefore = auth.roundMoney(authUser.balance || 0);
+    const requested = Number(body.walletDeduction || baseFinalAmount);
+    walletDeduction = auth.roundMoney(Math.max(0, Math.min(walletBalanceBefore, baseFinalAmount, requested)));
+    walletBalanceAfter = auth.roundMoney(walletBalanceBefore - walletDeduction);
+  }
+  const finalAmount = auth.roundMoney(Math.max(0, baseFinalAmount - walletDeduction));
   const finalUsdt = Math.round((finalAmount * USDT_DISCOUNT / USDT_RATE) * 100) / 100;
-  const paidAmount = paymentMethod === 'usdt' ? finalUsdt : finalAmount;
-  const paidCurrency = paymentMethod === 'usdt' ? 'USDT' : 'CNY';
+  const actualPaymentMethod = finalAmount <= 0 && walletDeduction > 0 ? 'balance' : paymentMethod;
+  const paidAmount = actualPaymentMethod === 'usdt' ? finalUsdt : finalAmount;
+  const paidCurrency = actualPaymentMethod === 'usdt' ? 'USDT' : 'CNY';
 
   const now = new Date();
   const order = {
@@ -264,12 +296,17 @@ module.exports = async function handler(req, res) {
     subtotal,
     discountRate,
     discountLabel,
+    baseFinalAmount,
+    walletDeduction,
+    walletBalanceBefore,
+    walletBalanceAfter,
     finalAmount,
     finalUsdt,
-    paymentMethod,
+    paymentMethod: actualPaymentMethod,
     paidAmount,
     paidCurrency,
-    email,
+    userId: authUser ? authUser.id : '',
+    email: authUser ? authUser.email : email,
     contact,
     remark,
     status: 'pending',
@@ -281,7 +318,7 @@ module.exports = async function handler(req, res) {
     account: items[0].account,
     password: items[0].password,
     originalAmount: subtotal,
-    currency: paymentMethod === 'usdt' ? 'USDT' : 'CNY'
+    currency: actualPaymentMethod === 'usdt' ? 'USDT' : 'CNY'
   };
 
   order.items.forEach((item) => {
@@ -293,10 +330,20 @@ module.exports = async function handler(req, res) {
   order.account = order.items[0] ? order.items[0].account : '';
   order.password = order.items[0] ? order.items[0].password : '';
 
+  if (authUser && walletDeduction > 0) {
+    authUser.balance = walletBalanceAfter;
+    authUser.ledger = Array.isArray(authUser.ledger) ? authUser.ledger : [];
+    authUser.ledger.unshift(auth.newLedger('order_discount', -walletDeduction, authUser.balance, '订单余额抵扣：' + order.orderId));
+    authUser.ledger = authUser.ledger.slice(0, 80);
+  }
+
   const text = orderText(order);
   const deliveries = [];
+  const storageDelivery = authUser && walletDeduction > 0 && authRedis && authUsers
+    ? store.pushOrderAndWriteUsers(authRedis, order, authUsers).then((stored) => deliveries.push({ channel: 'storage', ok: stored }))
+    : saveOrder(order).then((stored) => stored !== null && deliveries.push({ channel: 'storage', ok: stored }));
   await Promise.all([
-    saveOrder(order).then((stored) => stored !== null && deliveries.push({ channel: 'storage', ok: stored })),
+    storageDelivery,
     sendTelegram(text).then((sent) => sent !== null && deliveries.push({ channel: 'telegram', ok: sent })).catch(() => deliveries.push({ channel: 'telegram', ok: false })),
     sendWebhook(order).then((sent) => sent !== null && deliveries.push({ channel: 'webhook', ok: sent })).catch(() => deliveries.push({ channel: 'webhook', ok: false })),
     sendOrderEmail(order).then((result) => deliveries.push({ channel: 'email', ok: result.ok, info: result })).catch((error) => deliveries.push({ channel: 'email', ok: false, error: error.message }))

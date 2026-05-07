@@ -19,7 +19,12 @@
     return currency === 'USDT' ? (text + ' USDT') : ('¥' + text);
   }
   function safe(v){ return String(v || '').trim() || '--'; }
-  function paymentName(o){ return o.paymentMethod === 'usdt' ? 'USDT' : '支付宝'; }
+  function paymentName(o){
+    if(o.paymentMethod === 'usdt') return 'USDT';
+    if(o.paymentMethod === 'balance') return '余额';
+    if(o.paymentMethod === 'redeem_code') return '兑换码';
+    return '支付宝';
+  }
   function copyText(text){
     if(navigator.clipboard && window.isSecureContext){ return navigator.clipboard.writeText(text); }
     const t = document.createElement('textarea'); t.value = text; t.style.position='fixed'; t.style.left='-9999px';
@@ -109,6 +114,7 @@
       '<div><span>联系方式</span><b>' + safe(order.contact) + '</b></div>' +
       (order.subtotal && order.subtotal !== order.finalAmount ? '<div><span>商品总价</span><b>¥' + order.subtotal + '</b></div>' : '') +
       (order.discountLabel ? '<div><span>组合优惠</span><b>' + order.discountLabel + '</b></div>' : '') +
+      (order.walletDeduction ? '<div><span>账户立减</span><b>−¥' + order.walletDeduction + '</b></div>' : '') +
       (order.remark ? '<div class="lookupModalRowWide"><span>备注</span><b>' + order.remark + '</b></div>' : '') +
       '</div>';
 
