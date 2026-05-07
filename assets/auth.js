@@ -171,6 +171,7 @@
     if(title) title.textContent = name === 'register' ? '注册账户' : (name === 'reset' ? '找回密码' : '登录账户');
     const tabsEl = one('.authTabs', modal);
     if(tabsEl) tabsEl.hidden = (name === 'reset');
+    setTimeout(renderGoogleButtons, 0);
   }
   function buildModal(){
     if(modal) return modal;
@@ -484,10 +485,13 @@
         }
       });
       all('.googleBox', modal).forEach((box)=>{
-        if(box.dataset.rendered) return;
-        box.dataset.rendered = '1';
+        const pane = box.closest('[data-auth-pane]');
+        if(pane && pane.hidden) return;
+        const width = Math.max(280, Math.round(box.getBoundingClientRect().width || box.clientWidth || 320));
+        if(box.dataset.rendered === String(width)) return;
+        box.dataset.rendered = String(width);
         box.innerHTML = '';
-        google.accounts.id.renderButton(box, { theme:'outline', size:'large', shape:'pill', width: box.clientWidth || 280, text:'signin_with', locale:'zh_CN' });
+        google.accounts.id.renderButton(box, { theme:'outline', size:'large', shape:'pill', width, text:'signin_with', locale:'zh_CN' });
       });
     }
     if(window.google && window.google.accounts){ render(); return; }
