@@ -1052,11 +1052,15 @@ body{line-height:1.55}
 .authDashPane{display:grid;gap:9px}
 .authDashPane[hidden]{display:none!important}
 
+/* Make all auth modal primary buttons match the Google login button size */
+.authBody .primaryBtn,
+.authBody .primaryBtnLg{display:flex;width:100%;min-height:42px;padding:10px 16px;font-size:13.5px;border-radius:999px;justify-content:center;align-items:center;text-align:center;box-shadow:0 8px 18px rgba(15,118,110,.18)}
+
 /* Register button corner badge (mirrors home page authCtaBadge) */
 .authRegisterBtnWrap{position:relative;overflow:visible;display:block;width:100%}
 .authRegisterBtn{display:flex;width:100%;justify-content:center;align-items:center;text-align:center}
-.authRegisterBadge{position:absolute;right:8px;top:-10px;z-index:2;display:inline-flex;align-items:center;justify-content:center;min-height:18px;padding:2px 8px;border-radius:999px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;box-shadow:0 8px 20px rgba(0,0,0,.18);font-size:10px;font-style:normal;font-weight:950;line-height:1;white-space:nowrap;pointer-events:none;letter-spacing:.02em}
-@media (max-width:720px){.authRegisterBadge{right:8px;top:-9px;font-size:9.5px;padding:2px 7px}}
+.authRegisterBadge{position:absolute;right:8px;top:-9px;z-index:2;display:inline-flex;align-items:center;justify-content:center;min-height:18px;padding:2px 8px;border-radius:999px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;box-shadow:0 8px 20px rgba(0,0,0,.18);font-size:10px;font-style:normal;font-weight:950;line-height:1;white-space:nowrap;pointer-events:none;letter-spacing:.02em}
+@media (max-width:720px){.authRegisterBadge{right:8px;top:-8px;font-size:9.5px;padding:2px 7px}}
 
 /* Cart redeem-mode lock UI */
 .cartBarLock{display:inline-flex;align-items:center;gap:5px;background:#ecfdf3;color:#047857;border-radius:999px;padding:3px 9px;font-size:11px;font-weight:950;line-height:1.2}
