@@ -172,7 +172,18 @@
   }
   function closeModal(){ if(modal){ modal.remove(); modal = null; document.body.classList.remove('adminModalOpen'); } }
   function openUser(user){
-    openModal(user.email, '用户余额', '<form class="adminModalGrid" data-user-adjust><input name="amount" inputmode="decimal" placeholder="+10 或 -5"><textarea name="note" rows="2" placeholder="调整备注"></textarea><div class="adminModalActions"><button type="submit" class="adminSave">保存调整</button><button type="button" class="adminGhost" data-toggle-user="' + esc(user.id) + '" data-next-status="' + (user.status === 'disabled' ? 'active' : 'disabled') + '">' + (user.status === 'disabled' ? '启用用户' : '停用用户') + '</button></div></form><h3>余额流水</h3>' + ledgerHtml(user));
+    openModal(user.email, '用户余额',
+      '<form class="adminModalGrid" data-user-adjust>' +
+        '<input name="amount" inputmode="decimal" placeholder="+10 或 -5">' +
+        '<textarea name="note" rows="2" placeholder="调整备注"></textarea>' +
+        '<div class="adminModalActions three">' +
+          '<button type="submit" class="adminSave">保存调整</button>' +
+          '<button type="button" class="adminGhost" data-toggle-user="' + esc(user.id) + '" data-next-status="' + (user.status === 'disabled' ? 'active' : 'disabled') + '">' + (user.status === 'disabled' ? '启用用户' : '停用用户') + '</button>' +
+          '<button type="button" class="adminDanger" data-delete-user="' + esc(user.id) + '">删除用户</button>' +
+        '</div>' +
+      '</form>' +
+      '<h3>余额流水</h3>' + ledgerHtml(user)
+    );
     one('[data-user-adjust]', modal).addEventListener('submit', async (event)=>{
       event.preventDefault();
       const body = Object.fromEntries(new FormData(event.currentTarget).entries());
@@ -184,6 +195,11 @@
     one('[data-toggle-user]', modal).addEventListener('click', async (event)=>{
       const btn = event.currentTarget;
       try{ await api('/api/admin-user-update', { method:'POST', body:JSON.stringify({ action:'set_user_status', userId:user.id, status:btn.dataset.nextStatus }) }); await loadAll(); closeModal(); }
+      catch(error){ alert(errText(error)); }
+    });
+    one('[data-delete-user]', modal).addEventListener('click', async ()=>{
+      if(!confirm('确认删除用户 ' + user.email + ' 吗？删除后将无法恢复，但订单不会被删除。')) return;
+      try{ await api('/api/admin-user-update', { method:'POST', body:JSON.stringify({ action:'delete_user', userId:user.id }) }); await loadAll(); closeModal(); }
       catch(error){ alert(errText(error)); }
     });
   }
