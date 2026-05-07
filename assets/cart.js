@@ -1,6 +1,7 @@
 (function(){
   const STORAGE_KEY = 'maoyangCartV2';
   const EVENT_NAME = 'maoyang:cart-update';
+  const REDEEM_KEY = 'maoyangRedeemCheckout';
 
   const PRODUCTS = {
     spotify:  { key:'spotify',  label:'Spotify Premium', subtitle:'欧美日高价区家庭计划', amount:128, cycle:'1年', monthly:'≈¥10.7/月', original:298, badge:'热销 No.1', highlights:['无损音质·完整曲库','播客 / AIDJ / 离线下载','支持家庭组邀请'], desc:'欧美日高价区家庭计划，无损音质、播客、离线下载与完整曲库。', soldThisMonth:1328, needsAccountPassword:true, image:'assets/img/product-spotify.jpg', accent:'#1db954' },
@@ -13,19 +14,47 @@
 
   const PRODUCT_KEYS = ['spotify','netflix','disney','hbomax','chatgpt','network'];
 
+  function readRedeem(){
+    try{
+      const raw = sessionStorage.getItem(REDEEM_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      if(!parsed || !parsed.service || !PRODUCTS[parsed.service]) return null;
+      return parsed;
+    }catch(e){ return null; }
+  }
+  function isRedeemLocked(){ return !!readRedeem(); }
+  function redeemService(){ const data = readRedeem(); return data ? data.service : ''; }
+  function redeemLabel(){ const data = readRedeem(); return data ? (data.label || PRODUCTS[data.service].label) : ''; }
+  function redeemCode(){ const data = readRedeem(); return data ? data.code : ''; }
+  function clearRedeem(){
+    try{
+      sessionStorage.removeItem(REDEEM_KEY);
+      window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail:{ cart: load() } }));
+    }catch(e){}
+  }
   function load(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
       if(!raw) return [];
       const parsed = JSON.parse(raw);
       if(!Array.isArray(parsed)) return [];
-      return parsed.filter((k)=>typeof k==='string' && PRODUCTS[k]);
+      const list = parsed.filter((k)=>typeof k==='string' && PRODUCTS[k]);
+      const lock = redeemService();
+      if(lock){
+        const filtered = list.filter((k)=>k === lock);
+        if(filtered.indexOf(lock) < 0) filtered.push(lock);
+        return filtered;
+      }
+      return list;
     }catch(e){ return []; }
   }
   function save(list){
     try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-      window.dispatchEvent(new CustomEvent(EVENT_NAME,{detail:{cart:list.slice()}}));
+      const lock = redeemService();
+      const stored = lock ? [lock] : (list || []);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+      window.dispatchEvent(new CustomEvent(EVENT_NAME,{detail:{cart:stored.slice()}}));
     }catch(e){}
   }
   function get(){ return load(); }
@@ -33,18 +62,32 @@
   function has(key){ return load().indexOf(key) >= 0; }
   function add(key){
     if(!PRODUCTS[key]) return;
+    const lock = redeemService();
+    if(lock && key !== lock){
+      if(window.MAOYANG_CART_TOAST_LOCKED) window.MAOYANG_CART_TOAST_LOCKED();
+      return;
+    }
     const list = load();
     if(list.indexOf(key) >= 0) return;
     list.push(key); save(list);
   }
   function remove(key){
+    const lock = redeemService();
+    if(lock && key === lock){
+      if(window.MAOYANG_CART_TOAST_LOCKED) window.MAOYANG_CART_TOAST_LOCKED();
+      return;
+    }
     const list = load().filter((k)=>k!==key);
     save(list);
   }
   function toggle(key){
     has(key) ? remove(key) : add(key);
   }
-  function clear(){ save([]); }
+  function clear(){
+    const lock = redeemService();
+    if(lock){ save([lock]); return; }
+    save([]);
+  }
   function bundleRate(count){
     if(count >= 3) return 0.10;
     if(count === 2) return 0.05;
@@ -84,6 +127,7 @@
     PRODUCTS, PRODUCT_KEYS,
     get, items, has, add, remove, toggle, clear,
     bundleRate, bundleLabel, subtotal, finalCny, finalUsdt,
-    usdtRate, usdtDiscount, on
+    usdtRate, usdtDiscount, on,
+    isRedeemLocked, redeemService, redeemLabel, redeemCode, clearRedeem
   };
 })();

@@ -2,10 +2,17 @@
   const form = document.querySelector('[data-admin-form]');
   const keyInput = document.querySelector('[data-admin-key]');
   const statusBox = document.querySelector('[data-admin-status]');
+  const gateStatus = document.querySelector('[data-admin-gate-status]');
+  const gateEl = document.querySelector('[data-admin-gate]');
+  const contentEls = Array.prototype.slice.call(document.querySelectorAll('[data-admin-content]'));
+  const logoutBtn = document.querySelector('[data-admin-logout]');
   const tableBody = document.querySelector('[data-order-rows]');
   const mobileOrdersEl = document.querySelector('[data-mobile-orders]');
   const emptyState = document.querySelector('[data-empty-state]');
   const searchInput = document.querySelector('[data-admin-search]');
+  const filterStatus = document.querySelector('[data-filter-status]');
+  const filterPayment = document.querySelector('[data-filter-payment]');
+  const filterService = document.querySelector('[data-filter-service]');
   const selectAllInput = document.querySelector('[data-select-all]');
   const selectedCountEl = document.querySelector('[data-selected-count]');
   const bulkCancelBtn = document.querySelector('[data-bulk-cancel]');
@@ -20,6 +27,20 @@
   let visibleOrders = [];
   const selectedIds = new Set();
 
+  function showGate(){
+    if(gateEl) gateEl.hidden = false;
+    contentEls.forEach((el)=>{ el.hidden = true; });
+  }
+  function showContent(){
+    if(gateEl) gateEl.hidden = true;
+    contentEls.forEach((el)=>{ el.hidden = false; });
+  }
+  function setGateStatus(text, warn){
+    if(!gateStatus) return;
+    gateStatus.textContent = text || '';
+    gateStatus.classList.toggle('warn', !!warn);
+    gateStatus.hidden = !text;
+  }
   function setStatus(text, warn){
     statusBox.textContent = text;
     statusBox.classList.toggle('warn', !!warn);
@@ -97,6 +118,19 @@
     if(!q) return true;
     return norm(o.orderId).includes(q) || norm(o.email).includes(q);
   }
+  function matchesFilters(o){
+    if(filterStatus && filterStatus.value && (o.status || 'pending') !== filterStatus.value) return false;
+    if(filterPayment && filterPayment.value){
+      const method = o.paymentMethod || 'alipay';
+      if(method !== filterPayment.value) return false;
+    }
+    if(filterService && filterService.value){
+      const items = orderItems(o);
+      const has = items.some((it)=>(it.service || '') === filterService.value);
+      if(!has) return false;
+    }
+    return true;
+  }
   function syncSelectionUi(){
     const visibleIds = visibleOrders.map(orderId).filter(Boolean);
     const selectedVisible = visibleIds.filter((id)=>selectedIds.has(id)).length;
@@ -115,7 +149,7 @@
   }
   function applyFilter(){
     const query = searchInput ? searchInput.value : '';
-    visibleOrders = currentOrders.filter((order)=>matchesOrderSearch(order, query));
+    visibleOrders = currentOrders.filter((order)=>matchesOrderSearch(order, query) && matchesFilters(order));
     render(visibleOrders);
   }
 
@@ -156,12 +190,23 @@
 
       const actionTd = document.createElement('td');
       actionTd.dataset.label = '操作';
+      const actionWrap = document.createElement('div');
+      actionWrap.style.display = 'flex';
+      actionWrap.style.gap = '6px';
+      actionWrap.style.flexWrap = 'wrap';
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'adminAction adminActionView';
+      viewBtn.textContent = '查看';
+      viewBtn.addEventListener('click', ()=>openDetailModal(o));
       const actionBtn = document.createElement('button');
       actionBtn.type = 'button';
       actionBtn.className = 'adminAction';
       actionBtn.textContent = '处理';
       actionBtn.addEventListener('click', ()=>openEditorModal(o));
-      actionTd.appendChild(actionBtn);
+      actionWrap.appendChild(viewBtn);
+      actionWrap.appendChild(actionBtn);
+      actionTd.appendChild(actionWrap);
       tr.appendChild(actionTd);
 
       [
@@ -246,15 +291,24 @@
       main.appendChild(code);
       main.appendChild(meta);
 
+      const actionsWrap = document.createElement('div');
+      actionsWrap.className = 'adminMobileActions';
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'adminAction adminActionView';
+      viewBtn.textContent = '查看';
+      viewBtn.addEventListener('click', ()=>openDetailModal(o));
       const actionBtn = document.createElement('button');
       actionBtn.type = 'button';
       actionBtn.className = 'adminAction';
       actionBtn.textContent = '处理';
       actionBtn.addEventListener('click', ()=>openEditorModal(o));
+      actionsWrap.appendChild(viewBtn);
+      actionsWrap.appendChild(actionBtn);
 
       top.appendChild(selectBox);
       top.appendChild(main);
-      top.appendChild(actionBtn);
+      top.appendChild(actionsWrap);
       card.appendChild(top);
 
       const info = document.createElement('div');
@@ -420,37 +474,93 @@
     document.body.classList.add('adminModalOpen');
   }
 
-  function toggleEditor(order, afterRow){
-    const next = afterRow.nextElementSibling;
-    if(next && next.classList.contains('adminEditRow')){
-      next.remove();
-      return;
-    }
-    removeEditors();
-    removeMobileEditors();
+  function escapeHtml(v){
+    return safe(v).replace(/[&<>"']/g, (m)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function buildDetailBox(order){
+    const wrap = document.createElement('div');
+    wrap.className = 'adminDetailGrid';
 
-    const editorRow = document.createElement('tr');
-    editorRow.className = 'adminEditRow';
-    const td = document.createElement('td');
-    td.colSpan = 12;
-    editorRow.appendChild(td);
-    td.appendChild(buildEditorBox(order, ()=>editorRow.remove()));
-    afterRow.after(editorRow);
+    const items = orderItems(order);
+    const itemsBox = document.createElement('div');
+    itemsBox.className = 'adminDetailItems';
+    items.forEach((it)=>{
+      const card = document.createElement('div');
+      card.className = 'adminDetailItem';
+      let html = '<strong>' + escapeHtml(it.label || it.service) + (it.cycle ? ' · ' + escapeHtml(it.cycle) : '') + '</strong>';
+      if(it.amount) html += '<div class="row"><span>金额</span><b>' + money(it.amount) + '</b></div>';
+      if(it.account) html += '<div class="row"><span>' + (it.service === 'network' ? '订阅名' : (it.service === 'chatgpt' || FULFILLABLE.has(it.service) ? '账号' : (it.username ? '用户名' : '账号'))) + '</span><b>' + escapeHtml(it.account) + '</b></div>';
+      if(it.password) html += '<div class="row"><span>密码</span><b>' + escapeHtml(it.password) + '</b></div>';
+      if(it.username && it.username !== it.account) html += '<div class="row"><span>用户名</span><b>' + escapeHtml(it.username) + '</b></div>';
+      if(it.subscriptionLinks){
+        if(it.subscriptionLinks.shadowrocket) html += '<code>Shadowrocket: ' + escapeHtml(it.subscriptionLinks.shadowrocket) + '</code>';
+        if(it.subscriptionLinks.clash) html += '<code>Clash: ' + escapeHtml(it.subscriptionLinks.clash) + '</code>';
+      }
+      card.innerHTML = html;
+      itemsBox.appendChild(card);
+    });
+    wrap.appendChild(itemsBox);
+
+    function row(label, value){
+      if(!value && value !== 0) return '';
+      return '<div class="adminDetailRow"><span>' + label + '</span><b>' + escapeHtml(value) + '</b></div>';
+    }
+    const baseHtml = (
+      row('订单号', order.orderId) +
+      row('订单状态', statusText(order)) +
+      row('订单时间', orderTime(order)) +
+      row('支付方式', paymentName(order)) +
+      row('应付', paid(order)) +
+      (order.discountLabel ? row('组合优惠', order.discountLabel) : '') +
+      (order.walletDeduction ? row('账户立减', money(order.walletDeduction)) : '') +
+      (order.couponDeduction ? row('优惠券抵扣', money(order.couponDeduction)) : '') +
+      row('用户邮箱', order.email || '--') +
+      row('联系方式', order.contact || '--') +
+      (order.redeemCode ? row('使用兑换码', order.redeemCode) : '')
+    );
+    const baseWrap = document.createElement('div');
+    baseWrap.innerHTML = baseHtml;
+    Array.prototype.slice.call(baseWrap.children).forEach((c)=>wrap.appendChild(c));
+
+    if(order.remark){
+      const remark = document.createElement('div');
+      remark.innerHTML = '<div class="adminDetailRow"><span>用户备注</span><b>' + escapeHtml(order.remark) + '</b></div>';
+      wrap.appendChild(remark.firstChild);
+    }
+    if(order.adminNote){
+      const note = document.createElement('div');
+      note.innerHTML = '<div class="adminDetailRow"><span>内部备注</span><b>' + escapeHtml(order.adminNote) + '</b></div>';
+      wrap.appendChild(note.firstChild);
+    }
+    if(order.fulfillmentNote){
+      const note = document.createElement('div');
+      note.innerHTML = '<div class="adminDetailRow"><span>开通备注</span><b>' + escapeHtml(order.fulfillmentNote) + '</b></div>';
+      wrap.appendChild(note.firstChild);
+    }
+
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'adminSave';
+    editBtn.textContent = '处理订单';
+    editBtn.style.marginTop = '6px';
+    editBtn.addEventListener('click', ()=>{
+      closeEditorModal();
+      openEditorModal(order);
+    });
+    wrap.appendChild(editBtn);
+
+    return wrap;
   }
 
-  function toggleMobileEditor(order, card){
-    const current = card.querySelector('.adminMobileEditor');
-    if(current){
-      current.remove();
-      return;
-    }
+  function openDetailModal(order){
+    if(!modalEl || !modalBodyEl){ return; }
     removeEditors();
     removeMobileEditors();
-
-    const wrap = document.createElement('div');
-    wrap.className = 'adminMobileEditor';
-    wrap.appendChild(buildEditorBox(order, ()=>wrap.remove()));
-    card.appendChild(wrap);
+    if(modalTitleEl) modalTitleEl.textContent = (order.orderId || '') + (order.orderId ? ' · ' : '') + itemsLabel(order);
+    modalBodyEl.innerHTML = '';
+    modalBodyEl.appendChild(buildDetailBox(order));
+    modalEl.hidden = false;
+    document.body.classList.add('adminModalOpen');
   }
 
   function collectItems(box){
@@ -583,27 +693,56 @@
     return '操作失败，请检查管理密钥、存储配置和邮箱配置';
   }
 
+  function logout(){
+    sessionStorage.removeItem('maoyangAdminKey');
+    keyInput.value = '';
+    currentOrders = [];
+    visibleOrders = [];
+    selectedIds.clear();
+    render([]);
+    setStatus('', false);
+    setGateStatus('', false);
+    showGate();
+    setTimeout(()=>keyInput.focus(), 50);
+  }
+
   const savedKey = keyFromLocation() || sessionStorage.getItem('maoyangAdminKey');
   if(savedKey){
     keyInput.value = savedKey;
     sessionStorage.setItem('maoyangAdminKey', savedKey);
-    loadOrders(savedKey).catch((error)=>{ render([]); setStatus(errorMessage(error), true); });
+    loadOrders(savedKey).then(()=>{
+      showContent();
+    }).catch((error)=>{
+      showGate();
+      sessionStorage.removeItem('maoyangAdminKey');
+      setGateStatus(errorMessage(error), true);
+    });
+  }else{
+    showGate();
   }
 
   form.addEventListener('submit', async (event)=>{
     event.preventDefault();
     const key = keyInput.value.trim();
-    if(!key){ setStatus('请输入管理密钥', true); return; }
-    sessionStorage.setItem('maoyangAdminKey', key);
-    try{ await loadOrders(key); }
-    catch(error){
+    if(!key){ setGateStatus('请输入管理密钥', true); return; }
+    setGateStatus('正在验证密钥...');
+    try{
+      await loadOrders(key);
+      sessionStorage.setItem('maoyangAdminKey', key);
+      showContent();
+      setGateStatus('', false);
+    }catch(error){
       currentOrders = [];
       visibleOrders = [];
       selectedIds.clear();
       render([]);
-      setStatus(errorMessage(error), true);
+      sessionStorage.removeItem('maoyangAdminKey');
+      showGate();
+      setGateStatus(errorMessage(error), true);
     }
   });
+
+  if(logoutBtn) logoutBtn.addEventListener('click', logout);
 
   if(searchInput){
     searchInput.addEventListener('input', ()=>{
@@ -614,6 +753,14 @@
       }
     });
   }
+  [filterStatus, filterPayment, filterService].forEach((sel)=>{
+    if(sel) sel.addEventListener('change', ()=>{
+      applyFilter();
+      if(currentOrders.length > 0){
+        setStatus('当前显示 ' + visibleOrders.length + ' / ' + currentOrders.length + ' 条订单', false);
+      }
+    });
+  });
   if(selectAllInput){
     selectAllInput.addEventListener('change', ()=>{
       visibleOrders.map(orderId).filter(Boolean).forEach((id)=>{

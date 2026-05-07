@@ -22,6 +22,8 @@
 
   function buildCard(p){
     const inCart = Cart.has(p.key);
+    const locked = Cart.isRedeemLocked && Cart.isRedeemLocked();
+    const lockedOther = locked && Cart.redeemService && Cart.redeemService() !== p.key;
     const saved = (p.original || 0) - p.amount;
     const card = el('article','productCard');
     card.dataset.product = p.key;
@@ -46,13 +48,17 @@
         '</div>' +
         '<ul class="productHl">' + (p.highlights||[]).map((h)=>'<li>'+h+'</li>').join('') + '</ul>' +
         (p.soldThisMonth ? '<div class="productSold"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2c0 4 4 5 4 9a5 5 0 1 1-10 0c0-2 1-3 2-4 0 3 2 3 2 5"/></svg>本月已售 <b>' + p.soldThisMonth.toLocaleString() + '</b> 份</div>' : '') +
-        '<button class="addToCartBtn' + (inCart ? ' inCart' : '') + '" type="button" data-cart-toggle="' + p.key + '">' +
-          (inCart ?
-            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>已加入 · 点击移除' :
-            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.5 11h-11Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>加入购物车') +
+        '<button class="addToCartBtn' + (inCart ? ' inCart' : '') + (lockedOther ? ' locked' : '') + '" type="button" data-cart-toggle="' + p.key + '"' + (lockedOther ? ' disabled' : '') + '>' +
+          (lockedOther ?
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>兑换码已锁定' :
+            (inCart ?
+              '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>已加入 · 点击移除' :
+              '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.5 11h-11Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>加入购物车')
+          ) +
         '</button>' +
       '</div>';
     card.querySelector('[data-cart-toggle]').addEventListener('click', ()=>{
+      if(lockedOther){ if(window.MAOYANG_CART_TOAST_LOCKED) window.MAOYANG_CART_TOAST_LOCKED(); return; }
       const wasIn = Cart.has(p.key);
       Cart.toggle(p.key);
       if(!wasIn && window.MAOYANG_CART_TOAST) window.MAOYANG_CART_TOAST(p.label);
@@ -60,8 +66,27 @@
     return card;
   }
 
+  function renderLockBanner(){
+    const existing = document.querySelector('[data-redeem-lock-banner]');
+    const locked = Cart.isRedeemLocked && Cart.isRedeemLocked();
+    if(!locked){ if(existing) existing.remove(); return; }
+    if(existing){ existing.remove(); }
+    const label = Cart.redeemLabel ? Cart.redeemLabel() : '';
+    const banner = el('div','redeemLockNote');
+    banner.dataset.redeemLockBanner = '1';
+    banner.style.margin = '0 0 12px';
+    banner.innerHTML = '<span><b>当前已应用兑换码：' + (label || '商品兑换码') + '</b><br>购物车锁定为兑换码订单，需先完成兑换才可选购其他商品</span><button type="button" data-redeem-cancel>取消兑换</button>';
+    banner.querySelector('[data-redeem-cancel]').addEventListener('click', ()=>{
+      if(Cart.clearRedeem) Cart.clearRedeem();
+      Cart.clear();
+      render();
+    });
+    grid.parentNode.insertBefore(banner, grid);
+  }
+
   function render(){
     grid.innerHTML = '';
+    renderLockBanner();
     Cart.PRODUCT_KEYS.forEach((key)=>{
       const p = Cart.PRODUCTS[key];
       if(p) grid.appendChild(buildCard(p));

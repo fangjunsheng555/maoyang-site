@@ -309,6 +309,8 @@ body.hasCartBar{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
 .cartToast{position:fixed;left:50%;top:80px;transform:translateX(-50%);z-index:1200;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#0f172a;color:#fff;font-size:13.5px;font-weight:850;box-shadow:0 18px 38px rgba(15,23,42,.32);animation:toastIn .26s ease-out}
 .cartToast.hide{animation:toastOut .3s ease-in forwards}
 .cartToast svg{width:14px;height:14px;fill:none;stroke:#34d399;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cartToast.cartToastWarn{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;box-shadow:0 18px 38px rgba(154,52,18,.22)}
+.cartToast.cartToastWarn svg{stroke:#9a3412}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,-12px)}to{opacity:1;transform:translate(-50%,0)}}
 @keyframes toastOut{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-10px)}}
 
@@ -1044,3 +1046,23 @@ body{line-height:1.55}
   .qrCompact .qrFrame{min-height:148px}
   .qrCompact .qrFrame img{max-width:142px}
 }
+
+/* Auth dashboard tabs */
+.authDashTabs{margin-top:2px}
+.authDashPane{display:grid;gap:9px}
+.authDashPane[hidden]{display:none!important}
+
+/* Register button corner badge (mirrors home page authCtaBadge) */
+.authRegisterBtnWrap{position:relative;overflow:visible}
+.authRegisterBtn{position:relative;overflow:visible;padding-right:24px}
+.authRegisterBadge{position:absolute;right:-10px;top:-11px;display:inline-flex;align-items:center;justify-content:center;min-height:18px;padding:2px 8px;border-radius:999px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;box-shadow:0 8px 20px rgba(0,0,0,.18);font-size:10.5px;font-style:normal;font-weight:950;line-height:1;white-space:nowrap;pointer-events:none;letter-spacing:.02em}
+@media (max-width:720px){.authRegisterBadge{right:-8px;top:-10px;font-size:10px;padding:2px 7px}}
+
+/* Cart redeem-mode lock UI */
+.cartBarLock{display:inline-flex;align-items:center;gap:5px;background:#ecfdf3;color:#047857;border-radius:999px;padding:3px 9px;font-size:11px;font-weight:950;line-height:1.2}
+.cartBarLock svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2}
+.redeemLockNote{display:flex;align-items:center;gap:8px;border:1px solid #fed7aa;border-radius:12px;background:#fff7ed;color:#9a3412;padding:9px 12px;font-size:12.5px;font-weight:850;line-height:1.5;margin:10px 0}
+.redeemLockNote b{color:#7c2d12;font-weight:950}
+.redeemLockNote button{margin-left:auto;border:1px solid #fed7aa;background:#fff;color:#9a3412;border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:900;cursor:pointer}
+.redeemLockNote button:hover{background:#fff7ed}
+.addToCartBtn.locked{background:#f1f5f9!important;color:#94a3b8!important;cursor:not-allowed}

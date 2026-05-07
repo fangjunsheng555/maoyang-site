@@ -169,6 +169,8 @@
     all('[data-auth-pane]').forEach((p)=>p.hidden = p.dataset.authPane !== name);
     const title = one('#authTitle', modal);
     if(title) title.textContent = name === 'register' ? '注册账户' : (name === 'reset' ? '找回密码' : '登录账户');
+    const tabsEl = one('.authTabs', modal);
+    if(tabsEl) tabsEl.hidden = (name === 'reset');
   }
   function buildModal(){
     if(modal) return modal;
@@ -190,11 +192,10 @@
               '<div class="authDivider"><span>或</span></div><div class="googleBox" data-google-login><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
             '</form>' +
             '<form class="authPane" data-auth-pane="register" data-register-form hidden>' +
-              '<div class="authBonus"><b></b><span>新用户注册立减 ¥8.88</span></div>' +
               '<label class="field"><span>称呼</span><input name="name" autocomplete="name" placeholder="怎么称呼你"></label>' +
               '<label class="field"><span>邮箱</span><input type="email" name="email" autocomplete="email" required></label>' +
               '<label class="field"><span>密码</span><input type="password" name="password" autocomplete="new-password" required></label>' +
-              '<button class="primaryBtn primaryBtnLg" type="submit">注册并领取优惠券</button>' +
+              '<div class="authRegisterBtnWrap"><button class="primaryBtn primaryBtnLg authRegisterBtn" type="submit">注册并领取优惠券<em class="authRegisterBadge">立减 ' + bonusText() + '</em></button></div>' +
               '<div class="authDivider"><span>或</span></div><div class="googleBox" data-google-register><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
             '</form>' +
             '<form class="authPane" data-auth-pane="reset" data-reset-form hidden>' +
@@ -315,6 +316,7 @@
     dash.hidden = !state.user;
     if(!state.user) return;
     const pendingWithdraw = state.withdrawals.filter((w)=>w.status === 'pending').reduce((sum, w)=>sum + Number(w.amount || 0), 0);
+    const activeTab = dash.dataset.activeTab || 'orders';
     dash.innerHTML =
       '<div class="authProfile">' +
         '<div><span>当前账户</span><strong>' + esc(state.user.name || state.user.email) + '</strong><em>' + esc(state.user.email) + '</em></div>' +
@@ -322,13 +324,32 @@
       '</div>' +
       '<div class="authBalanceCard"><span>账户余额</span><b>' + money(state.user.balance) + '</b><small>余额可用于下单抵扣，也可提交提现申请。</small></div>' +
       '<div class="authMiniGrid"><span><b>' + state.orders.length + '</b>账户订单</span><span><b>' + money(pendingWithdraw) + '</b>提现处理中</span></div>' +
-      '<form class="authTool" data-redeem-form><div><strong>兑换码</strong><small>支持余额码与商品兑换码</small></div><div class="authInline"><input name="code" placeholder="输入兑换码" autocomplete="off"><button type="submit" class="primaryBtn">兑换</button></div><p data-redeem-status hidden></p></form>' +
-      '<form class="authTool" data-withdraw-form><div><strong>余额提现</strong><small>提交后后台审核处理，驳回会自动退回余额</small></div><label class="field"><span>提现金额</span><input name="amount" inputmode="decimal" placeholder="例如 20"></label><label class="field"><span>收款方式</span><input name="method" placeholder="支付宝 / USDT / 其他"></label><label class="field"><span>收款账户</span><input name="account" placeholder="账号 / 地址" required></label><button type="submit" class="ghostBtn">提交提现</button><p data-withdraw-status hidden></p></form>' +
-      '<div class="authOrders"><div class="authSectionTitle"><strong>订单查询</strong><button type="button" class="ghostBtn" data-auth-refresh>刷新</button></div><div data-auth-orders></div></div>';
+      '<div class="authTabs authTabsTwo authDashTabs">' +
+        '<button type="button"' + (activeTab === 'orders' ? ' class="active"' : '') + ' data-dash-tab="orders">我的订单</button>' +
+        '<button type="button"' + (activeTab === 'tools' ? ' class="active"' : '') + ' data-dash-tab="tools">兑换 / 提现</button>' +
+      '</div>' +
+      '<div class="authDashPane" data-dash-pane="orders"' + (activeTab === 'orders' ? '' : ' hidden') + '>' +
+        '<div class="authOrders"><div class="authSectionTitle"><strong>订单查询</strong><button type="button" class="ghostBtn" data-auth-refresh>刷新</button></div><div data-auth-orders></div></div>' +
+      '</div>' +
+      '<div class="authDashPane" data-dash-pane="tools"' + (activeTab === 'tools' ? '' : ' hidden') + '>' +
+        '<form class="authTool" data-redeem-form><div><strong>兑换码</strong><small>支持余额码与商品兑换码</small></div><div class="authInline"><input name="code" placeholder="输入兑换码" autocomplete="off"><button type="submit" class="primaryBtn">兑换</button></div><p data-redeem-status hidden></p></form>' +
+        '<form class="authTool" data-withdraw-form><div><strong>余额提现</strong><small>提交后后台审核处理，驳回会自动退回余额</small></div><label class="field"><span>提现金额</span><input name="amount" inputmode="decimal" placeholder="例如 20"></label><label class="field"><span>收款方式</span><input name="method" placeholder="支付宝 / USDT / 其他"></label><label class="field"><span>收款账户</span><input name="account" placeholder="账号 / 地址" required></label><button type="submit" class="ghostBtn">提交提现</button><p data-withdraw-status hidden></p></form>' +
+      '</div>';
+    all('[data-dash-tab]', dash).forEach((btn)=>{
+      btn.addEventListener('click', ()=>{
+        const name = btn.dataset.dashTab;
+        dash.dataset.activeTab = name;
+        all('[data-dash-tab]', dash).forEach((b)=>b.classList.toggle('active', b.dataset.dashTab === name));
+        all('[data-dash-pane]', dash).forEach((p)=>p.hidden = p.dataset.dashPane !== name);
+      });
+    });
     one('[data-auth-logout]', dash).addEventListener('click', logout);
-    one('[data-auth-refresh]', dash).addEventListener('click', refresh);
-    one('[data-redeem-form]', dash).addEventListener('submit', redeem);
-    one('[data-withdraw-form]', dash).addEventListener('submit', withdraw);
+    const refreshBtn = one('[data-auth-refresh]', dash);
+    if(refreshBtn) refreshBtn.addEventListener('click', refresh);
+    const redeemForm = one('[data-redeem-form]', dash);
+    if(redeemForm) redeemForm.addEventListener('submit', redeem);
+    const withdrawForm = one('[data-withdraw-form]', dash);
+    if(withdrawForm) withdrawForm.addEventListener('submit', withdraw);
     renderOrderList();
   }
   function renderOrderList(){

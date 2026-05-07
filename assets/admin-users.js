@@ -188,7 +188,14 @@
     });
   }
   function openCreateCodes(){
-    openModal('创建兑换码', '兑换码', '<div class="adminCreateGrid"><form class="adminCreateBox" data-create-code="balance"><h3>余额兑换码</h3><label>批次名称<input name="batchName" placeholder="例如 5 月余额码"></label><label>余额金额<input name="amount" inputmode="decimal" placeholder="例如 20" required></label><label>生成数量<input name="count" inputmode="numeric" placeholder="留空为 1"></label><label>自定义兑换码<textarea name="codes" rows="4" placeholder="可填多个，空格/换行分隔；留空随机"></textarea></label><label>每码可用次数<input name="maxUses" inputmode="numeric" placeholder="默认 1"></label><label>过期时间<input name="expiresAt" placeholder="可留空"></label><label>备注<input name="note" placeholder="后台备注"></label><button class="adminSave" type="submit">创建余额码</button></form><form class="adminCreateBox" data-create-code="product"><h3>商品兑换码</h3><label>批次名称<input name="batchName" placeholder="例如 Spotify 商品码"></label><label>兑换商品<select name="service"><option value="spotify">Spotify</option><option value="netflix">Netflix</option><option value="disney">Disney+</option><option value="hbomax">HBO Max</option><option value="chatgpt">ChatGPT Plus</option><option value="network">网络节点</option></select></label><label>生成数量<input name="count" inputmode="numeric" placeholder="留空为 1"></label><label>自定义兑换码<textarea name="codes" rows="4" placeholder="可填多个，空格/换行分隔；留空随机"></textarea></label><label>每码可用次数<input name="maxUses" inputmode="numeric" placeholder="默认 1"></label><label>过期时间<input name="expiresAt" placeholder="可留空"></label><label>备注<input name="note" placeholder="后台备注"></label><button class="adminSave" type="submit">创建商品码</button></form></div>');
+    const balanceForm = '<form class="adminCreateBox" data-create-code="balance" data-code-pane="balance"><label>批次名称<input name="batchName" placeholder="例如 5 月余额码"></label><label>余额金额<input name="amount" inputmode="decimal" placeholder="例如 20" required></label><label>生成数量<input name="count" inputmode="numeric" placeholder="留空为 1"></label><label>自定义兑换码<textarea name="codes" rows="3" placeholder="可填多个，空格/换行分隔；留空随机"></textarea></label><label>每码可用次数<input name="maxUses" inputmode="numeric" placeholder="默认 1"></label><label>过期时间<input name="expiresAt" placeholder="可留空"></label><label>备注<input name="note" placeholder="后台备注"></label><button class="adminSave" type="submit">创建余额码</button></form>';
+    const productForm = '<form class="adminCreateBox" data-create-code="product" data-code-pane="product" hidden><label>批次名称<input name="batchName" placeholder="例如 Spotify 商品码"></label><label>兑换商品<select name="service"><option value="spotify">Spotify</option><option value="netflix">Netflix</option><option value="disney">Disney+</option><option value="hbomax">HBO Max</option><option value="chatgpt">ChatGPT Plus</option><option value="network">网络节点</option></select></label><label>生成数量<input name="count" inputmode="numeric" placeholder="留空为 1"></label><label>自定义兑换码<textarea name="codes" rows="3" placeholder="可填多个，空格/换行分隔；留空随机"></textarea></label><label>每码可用次数<input name="maxUses" inputmode="numeric" placeholder="默认 1"></label><label>过期时间<input name="expiresAt" placeholder="可留空"></label><label>备注<input name="note" placeholder="后台备注"></label><button class="adminSave" type="submit">创建商品码</button></form>';
+    openModal('创建兑换码', '兑换码', '<div class="adminCodeTabs"><button type="button" class="active" data-code-tab="balance">余额兑换码</button><button type="button" data-code-tab="product">商品兑换码</button></div>' + balanceForm + productForm);
+    all('[data-code-tab]', modal).forEach((btn)=>btn.addEventListener('click', ()=>{
+      const name = btn.dataset.codeTab;
+      all('[data-code-tab]', modal).forEach((b)=>b.classList.toggle('active', b.dataset.codeTab === name));
+      all('[data-code-pane]', modal).forEach((p)=>p.hidden = p.dataset.codePane !== name);
+    }));
     all('[data-create-code]', modal).forEach((form)=>form.addEventListener('submit', async (event)=>{
       event.preventDefault();
       const body = Object.fromEntries(new FormData(event.currentTarget).entries());
@@ -198,10 +205,58 @@
       catch(error){ alert(errText(error)); }
     }));
   }
+  function copyText(text){
+    if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    const t = document.createElement('textarea'); t.value = text; t.style.position = 'fixed'; t.style.left = '-9999px';
+    document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove();
+    return Promise.resolve();
+  }
   function openBatch(batch){
-    openModal(batch.name, '兑换码批次', '<div class="adminModalActions three"><button type="button" class="adminGhost" data-select-all-codes>全选</button><button type="button" class="adminGhost" data-disable-selected>作废所选</button><button type="button" class="adminDanger" data-delete-selected>删除所选</button><button type="button" class="adminGhost" data-disable-batch>作废整批</button><button type="button" class="adminDanger" data-delete-batch>删除整批</button></div><div class="adminCodeRows">' + batch.codes.map((code)=>'<label class="adminCodeRow"><input type="checkbox" value="' + esc(code.id) + '"><span><code>' + esc(code.code) + '</code><small>' + esc(code.status || 'active') + ' · 已用 ' + (code.usedCount || 0) + ' / ' + (code.maxUses || 1) + '</small></span><b>' + esc(codeLabel(code)) + '</b></label>').join('') + '</div>');
-    const selected = ()=>all('.adminCodeRow input:checked', modal).map((input)=>input.value);
-    one('[data-select-all-codes]', modal).addEventListener('click', ()=>all('.adminCodeRow input', modal).forEach((input)=>input.checked = true));
+    const codesText = batch.codes.map((c)=>c.code).join('\n');
+    openModal(batch.name, '兑换码批次',
+      '<div class="adminBatchActions">' +
+        '<button type="button" class="adminGhost" data-select-all-codes>全选</button>' +
+        '<button type="button" class="adminGhost" data-copy-all-codes>复制全部</button>' +
+        '<button type="button" class="adminGhost" data-disable-selected>作废所选</button>' +
+        '<button type="button" class="adminDanger" data-delete-selected>删除所选</button>' +
+        '<button type="button" class="adminGhost" data-disable-batch>作废整批</button>' +
+        '<button type="button" class="adminDanger" data-delete-batch>删除整批</button>' +
+      '</div>' +
+      '<div class="adminCodeRows">' + batch.codes.map((code)=>
+        '<label class="adminCodeRow">' +
+          '<input type="checkbox" value="' + esc(code.id) + '">' +
+          '<span><code>' + esc(code.code) + '</code><small>' + esc(code.status || 'active') + ' · 已用 ' + (code.usedCount || 0) + ' / ' + (code.maxUses || 1) + '</small></span>' +
+          '<b>' + esc(codeLabel(code)) + '</b>' +
+          '<button type="button" class="adminCodeCopy" data-copy="' + esc(code.code) + '">复制</button>' +
+        '</label>'
+      ).join('') + '</div>'
+    );
+    const selected = ()=>all('.adminCodeRow input[type=checkbox]:checked', modal).map((input)=>input.value);
+    one('[data-select-all-codes]', modal).addEventListener('click', ()=>{
+      const inputs = all('.adminCodeRow input[type=checkbox]', modal);
+      const allChecked = inputs.every((i)=>i.checked);
+      inputs.forEach((input)=>input.checked = !allChecked);
+    });
+    one('[data-copy-all-codes]', modal).addEventListener('click', (event)=>{
+      const btn = event.currentTarget;
+      copyText(codesText).then(()=>{
+        const original = btn.textContent;
+        btn.textContent = '已复制 ' + batch.codes.length + ' 个';
+        setTimeout(()=>{ btn.textContent = original; }, 1500);
+      });
+    });
+    all('[data-copy]', modal).forEach((btn)=>{
+      btn.addEventListener('click', (event)=>{
+        event.preventDefault();
+        event.stopPropagation();
+        copyText(btn.dataset.copy).then(()=>{
+          btn.classList.add('copied');
+          const original = btn.textContent;
+          btn.textContent = '已复制';
+          setTimeout(()=>{ btn.textContent = original; btn.classList.remove('copied'); }, 1200);
+        });
+      });
+    });
     one('[data-disable-selected]', modal).addEventListener('click', async ()=>{ const ids = selected(); if(!ids.length) return; await api('/api/admin-user-update',{method:'POST',body:JSON.stringify({action:'code_bulk_status', ids, status:'disabled'})}); await loadAll(); closeModal(); });
     one('[data-delete-selected]', modal).addEventListener('click', async ()=>{ const ids = selected(); if(!ids.length || !confirm('确认删除所选兑换码？')) return; await api('/api/admin-user-update',{method:'POST',body:JSON.stringify({action:'code_bulk_delete', ids})}); await loadAll(); closeModal(); });
     one('[data-disable-batch]', modal).addEventListener('click', async ()=>{ await api('/api/admin-user-update',{method:'POST',body:JSON.stringify({action:'code_batch_status', batchId:batch.id, status:'disabled'})}); await loadAll(); closeModal(); });
