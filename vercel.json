@@ -1,6 +1,54 @@
 {
   "rewrites": [
     {
+      "source": "/api/auth-config",
+      "destination": "/api/account?route=auth-config"
+    },
+    {
+      "source": "/api/auth-register",
+      "destination": "/api/account?route=auth-register"
+    },
+    {
+      "source": "/api/auth-login",
+      "destination": "/api/account?route=auth-login"
+    },
+    {
+      "source": "/api/auth-google",
+      "destination": "/api/account?route=auth-google"
+    },
+    {
+      "source": "/api/auth-code",
+      "destination": "/api/account?route=auth-code"
+    },
+    {
+      "source": "/api/auth-reset",
+      "destination": "/api/account?route=auth-reset"
+    },
+    {
+      "source": "/api/auth-logout",
+      "destination": "/api/account?route=auth-logout"
+    },
+    {
+      "source": "/api/user-me",
+      "destination": "/api/account?route=user-me"
+    },
+    {
+      "source": "/api/user-redeem",
+      "destination": "/api/account?route=user-redeem"
+    },
+    {
+      "source": "/api/user-withdraw",
+      "destination": "/api/account?route=user-withdraw"
+    },
+    {
+      "source": "/api/admin-users",
+      "destination": "/api/account?route=admin-users"
+    },
+    {
+      "source": "/api/admin-user-update",
+      "destination": "/api/account?route=admin-user-update"
+    },
+    {
       "source": "/admin",
       "destination": "/admin.html"
     }
