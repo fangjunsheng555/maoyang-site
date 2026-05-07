@@ -291,24 +291,8 @@
       main.appendChild(code);
       main.appendChild(meta);
 
-      const actionsWrap = document.createElement('div');
-      actionsWrap.className = 'adminMobileActions';
-      const viewBtn = document.createElement('button');
-      viewBtn.type = 'button';
-      viewBtn.className = 'adminAction adminActionView';
-      viewBtn.textContent = '查看';
-      viewBtn.addEventListener('click', ()=>openDetailModal(o));
-      const actionBtn = document.createElement('button');
-      actionBtn.type = 'button';
-      actionBtn.className = 'adminAction';
-      actionBtn.textContent = '处理';
-      actionBtn.addEventListener('click', ()=>openEditorModal(o));
-      actionsWrap.appendChild(viewBtn);
-      actionsWrap.appendChild(actionBtn);
-
       top.appendChild(selectBox);
       top.appendChild(main);
-      top.appendChild(actionsWrap);
       card.appendChild(top);
 
       const info = document.createElement('div');
@@ -329,6 +313,22 @@
         remark.textContent = remarkText.replace(/\s+/g, ' ').slice(0, 72);
         card.appendChild(remark);
       }
+
+      const actionsRow = document.createElement('div');
+      actionsRow.className = 'adminMobileActions';
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'adminAction adminActionView';
+      viewBtn.textContent = '查看';
+      viewBtn.addEventListener('click', ()=>openDetailModal(o));
+      const actionBtn = document.createElement('button');
+      actionBtn.type = 'button';
+      actionBtn.className = 'adminAction';
+      actionBtn.textContent = '处理';
+      actionBtn.addEventListener('click', ()=>openEditorModal(o));
+      actionsRow.appendChild(viewBtn);
+      actionsRow.appendChild(actionBtn);
+      card.appendChild(actionsRow);
 
       mobileOrdersEl.appendChild(card);
     });

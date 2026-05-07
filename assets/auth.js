@@ -195,7 +195,7 @@
               '<label class="field"><span>称呼</span><input name="name" autocomplete="name" placeholder="怎么称呼你"></label>' +
               '<label class="field"><span>邮箱</span><input type="email" name="email" autocomplete="email" required></label>' +
               '<label class="field"><span>密码</span><input type="password" name="password" autocomplete="new-password" required></label>' +
-              '<div class="authRegisterBtnWrap"><button class="primaryBtn primaryBtnLg authRegisterBtn" type="submit">注册并领取优惠券<em class="authRegisterBadge">立减 ' + bonusText() + '</em></button></div>' +
+              '<div class="authRegisterBtnWrap"><button class="primaryBtn primaryBtnLg authRegisterBtn" type="submit">注册并领取优惠券</button><em class="authRegisterBadge">立减 ' + bonusText() + '</em></div>' +
               '<div class="authDivider"><span>或</span></div><div class="googleBox" data-google-register><button type="button" class="googlePlaceholder googleBtn" disabled><span class="googleIcon"></span><b>Google登录</b></button></div>' +
             '</form>' +
             '<form class="authPane" data-auth-pane="reset" data-reset-form hidden>' +
